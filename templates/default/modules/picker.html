@@ -1,0 +1,108 @@
+<!-- /opt/balthub/templates/default/modules/picker.html -->
+
+<div class="picker-system row" data-picker>
+
+    {% for picker in pickers %}
+
+        <div class="picker position-relative col-md-3 {% if picker.disabled %}disabled{% endif %}"
+            data-picker-name="{{ picker.name }}"
+            data-auto-submit="{{ picker.auto_submit|yesno:'true,false' }}">
+
+            {% if picker.type != "range" %}
+                <button type="button"
+                        class="picker-trigger"
+                        data-placeholder="{{ picker.placeholder }}">
+                    {{ picker.label|default:picker.name }}
+                </button>
+            {% endif %}
+
+            <button type="button"
+                    class="picker-reset position-absolute"
+                    data-picker-reset>
+                ×
+            </button>
+
+                <!-- RANGE PICKER -->
+                {% if picker.type == "range" %}
+
+                    <div class="picker-range">
+
+                        <div class="picker-range-fields">
+
+                            <span class="picker-range-label">
+                                {{ picker.label }}
+                            </span>
+
+                            <input
+                                type="number"
+                                class="picker-range-input"
+                                placeholder="{{ picker.range.from_placeholder }}"
+                                value="{{ picker.range.from_value }}"
+                                data-picker-range="{{ picker.range.from_name }}"
+                            >
+
+                            <input
+                                type="number"
+                                class="picker-range-input"
+                                placeholder="{{ picker.range.to_placeholder }}"
+                                value="{{ picker.range.to_value }}"
+                                data-picker-range="{{ picker.range.to_name }}"
+                            >
+
+                        </div>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="picker-dropdown position-absolute">
+
+                        <div class="picker-options">
+
+                            {% for option in picker.options %}
+
+                                <label class="picker-option position-relative">
+
+                                    <input
+                                        type="{{ picker.input_type }}"
+                                        value="{{ option.value }}"
+                                        data-picker-value
+                                    >
+
+                                    {{ option.label }}
+
+                                </label>
+
+                            {% endfor %}
+
+                        </div>
+
+                {% if not picker.auto_submit %}
+
+                    <button type="button"
+                            class="picker-apply">
+
+                        Применить
+
+                    </button>
+
+                {% endif %}
+
+                    </div>
+
+
+                {% endif %}
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+<div class="col-12 position-absolute text-end picker-control">
+
+    <a href="#" data-picker-reset-all>
+        Reset all
+    </a>
+
+</div>

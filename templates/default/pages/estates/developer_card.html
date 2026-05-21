@@ -1,0 +1,31 @@
+<!-- templates/default/pages/estates/developer_card.html -->
+
+<div class="card p-3 mb-3">
+
+    {% if developer.logo %}
+        <img src="{{ developer.logo.url }}" class="img-fluid mb-2" style="max-height:100px;">
+    {% endif %}
+
+    <h5>
+        {% if developer.slug %}
+            <a href="{% url 'developer_detail' developer.slug %}">
+                {{ developer.name }}
+            </a>
+        {% else %}
+            {{ developer.name }}
+        {% endif %}
+    </h5>
+
+    <div class="small text-muted mt-2">
+
+        Проектов: {{ developer.projects_count }}
+
+    </div>
+
+    {% if developer.min_price %}
+        <div class="small">
+            от {{ developer.min_price }}
+        </div>
+    {% endif %}
+
+</div>

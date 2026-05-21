@@ -1,0 +1,46 @@
+<!-- /opt/balthub/templates/default/pages/estates/ajax/_flat_list.html -->
+
+<div class="pickers position-relative">
+    {% include "default/modules/picker.html" with pickers=pickers %}
+</div>
+
+<div class="row" data-items>
+    {% for flat in page_obj %}
+        <div class="col-md-3">
+            {% include "default/pages/estates/flat_card.html" with flat=flat %}
+        </div>
+    {% endfor %}
+</div>
+
+<div class="pagination-wrapper" data-pagination>
+    {% include "default/includes/pagination.html" %}
+</div>
+
+
+
+
+
+
+<!--
+
+вызывать список квартир, когда буду проектировать внутренний интерфейс
+
+<h2>Квартиры</h2>
+
+
+<div
+    data-ajax-list
+    data-container="#flat-list-container"
+    data-form=".house-filter-form"
+    data-push-state="true"
+>
+
+    <div class="ajax-loader-overlay hidden">
+        <div class="spinner"></div>
+    </div>
+    
+    <div id="flat-list-container">
+        {% include "default/pages/estates/ajax/_flat_list.html" %}
+    </div>
+</div>
+-->

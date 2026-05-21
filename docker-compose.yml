@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:16
+    container_name: bh_database_box
+    restart: always
+    environment:
+      POSTGRES_DB: bh_database
+      POSTGRES_USER: bh_database_connect
+      POSTGRES_PASSWORD: nomdQo1DMxjaINVOrir68pKZ8MfYsMI3
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: balthub_www_box
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8002:8000"
+    depends_on:
+      - db
+    environment:
+      DB_NAME: bh_database
+      DB_USER: bh_database_connect
+      DB_PASSWORD: nomdQo1DMxjaINVOrir68pKZ8MfYsMI3
+      DB_HOST: db
+      DB_PORT: 5432
+      DJANGO_SETTINGS_MODULE: config.settings
+
+  redis:
+    image: redis:7-alpine
+    container_name: balthub-redis
+    command: redis-server --requirepass 1T4jpiMv4hYZOfjv6Umvkm82o2r6jAYS
+    restart: always
+    ports:
+      - "127.0.0.1:6379:6379"
+
+volumes:
+  postgres_data:

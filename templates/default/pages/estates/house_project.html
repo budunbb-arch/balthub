@@ -1,0 +1,19 @@
+{% extends "default/base.html" %}
+
+{% block content %}
+
+<h1 class="mb-4">
+    Дома проекта: {{ project.name }}
+</h1>
+
+<div class="row">
+    {% for house in houses %}
+        <div class="col-md-4">
+            {% include "default/pages/estates/house_card.html" %}
+        </div>
+    {% empty %}
+        <p>В этом проекте нет домов</p>
+    {% endfor %}
+</div>
+
+{% endblock %}

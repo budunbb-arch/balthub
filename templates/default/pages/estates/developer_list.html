@@ -1,0 +1,43 @@
+<!-- templates/default/pages/estates/developer_list.html -->
+
+{% extends "default/base.html" %}
+
+{% load static %}
+
+{% block title %}Застройщики{% endblock %}
+
+{% block content %}
+
+<h1 class="mb-4">Застройщики</h1>
+
+<div
+    data-ajax-list
+    data-container="#developer-list-container"
+    data-form=".house-filter-form"
+    data-scroll="top"
+    data-push-state="true"
+>
+
+    <div class="ajax-loader-overlay hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="developer-list-container">
+
+        {% include "default/pages/estates/ajax/_developer_list.html" %}
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_css%}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider/dist/nouislider.min.css">
+    <link rel="stylesheet" href="{% static 'assets/css/picker.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
+    <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+{% endblock %}

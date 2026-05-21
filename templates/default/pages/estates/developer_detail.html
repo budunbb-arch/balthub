@@ -1,0 +1,108 @@
+<!-- templates/default/pages/estates/developer_detail.html -->
+
+{% extends "default/base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<h1>{{ seo.h1 }}</h1>
+<h1>{{ developer.name }}</h1>
+
+{% if developer.logo %}
+    <img src="{{ developer.logo.url }}" alt="{{ developer.name }}" style="max-width:200px;">
+{% endif %}
+
+<!-- Описание -->
+{% for d in developer.developerdescriptions.all %}
+    <div class="developer-description">
+        {{ d.text_description|safe }}
+    </div>
+{% endfor %}
+
+<hr>
+
+<div class="developer-stats mb-4">
+    <div>Проектов: {{ stats.total_projects }}</div>
+    <div>Домов: {{ stats.total_houses }}</div>
+    <div>Квартир: {{ stats.total_flats }}</div>
+
+    {% if stats.min_price %}
+        <div>
+            Цены:
+            от {{ stats.min_price|floatformat:0 }}
+            до {{ stats.max_price|floatformat:0 }} ₽
+        </div>
+    {% endif %}
+</div>
+
+{# PROJECTS #}
+<h2 class="mt-5 mb-4">
+    Проекты
+</h2>
+
+<div
+    data-ajax-list
+    data-container="#developer-projects-container"
+    data-form=".house-filter-form"
+    data-scroll="top"
+    data-push-state="true"
+>
+
+    <div class="ajax-loader-overlay hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="developer-projects-container">
+
+        {% include "default/pages/estates/ajax/_project_list.html" %}
+
+    </div>
+
+</div>
+
+<!-- Контакты -->
+<h3>Контакты</h3>
+
+<ul>
+{% for c in developer.developercontacts.all %}
+    <li>
+        <i class="{{ c.contact_type.code }}"></i>
+        {{ c.value }}
+        {% if c.description %}
+            <small>({{ c.description }})</small>
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+
+<hr>
+
+<!-- Отделы -->
+<h3>Отделы</h3>
+
+{% for dept in developer.developerdepartments.all %}
+    <div class="mb-3">
+        <strong>{{ dept.name }}</strong>
+
+        <ul>
+        {% for c in dept.contacts.all %}
+            <li>
+                <i class="{{ c.contact_type.code }}"></i>
+                {{ c.value }}
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+{% endfor %}
+
+{% endblock %}
+
+{% block extra_css%}
+    <link rel="stylesheet" href="{% static 'assets/css/picker.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
+    <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+{% endblock %}

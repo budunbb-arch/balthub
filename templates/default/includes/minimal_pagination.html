@@ -1,0 +1,16 @@
+<!-- templates/default/includes/minimal_pagination.html -->
+
+{% if page_obj.has_next %}
+
+    <div data-pagination>
+
+        <a
+            href="/estates/ajax/house/{{ house.slug }}/plans/?rooms={{ rooms }}&page={{ page_obj.next_page_number }}"
+            data-next-page
+        >
+            next
+        </a>
+
+    </div>
+
+{% endif %}

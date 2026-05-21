@@ -1,0 +1,35 @@
+<div class="card p-3 mb-3">
+
+    <div class="d-flex justify-content-between">
+        <div>
+            <strong>{{ flat.house.project.name }}</strong>
+        </div>
+
+        {% if flat.number %}
+           <a href="{{ flat.get_absolute_url }}"><span class="text-muted">№{{ flat.number }}</span></a>
+        {% endif %}
+    </div>
+
+    <div class="mt-2">
+        <div>Дом: {{ flat.house }}</div>
+
+        {% if flat.params.rooms %}
+            <div>Комнат: {{ flat.params.rooms }}</div>
+        {% endif %}
+
+        {% if flat.params.square %}
+            <div>Площадь: {{ flat.params.square }} м²</div>
+        {% endif %}
+
+        {% with deal=flat.deals.first %}
+            {% if deal and deal.price %}
+                <div class="mt-2">
+                    <strong>
+                        {{ deal.price }} {{ deal.currency }}
+                    </strong>
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+</div>

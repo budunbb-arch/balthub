@@ -1,0 +1,15 @@
+<div class="container">
+
+<h2 class="mb-3">Последние дома</h2>
+
+<div class="row mb-4">
+    {% for house in latest_houses %}
+        <div class="col-md-3">
+            {% include "default/modules/house_card.html" %}
+        </div>
+    {% empty %}
+        <p>Дома отсутствуют</p>
+    {% endfor %}
+</div>
+
+</div>

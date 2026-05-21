@@ -1,0 +1,41 @@
+<!-- /opt/balthub/templates/default/pages/estates/project_list.html -->
+
+{% extends "default/base.html" %}
+
+{% load static %}
+
+{% block title %}Проекты{% endblock %}
+
+{% block content %}
+
+    <h1 class="mb-4">Проекты</h1>
+
+    <div 
+        data-ajax-list
+        data-container="#project-list-container"
+        data-form=".house-filter-form"
+        data-scroll="top"
+        data-push-state="true"
+    >
+
+        <div class="ajax-loader-overlay hidden">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- ТОЛЬКО ЭТО МЕНЯЕМ -->
+        <div id="project-list-container">
+            {% include "default/pages/estates/ajax/_project_list.html" %}
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block extra_css%}
+    <link rel="stylesheet" href="{% static 'assets/css/picker.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
+    <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+{% endblock %}

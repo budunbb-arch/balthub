@@ -1,0 +1,173 @@
+<!-- /opt/balthub/templates/default/pages/estates/house_detail.html -->
+
+{% extends "default/base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<h1>{{ house.params.address|default:"Дом" }}</h1>
+
+<p><strong>Проект:</strong> {{ house.project.name }}</p>
+<p><strong>Город:</strong> {{ house.project.params.city.name }}</p>
+
+<hr>
+
+<ul>
+    <li>Корпус: {{ house.params.corpus }}</li>
+    <li>Очередь: {{ house.params.phase }}</li>
+    <li>Этажность: {{ house.params.floors }}</li>
+    <li>Срок сдачи: {{ house.params.deadline }}</li>
+    <li>Год: {{ house.params.deadline_year }}</li>
+    <li>Тип: {{ house.params.house_structure_type }}</li>
+    <li>Статус: {{ house.params.building_status }}</li>
+</ul>
+
+<hr>
+
+<p>
+    Паркинг: {{ house.params.parking|yesno:"Да,Нет" }}<br>
+    Лифт: {{ house.params.lift|yesno:"Да,Нет" }}
+</p>
+
+<hr>
+
+<h2>Планировки</h2>
+
+<!--
+{% if flat_plans %}
+
+<div class="house-layouts">
+
+    {% for rooms, plans in flat_plans.items %}
+
+        <div class="rooms-group mb-5">
+
+            <h3>
+                {{ rooms }}-комнатные
+            </h3>
+
+            <div class="row g-4">
+
+                {% for plan in plans %}
+
+                    <div class="flatplan-card col-lg-4 col-md-6 col-12">
+
+                        <div class="row">
+                            <div class="flatplan-card-image col-9">
+                                <img src="{{ plan.plan_image }}" class="img-fluid" alt="">
+                            </div>
+
+                            <div class="flatplan-card-description col-3">
+                                <div class="flatplan-card-description-squareline">
+                                    <div class="flatplan-card-description-squareline-block text-center">
+                                        <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.square }}</strong> м²</span>
+                                        <span class="flatplan-card-description-squareline-block-hint uppercase">Общая</span>
+                                    </div>
+                                    <div class="flatplan-card-description-squareline-block text-center">
+                                        <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.living_square }}</strong> м²</span>
+                                        <span class="flatplan-card-description-squareline-block-hint uppercase">Жилая</span>
+                                    </div>
+                                    <div class="flatplan-card-description-squareline-block text-center">
+                                        <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.kitchen_square }}</strong> м²</span>
+                                        <span class="flatplan-card-description-squareline-block-hint uppercase">Кухня</span>
+                                    </div>
+                                    <div class="flatplan-card-description-squareline-block text-center">
+                                        <span class="flatplan-card-description-squareline-block-num">
+                                            <span class="flatplan-card-description-squareline-block-hint">от<br></span>
+                                            <strong>{{ plan.price_per_m2 }}</strong>
+                                        </span>
+                                        <span class="flatplan-card-description-squareline-block-hint">₽ / м²</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flatplan-card-content col-12">
+                                <ul class="list-unstyled">
+                                    <li>{{ plan.balcony_type__name }}</li>
+                                    <li>{{ plan.bathroom_unit_type__name }} санузел</li>
+                                    <li>{{ plan.finish_type__name }}</li>
+                                </ul>
+
+                                <button>Свободно <span class="flatplan-card-description-num"><strong>{{ plan.flats_count }}</strong></span> квартир</button>
+                            </div>
+
+                        </div>
+                            
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endif %}
+-->
+
+{% if rooms_groups %}
+
+    <div class="house-layouts">
+
+        {% for rooms in rooms_groups %}
+
+            <div class="rooms-group mb-4">
+
+                <button
+                    class="rooms-toggle btn btn-dark w-100 text-start"
+                    data-rooms="{{ rooms }}"
+                    data-house="{{ house.slug }}"
+                >
+                    {{ rooms }}-комнатные
+                </button>
+
+                <div
+                    class="rooms-content mt-4"
+                    id="rooms-content-{{ rooms }}"
+                    data-plans-url="{% url 'house_plans_ajax' house.slug %}"
+                >
+
+                    <div
+                        class="plans-wrapper"
+                        data-ajax-list
+                        data-container=".plans-container-wrapper"
+                    >
+
+                        <div class="ajax-loader-overlay hidden">
+                            <div class="spinner"></div>
+                        </div>
+
+                        <div class="plans-container-wrapper">
+
+                            {% include "default/pages/estates/ajax/_plans_items.html" %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% endif %}
+
+
+{% endblock %}
+
+{% block extra_css%}
+    <link rel="stylesheet" href="{% static 'assets/css/picker.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
+    <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+    <script src="{% static 'assets/js/house-plans.js' %}"></script>
+{% endblock %}

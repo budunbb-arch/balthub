@@ -1,0 +1,17 @@
+<!-- /opt/balthub/templates/default/pages/estates/ajax/_house_list.html -->
+
+<div class="pickers position-relative">
+    {% include "default/modules/picker.html" with pickers=pickers %}
+</div>
+
+<div class="row" data-items>
+    {% for house in page_obj %}
+        <div class="col-md-3">
+            {% include "default/pages/estates/house_card.html" with house=house %}
+        </div>
+    {% endfor %}
+</div>
+
+<div class="pagination-wrapper" data-pagination>
+    {% include "default/includes/pagination.html" %}
+</div>

@@ -1,0 +1,16 @@
+{# latest_projects.html #}
+<div class="container">
+
+<h5>Последние проекты</h5>
+
+<div class="row mb-4">
+    {% for project in latest_projects %}
+        <div class="col-md-3">
+            {% include "default/modules/project_card.html" %}
+        </div>
+    {% empty %}
+        <p>Проекты отсутствуют.</p>
+    {% endfor %}
+</div>
+
+</div>

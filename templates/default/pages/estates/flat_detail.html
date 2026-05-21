@@ -1,0 +1,41 @@
+{% extends "default/base.html" %}
+
+{% block content %}
+
+<h1>
+    Квартира {{ flat.number|default:"" }}
+</h1>
+
+<p>
+    Проект: {{ flat.house.project.name }}
+</p>
+
+<p>
+    Дом: {{ flat.house }}
+</p>
+
+<hr>
+
+<h4>Характеристики</h4>
+
+{% if flat.params %}
+    <p>Комнат: {{ flat.params.rooms }}</p>
+    <p>Площадь: {{ flat.params.square }} м²</p>
+    <p>Этаж: {{ flat.params.floor }}</p>
+    <p>Планировка: <img src="{{ flat.plan }}"></p>
+{% endif %}
+
+<hr>
+
+<h4>Предложения</h4>
+
+{% for deal in flat.deals.all %}
+    <div>
+        {{ deal.deal_type }}:
+        <strong>{{ deal.price }} {{ deal.currency }}</strong>
+    </div>
+{% empty %}
+    <p>Нет предложений</p>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,21 @@
+<!-- /opt/balthub/templates/default/pages/estates/ajax/_project_list.html -->
+
+<div class="pickers position-relative">
+    {% include "default/modules/picker.html" with pickers=pickers %}
+</div>
+
+<div class="row" data-items>
+    {% if page_obj %}
+        {% for project in page_obj %}
+            <div class="col-md-3">
+                {% include "default/pages/estates/project_card.html" with project=project %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Нет проектов</p>
+    {% endif %}
+</div>
+
+<div class="pagination-wrapper" data-pagination>
+    {% include "default/includes/pagination.html" %}
+</div>

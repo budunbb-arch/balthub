@@ -1,0 +1,8 @@
+Django
+psycopg2-binary
+python-dotenv
+Pillow
+lxml
+django-redis
+python-slugify
+transliterate

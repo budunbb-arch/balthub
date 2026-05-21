@@ -1,0 +1,32 @@
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container">
+
+            <div class="row w-100 align-items-center">
+
+                <!-- LOGO -->
+                <div class="col-2" id="logo">
+                    <a class="navbar-brand" href="{% url 'home' %}">Balthub</a>
+                </div>
+
+                <!-- MAIN MENU -->
+                <div class="col-10" id="main-menu">
+                    
+                    <!-- TOGGLER -->
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <!-- COLLAPSE -->
+                    <div class="collapse navbar-collapse" id="mainNavbar">
+                        <div class="ms-auto">
+                            {% include "default/includes/render_modules.html" with modules=layout.main_menu %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </nav>
+</header>

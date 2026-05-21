@@ -1,0 +1,228 @@
+from django.urls import reverse, Resolver404, resolve
+
+from apps.estates.projects.models import Project
+from apps.estates.houses.models import House
+from apps.estates.flats.models import Flat
+from apps.estates.developers.models import Developer
+
+
+def build_breadcrumbs(request):
+
+    resolver = request.resolver_match
+
+    if not resolver:
+        return []
+
+    view = resolver.url_name
+
+    if view == "home":
+        return []
+
+    breadcrumbs = [
+        {
+            "title": "Главная",
+            "url": reverse("home"),
+        }
+    ]
+
+    # =====================================================
+    # DEVELOPERS LIST
+    # =====================================================
+
+    if view == "developer_list":
+
+        breadcrumbs.append({
+            "title": "Застройщики",
+            "url": None,
+        })
+
+    
+    # =====================================================
+    # DEVELOPER DETAIL
+    # =====================================================
+
+    elif view == "developer_detail":
+
+        developer_slug = resolver.kwargs.get("slug")
+
+        developer = (
+            Developer.objects
+            .only("name", "slug")
+            .filter(slug=developer_slug)
+            .first()
+        )
+
+        breadcrumbs.append({
+            "title": "Застройщики",
+            "url": reverse("developer_list"),
+        })
+
+        breadcrumbs.append({
+            "title": developer.name if developer else developer_slug,
+            "url": None,
+        })
+
+
+    # =====================================================
+    # PROJECT LIST
+    # =====================================================
+
+    elif view == "project_list":
+
+        breadcrumbs.append({
+            "title": "Новостройки",
+            "url": None,
+        })
+
+    # =====================================================
+    # PROJECT DETAIL
+    # =====================================================
+
+    elif view == "project_detail":
+
+        project_slug = resolver.kwargs.get("project_slug")
+
+        project = (
+            Project.objects
+            .only("name", "slug")
+            .filter(slug=project_slug)
+            .first()
+        )
+
+        breadcrumbs.append({
+            "title": "Новостройки",
+            "url": reverse("project_list"),
+        })
+
+        breadcrumbs.append({
+            "title": project.name if project else project_slug,
+            "url": None,
+        })
+
+
+    # =====================================================
+    # HOUSE LIST
+    # =====================================================
+
+    elif view == "house_list":
+
+        breadcrumbs.append({
+            "title": "Дома",
+            "url": None,
+        })
+
+
+    # =====================================================
+    # HOUSE DETAIL
+    # =====================================================
+
+    elif view == "house_detail":
+
+        project_slug = resolver.kwargs.get("project_slug")
+        house_slug = resolver.kwargs.get("house_slug")
+
+        project = (
+            Project.objects
+            .only("name", "slug")
+            .filter(slug=project_slug)
+            .first()
+        )
+
+        house = (
+            House.objects
+            .only("id", "slug")
+            .filter(slug=house_slug)
+            .first()
+        )
+
+        breadcrumbs.append({
+            "title": "Новостройки",
+            "url": reverse("project_list"),
+        })
+
+        if project:
+            breadcrumbs.append({
+                "title": project.name,
+                "url": reverse(
+                    "project_detail",
+                    kwargs={
+                        "project_slug": project.slug
+                    }
+                ),
+            })
+
+        breadcrumbs.append({
+            "title": f"Дом #{house.id}" if house else house_slug,
+            "url": None,
+        })
+
+
+    # =====================================================
+    # FLAT DETAIL
+    # =====================================================
+
+    elif view == "flat_detail":
+
+        project_slug = resolver.kwargs.get("project_slug")
+        house_slug = resolver.kwargs.get("house_slug")
+        flat_slug = resolver.kwargs.get("flat_slug")
+
+        project = (
+            Project.objects
+            .only("name", "slug")
+            .filter(slug=project_slug)
+            .first()
+        )
+
+        house = (
+            House.objects
+            .only("id", "slug")
+            .filter(slug=house_slug)
+            .first()
+        )
+
+        flat = (
+            Flat.objects
+            .only("number", "slug")
+            .filter(slug=flat_slug)
+            .first()
+        )
+
+        breadcrumbs.append({
+            "title": "Новостройки",
+            "url": reverse("project_list"),
+        })
+
+        if project:
+            breadcrumbs.append({
+                "title": project.name,
+                "url": reverse(
+                    "project_detail",
+                    kwargs={
+                        "project_slug": project.slug
+                    }
+                ),
+            })
+
+        if house:
+            breadcrumbs.append({
+                "title": f"Дом #{house.id}",
+                "url": reverse(
+                    "house_detail",
+                    kwargs={
+                        "project_slug": project.slug,
+                        "house_slug": house.slug,
+                    }
+                ),
+            })
+
+        breadcrumbs.append({
+            "title": (
+                f"Квартира {flat.number}"
+                if flat and flat.number
+                else flat_slug
+            ),
+            "url": None,
+        })
+
+    return breadcrumbs

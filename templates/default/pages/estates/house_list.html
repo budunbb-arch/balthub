@@ -1,0 +1,41 @@
+<!-- /opt/balthub/templates/default/pages/estates/house_list.html -->
+
+{% extends "default/base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+    <h1 class="mb-4">Все дома</h1>
+
+    <div 
+        data-ajax-list
+        data-container="#house-list-container"
+        data-form=".house-filter-form"
+        data-scroll="top"
+        data-push-state="true"
+    >
+        
+        <div class="ajax-loader-overlay hidden">
+            <div class="spinner"></div>
+        </div>
+
+        <div id="house-list-container">
+            {% include "default/pages/estates/ajax/_house_list.html" %}
+        </div>
+        
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css%}
+    <link rel="stylesheet" href="{% static 'assets/css/picker.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
+    <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+{% endblock %}

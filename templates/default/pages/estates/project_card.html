@@ -1,0 +1,26 @@
+<!-- /opt/balthub/templates/default/pages/estates/project_card.html -->
+
+<div class="card mb-3"> 
+  {# изображение проекта #} 
+  {% if project.images.all %} 
+    <div class="card-img-wrapper">
+      <img src="{{ project.images.first.image }}" class="card-img-top" alt="{{ project.name }}"> 
+    </div>
+  {% endif %} 
+
+  <div class="card-body"> 
+    <h5 class="card-title">{{ project.name }}</h5> 
+
+    {# девелопер #} 
+    {% if project.developer %} 
+      <p class="text-muted">{{ project.developer.name }}</p> 
+    {% endif %} 
+
+    {# город через ProjectParams #} 
+    {% if project.params and project.params.city %} 
+      <span class="card-city">{{ project.params.city.name }}</span> 
+    {% endif %} 
+
+    <a href="{% url 'project_detail' project.slug %}" class="btn btn-primary">Подробнее</a> 
+  </div> 
+</div>

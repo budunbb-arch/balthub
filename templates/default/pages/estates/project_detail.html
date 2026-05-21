@@ -1,0 +1,82 @@
+<!-- /opt/balthub/templates/default/pages/estates/project_detail.html -->
+
+{% extends "default/base.html" %}
+
+{% load static %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- Заголовок -->
+    <h1 class="mb-3">{{ project.name }}</h1>
+
+    <!-- Застройщик -->
+    {% if project.developer %}
+        <div class="text-muted mb-3">
+            Застройщик: {{ project.developer.name }}
+        </div>
+    {% endif %}
+
+    {% if project.params %}
+        <div class="text-muted mb-3">
+            Локация: 
+            {% if project.params.city %}
+                {{ project.params.city.name }},
+            {% endif %}
+
+            {% if project.params.district %} 
+                {{ project.params.district.name }}
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <!-- Галерея -->
+    <div class="row mb-4">
+        {% for img in project.images.all %}
+            <div class="col-md-3 mb-3">
+                <img src="{{ img.image }}" class="img-fluid rounded">
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Описание -->
+    {% if project.description %}
+        <div class="mb-4">
+            <h5>Описание</h5>
+            <p>{{ project.description.description }}</p>
+        </div>
+    {% endif %}
+
+    <!-- Дома - tpl: ajax/_house_list.html -->
+    <div id="houses-list">
+        <h5>Дома</h5>
+
+        <div 
+            data-ajax-list
+            data-container="#houses-block"
+            data-form=".house-filter-form"
+            data-push-state="true"
+        >
+
+            <div class="ajax-loader-overlay hidden">
+                <div class="spinner"></div>
+            </div>
+            
+            <div id="houses-block">
+                {% include "default/pages/estates/ajax/_house_list.html" %}
+            </div>    
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_css%}
+    <link rel="stylesheet" href="{% static 'assets/css/picker.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
+    <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+{% endblock %}

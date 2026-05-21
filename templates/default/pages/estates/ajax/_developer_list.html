@@ -1,0 +1,41 @@
+<!-- templates/default/pages/estates/ajax/_developer_list.html -->
+
+<div class="pickers position-relative">
+    {% include "default/modules/picker.html" with pickers=pickers %}
+</div>
+
+<!-- ITEMS -->
+<div
+    class="row"
+    data-items
+>
+
+    {% if page_obj %}
+
+        {% for developer in page_obj %}
+
+            <div class="col-md-3">
+
+                {% include "default/pages/estates/developer_card.html" with developer=developer %}
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>Нет застройщиков</p>
+
+    {% endif %}
+
+</div>
+
+<!-- PAGINATION -->
+<div
+    class="pagination-wrapper"
+    data-pagination
+>
+
+    {% include "default/includes/pagination.html" %}
+
+</div>

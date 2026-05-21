@@ -1,0 +1,63 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Balthub{% endblock %}</title>
+
+    <meta name="description" content="{{ seo.description }}">
+    <meta name="keywords" content="{{ seo.keywords }}">
+
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+    <meta property="og:title" content="{{ seo.title }}">
+    <meta property="og:description" content="{{ seo.description }}">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <!-- Toastr -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <link rel="stylesheet" href="{% static 'assets/css/alienstyle.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    {% include "default/layout/header.html" %}
+
+    {% include "default/includes/breadcrumbs.html" %}
+
+    {% include "default/layout/content_top.html" %}
+
+    {% block layout %}
+    <div class="container">
+        <div class="row">
+
+            {% if layout.sidebar %}
+    <aside class="col-md-3">
+        {% include "default/includes/render_modules.html" with modules=layout.sidebar %}
+    </aside>
+    <main class="col-md-9">
+{% else %}
+    <main class="col-12">
+{% endif %}
+
+    {% block content %}{% endblock %}
+
+</main>
+
+        </div>
+    </div>
+    {% endblock %}
+
+    {% include "default/layout/content_bottom.html" %}
+
+    {% include "default/layout/footer.html" %}
+    {% include "default/layout/scripts.html" %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

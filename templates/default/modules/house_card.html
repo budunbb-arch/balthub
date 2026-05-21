@@ -1,0 +1,29 @@
+{# templates/default/modules/house_card.html #}
+
+<div class="card mb-3">
+    {% if house.image %}
+        <div class="card-img-wrapper">
+            <img src="{{ house.image }}" class="card-img" alt="">
+        </div>
+    {% endif %}
+
+    <div class="card-body">
+        <h5 class="card-title">
+            {{ house.params.address|default:"Без адреса" }}
+        </h5>
+
+        <p class="card-text">
+            {{ house.project.name }}
+        </p>
+
+        {% if house.params.deadline %}
+            <p class="text-muted">
+                Срок сдачи: {{ house.params.deadline }} {{ house.params.deadline_year }}
+            </p>
+        {% endif %}
+
+        <a href="{% url 'house_detail' house.project.slug house.slug %}" class="btn btn-sm btn-primary">
+            Подробнее
+        </a>
+    </div>
+</div>
