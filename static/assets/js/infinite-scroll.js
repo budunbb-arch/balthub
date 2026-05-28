@@ -55,7 +55,13 @@ class InfiniteScroll {
             return;
         }
 
-        const nextLink = this.wrapper.querySelector("[data-next-page]");
+        const pagination = this.wrapper.querySelector("[data-pagination]");
+
+        if (!pagination) {
+            return;
+        }
+
+        const nextLink = pagination.querySelector("[data-next-page]");
 
         if (!nextLink) {
             return;
@@ -101,12 +107,19 @@ class InfiniteScroll {
             });
 
             // replace pagination
-            const oldPagination = this.wrapper.querySelector("[data-pagination]");
-            const newPagination = doc.querySelector("[data-pagination]");
+            const oldPagination =
+                this.wrapper.querySelector("[data-pagination]");
+
+            const newPagination =
+                doc.querySelector("[data-pagination]");
 
             if (oldPagination && newPagination) {
 
                 oldPagination.replaceWith(newPagination);
+
+                if (this.observer) {
+                    this.observer.disconnect();
+                }
 
                 this.observe();
 
@@ -114,6 +127,9 @@ class InfiniteScroll {
 
                 oldPagination.remove();
 
+                if (this.observer) {
+                    this.observer.disconnect();
+                }
             }
 
         } catch (e) {
@@ -129,6 +145,7 @@ class InfiniteScroll {
         }
 
     }
+
 
     destroy() {
 

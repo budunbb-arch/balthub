@@ -1,0 +1,18 @@
+<!-- /opt/balthub/templates/default/includes/infinite_pagination.html -->
+
+{% load querystring %}
+
+{% if page_obj.has_next %}
+
+    <div data-pagination>
+
+        <a
+            href="?{% query_transform page=page_obj.next_page_number %}"
+            data-next-page
+        >
+            next
+        </a>
+
+    </div>
+
+{% endif %}

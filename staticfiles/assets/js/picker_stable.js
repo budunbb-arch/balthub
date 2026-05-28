@@ -472,10 +472,16 @@ function initPickers() {
 
     const wrapper = document.querySelector("[data-ajax-list]");
 
-    if (wrapper) {
+    if (
+        wrapper
+        && !wrapper.classList.contains("plans-wrapper")
+    ) {
+
         if (!window.infiniteScrollInstance) {
+
             window.infiniteScrollInstance =
                 new InfiniteScroll(wrapper);
+
         }
     }
 

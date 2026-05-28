@@ -44,7 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         content.dataset.loaded = "1";
 
-        new InfiniteScroll(wrapper);
+        if (!wrapper._infiniteScroll) {
+
+            wrapper._infiniteScroll =
+                new InfiniteScroll(wrapper);
+
+        }
     }
 
     // =====================================================
