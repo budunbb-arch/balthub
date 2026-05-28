@@ -1,6 +1,6 @@
 <!-- templates/default/pages/estates/ajax/_developer_list.html -->
 
-<div class="pickers position-relative">
+<div class="pickers position-relative" data-picker-root data-i18n-select="{{ trans.text_choose }}">
     {% include "default/modules/picker.html" with pickers=pickers %}
 </div>
 
@@ -24,7 +24,7 @@
 
     {% else %}
 
-        <p>Нет застройщиков</p>
+        <p>{{ trans.no_developers }}</p>
 
     {% endif %}
 

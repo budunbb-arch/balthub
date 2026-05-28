@@ -3,39 +3,68 @@
 from django.core.cache import cache
 from django.urls import resolve
 from django.conf import settings
+from django.utils.translation import get_language
+
 from apps.core.common.models import Module
+from apps.core.localization import load_locale
+
 from apps.modules.registry import MODULE_FUNCTIONS
+
 from .breadcrumbs import build_breadcrumbs
 from .builders import build_seo
 
+import logging
 
+logger = logging.getLogger(__name__)
+
+
+
+def localization(request):
+
+    lang = (get_language() or "ru")[:2]
+
+    return {
+        "trans": load_locale(lang)
+    }
 
 def layout_modules(request):
-    """
-    Возвращает layout для текущей страницы.
-    Кэшируется в Redis по view_name.
-    Поддерживаются:
-      - Глобальные модули (route=None)
-      - View-specific модули (route - начало пути)
-    """
-    try:
-        view_name = resolve(request.path).view_name
-    except:
-        view_name = request.path
+
+    resolver_match = getattr(
+        request,
+        "resolver_match",
+        None
+    )
+
+    view_name = getattr(
+        resolver_match,
+        "view_name",
+        None
+    )
 
     module_context = {}
 
     for module_func in MODULE_FUNCTIONS:
+
         try:
-            module_context.update(module_func(request))
-        except:
-            print(F"[MODULE ERROR] {module_func.__name__}: {e}")
+
+            module_context.update(
+                module_func(request)
+            )
+
+        except Exception as e:
+
+            logger.exception(
+                "[MODULE ERROR] %s: %s",
+                module_func.__name__,
+                str(e)
+            )
 
     cache_key = f"layout:{view_name}"
+
     layout = cache.get(cache_key)
 
     if layout is None:
-        # инициализация layout
+
         layout = {
             "main_menu": [],
             "account_menu": [],
@@ -44,27 +73,42 @@ def layout_modules(request):
             "content_bottom": [],
         }
 
-        modules = Module.objects.filter(is_active=True).order_by("position", "id")
+        modules = (
+            Module.objects
+            .filter(is_active=True)
+            .order_by("position", "id")
+        )
 
         for module in modules:
-            # если route задан, показываем модуль только для пути request.path
-            # иначе route=None → глобальный модуль
-            # if module.route:
-            #     if not request.path.startswith(module.route):
-            #         continue
-            view_name = resolve(request.path).view_name
 
             if module.route:
+
                 if module.route != view_name:
                     continue
 
-            layout[module.position].append(module.template)
+            if module.position not in layout:
+                layout[module.position] = []
 
-        cache.set(cache_key, layout, settings.CACHE_TTL)
+            layout[module.position].append(
+                module.template
+            )
 
-    # подмешиваем кастомный layout из view (request.layout)
-    custom_layout = getattr(request, "layout", {})
-    layout = {**layout, **custom_layout}
+        cache.set(
+            cache_key,
+            layout,
+            settings.CACHE_TTL
+        )
+
+    custom_layout = getattr(
+        request,
+        "layout",
+        {}
+    )
+
+    layout = {
+        **layout,
+        **custom_layout
+    }
 
     return {
         "layout": layout,
@@ -90,8 +134,8 @@ def breadcrumbs(request):
     try:
         data = build_breadcrumbs(request)
 
-    except Exception as e:
-        print("BREADCRUMB ERROR:", e)
+    except Exception:
+        logger.exception("BREADCRUMB ERROR:")
         data = []
 
     return {
@@ -100,6 +144,14 @@ def breadcrumbs(request):
 
 
 def seo(request):
+
+    try:
+        data = build_seo(request)
+
+    except Exception:
+        logger.exception("SEO ERROR:")
+        data = {}
+
     return {
-        "seo": build_seo(request)
+        "seo": data
     }

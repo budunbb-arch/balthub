@@ -9,7 +9,7 @@
 
     <div class="card-body">
         <h5 class="card-title">
-            {{ house.params.address|default:"Без адреса" }}
+            {{ house.params.address|default:trans.no_address }}
         </h5>
 
         <p class="card-text">
@@ -18,12 +18,12 @@
 
         {% if house.params.deadline %}
             <p class="text-muted">
-                Срок сдачи: {{ house.params.deadline }} {{ house.params.deadline_year }}
+                {{ trans.deadline }} {{ house.params.deadline }} {{ house.params.deadline_year }}
             </p>
         {% endif %}
 
         <a href="{% url 'house_detail' house.project.slug house.slug %}" class="btn btn-sm btn-primary">
-            Подробнее
+            {{ trans.button_more }}
         </a>
     </div>
 </div>

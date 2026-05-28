@@ -1,0 +1,148 @@
+.pickers {
+    background: #f5f5f5;
+    border-radius: 50vh;
+    margin-bottom: 2em;
+}
+
+.picker {
+    padding: 1em;
+    overflow: visible;
+    position: relative;
+}
+
+.picker-dropdown {
+
+    position: absolute;
+    top: 100%;
+    left: 0;
+
+    width: 100%;
+    z-index: 10;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform: translateY(-10px);
+
+    transition:
+        opacity .5s ease,
+        transform .5s ease,
+        visibility .5s ease;
+}
+
+.picker.open .picker-dropdown {
+
+    opacity: 1;
+    visibility: visible;
+
+    transform: translateY(0);
+}
+.picker-options {
+    overflow-y: auto;
+    max-height: 260px;
+}
+
+button.picker-trigger {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: none;
+    border-right: 1px solid #ddd;
+    background: none;
+    padding: 0 1em;
+}
+label.picker-option {
+    display: block;
+    background: lab(100 0 0 / 0.9);
+    padding: .7em 1em;
+    cursor: pointer;
+}
+label.picker-option:hover {
+    color: seagreen;
+}
+.picker-dropdown input[type="radio"], .picker-dropdown input[type="checkbox"] {
+    visibility: hidden;
+}
+.picker-dropdown input[type="checkbox"] {
+    margin-right: .25em;
+}
+.picker-dropdown input[type="checkbox"]::after {
+    content: '\e065';
+    visibility: visible;
+    font-family: var(--icon-font);
+    font-weight: 900;
+    display: block;
+    color: #ccc;
+}
+.picker-dropdown input[type="checkbox"]:checked::after {
+    color: seagreen;
+}
+
+button.picker-apply {
+    display: block;
+    width: 100%;
+    border: none;
+    border-radius: 50vh;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding: 1em;
+    color: #fff;
+    background: seagreen;
+}
+
+.picker-control {
+    bottom: -2em;
+    z-index: 1;
+}
+
+button.picker-reset {
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition: .5s;
+    border: none;
+    background: #ddd;
+    height: 30px;
+    padding: 0;
+    display: block;
+    aspect-ratio: 1 / 1;
+    top: calc(50% - 15px);
+    right: 1.5em;
+    border-radius: 50%;
+}
+.picker.has-value .picker-reset {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+}
+
+.picker-range {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.picker-range-label {
+    font-size: .9rem;
+    font-weight: 600;
+}
+
+.picker-range-fields {
+    display: flex;
+    gap: .5rem;
+}
+
+.picker-range-input {
+    width: 30%;
+}
+
+.picker.disabled {
+    opacity: .5;
+    pointer-events: none;
+}

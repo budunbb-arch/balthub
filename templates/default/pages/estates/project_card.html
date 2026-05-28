@@ -21,6 +21,6 @@
       <span class="card-city">{{ project.params.city.name }}</span> 
     {% endif %} 
 
-    <a href="{% url 'project_detail' project.slug %}" class="btn btn-primary">Подробнее</a> 
+    <a href="{% url 'project_detail' project.slug %}" class="btn btn-primary">{{ trans.button_more }}</a> 
   </div> 
 </div>

@@ -3,7 +3,7 @@
 {% block content %}
 
 <h1 class="mb-4">
-    Дома проекта: {{ project.name }}
+    {{ trans.project_houses }}: {{ project.name }}
 </h1>
 
 <div class="row">
@@ -12,7 +12,7 @@
             {% include "default/pages/estates/house_card.html" %}
         </div>
     {% empty %}
-        <p>В этом проекте нет домов</p>
+        <p>{{ trans.text_no_houses }}</p>
     {% endfor %}
 </div>
 

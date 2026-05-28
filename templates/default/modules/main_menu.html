@@ -4,23 +4,23 @@
 <ul class="navbar-nav flex-row gap-3">
 
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'home' %}">Главная</a>
+        <a class="nav-link" href="{% url 'home' %}">{{ trans.home }}</a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'developer_list' %}">Застройщики</a>
+        <a class="nav-link" href="{% url 'developer_list' %}">{{ trans.developer_list }}</a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'project_list' %}">Проекты</a>
+        <a class="nav-link" href="{% url 'project_list' %}">{{ trans.project_list }}</a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'house_list' %}">Дома</a>
+        <a class="nav-link" href="{% url 'house_list' %}">{{ trans.house_list }}</a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link" href="#">Планировки</a>
+        <a class="nav-link" href="{% url 'plans' %}">{{ trans.plans }}</a>
     </li>
 
 </ul>

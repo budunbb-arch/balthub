@@ -2,7 +2,7 @@
 
 from django.urls import path
 from apps.estates.projects.views import project_list, project_detail
-from apps.estates.houses.views import house_list, house_detail, house_plans_ajax
+from apps.estates.houses.views import house_list, house_detail, house_plans_ajax, plans, plans_ajax
 from apps.estates.flats.views import flat_detail
 from apps.estates.developers.views import developer_list, developer_detail
 
@@ -13,10 +13,12 @@ urlpatterns = [
         house_plans_ajax,
         name="house_plans_ajax"
     ),
+    path("ajax/plans/", plans_ajax, name="plans_ajax"),
 
     # списки
     path("projects/", project_list, name="project_list"),
     path("houses/", house_list, name="house_list"),
+    path("plans/", plans, name="plans"),
     path("developers/", developer_list, name="developer_list"),
 
     path("developers/<slug:slug>/", developer_detail, name="developer_detail"),

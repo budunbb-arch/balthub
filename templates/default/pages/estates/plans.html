@@ -1,0 +1,37 @@
+{% extends "default/base.html" %}
+{% load static %}
+
+{% block content %}
+<h1>{{ trans.text_layouts }}</h1>
+
+{% if rooms_groups %}
+<div class="house-layouts">
+  {% for rooms in rooms_groups %}
+    <div class="rooms-group mb-4">
+      <button class="rooms-toggle btn btn-dark w-100 text-start"
+              data-rooms="{{ rooms }}"
+              data-plans-url="{{ plans_url }}">
+        {{ rooms }}-{{ trans.text_roomcols }}
+      </button>
+
+      <div class="rooms-content mt-4" id="rooms-content-{{ rooms }}" data-plans-url="{{ plans_url }}">
+        <div class="plans-wrapper" data-ajax-list data-container=".plans-container-wrapper">
+          <div class="ajax-loader-overlay hidden"><div class="spinner"></div></div>
+          <div class="plans-container-wrapper">
+            {% if page_obj %}
+              {% include "default/pages/estates/ajax/_plans_items.html" %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
+<script src="{% static 'assets/js/picker_stable.js' %}"></script>
+<script src="{% static 'assets/js/house-plans.js' %}"></script>
+{% endblock %}

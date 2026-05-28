@@ -4,11 +4,11 @@
 
 {% load static %}
 
-{% block title %}Проекты{% endblock %}
+{% block title %}{{ trans.text_projects }}{% endblock %}
 
 {% block content %}
 
-    <h1 class="mb-4">Проекты</h1>
+    <h1 class="mb-4">{{ trans.text_projects }}</h1>
 
     <div 
         data-ajax-list
@@ -22,7 +22,6 @@
             <div class="spinner"></div>
         </div>
 
-        <!-- ТОЛЬКО ЭТО МЕНЯЕМ -->
         <div id="project-list-container">
             {% include "default/pages/estates/ajax/_project_list.html" %}
         </div>

@@ -13,13 +13,13 @@
     <!-- Застройщик -->
     {% if project.developer %}
         <div class="text-muted mb-3">
-            Застройщик: {{ project.developer.name }}
+            {{ trans.text_developer }}: {{ project.developer.name }}
         </div>
     {% endif %}
 
     {% if project.params %}
         <div class="text-muted mb-3">
-            Локация: 
+            {{ trans.text_location }}: 
             {% if project.params.city %}
                 {{ project.params.city.name }},
             {% endif %}
@@ -42,14 +42,14 @@
     <!-- Описание -->
     {% if project.description %}
         <div class="mb-4">
-            <h5>Описание</h5>
+            <h5>{{ trans.text_description }}</h5>
             <p>{{ project.description.description }}</p>
         </div>
     {% endif %}
 
     <!-- Дома - tpl: ajax/_house_list.html -->
     <div id="houses-list">
-        <h5>Дома</h5>
+        <h5>{{ trans.text_houses }}</h5>
 
         <div 
             data-ajax-list

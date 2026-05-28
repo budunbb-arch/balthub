@@ -12,10 +12,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-oeese^5es8x##x_=gtl)sv==see)*fna(n4mbfwyc(v0hq!*81'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     '*',
+]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://balthub.rf39.ru",
 ]
 
 
@@ -28,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'apps.core',
     'apps.core.common',
     'apps.estates.developers',
     'apps.estates.parsing',
@@ -40,7 +47,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'apps.core.middleware.language.LanguageMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -69,6 +78,7 @@ TEMPLATES[0]['OPTIONS']['context_processors'] += [
     'apps.core.engines.context_processors.layout_modules',
     'apps.core.engines.context_processors.breadcrumbs',
     'apps.core.engines.context_processors.seo',
+    'apps.core.engines.context_processors.localization',
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
@@ -128,6 +138,12 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [ 
     BASE_DIR / "static"
 ]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_STORAGE = (
+    "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = '/app/media'

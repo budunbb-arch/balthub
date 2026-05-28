@@ -18,13 +18,13 @@
 
     <div class="small text-muted mt-2">
 
-        Проектов: {{ developer.projects_count }}
+        {{ trans.of_projects }} {{ developer.projects_count }}
 
     </div>
 
     {% if developer.min_price %}
         <div class="small">
-            от {{ developer.min_price }}
+            {{ trans.text_from }} {{ developer.min_price }}
         </div>
     {% endif %}
 

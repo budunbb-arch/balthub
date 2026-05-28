@@ -20,22 +20,22 @@
                     <div class="flatplan-card-description-squareline">
                         <div class="flatplan-card-description-squareline-block text-center">
                             <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.square }}</strong> м²</span>
-                            <span class="flatplan-card-description-squareline-block-hint uppercase">Общая</span>
+                            <span class="flatplan-card-description-squareline-block-hint uppercase">{{ trans.full_square }}</span>
                         </div>
                         <div class="flatplan-card-description-squareline-block text-center">
                             <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.living_square }}</strong> м²</span>
-                            <span class="flatplan-card-description-squareline-block-hint uppercase">Жилая</span>
+                            <span class="flatplan-card-description-squareline-block-hint uppercase">{{ trans.living_square }}</span>
                         </div>
                         <div class="flatplan-card-description-squareline-block text-center">
                             <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.kitchen_square }}</strong> м²</span>
-                            <span class="flatplan-card-description-squareline-block-hint uppercase">Кухня</span>
+                            <span class="flatplan-card-description-squareline-block-hint uppercase">{{ trans.kitchen_square }}</span>
                         </div>
                         <div class="flatplan-card-description-squareline-block text-center">
                             <span class="flatplan-card-description-squareline-block-num">
-                                <span class="flatplan-card-description-squareline-block-hint">от<br></span>
+                                <span class="flatplan-card-description-squareline-block-hint">{{ trans.text_from }}<br></span>
                                 <strong>{{ plan.price_per_m2 }}</strong>
                             </span>
-                            <span class="flatplan-card-description-squareline-block-hint">₽ / м²</span>
+                            <span class="flatplan-card-description-squareline-block-hint">{{ trans.specific_price }}</span>
                         </div>
                     </div>
                 </div>
@@ -44,14 +44,14 @@
 
                     <ul class="list-unstyled">
                         <li>{{ plan.balcony_type__name }}</li>
-                        <li>{{ plan.bathroom_unit_type__name }} санузел</li>
+                        <li>{{ plan.bathroom_unit_type__name }} {{ trans.text_bathroom }}</li>
                         <li>{{ plan.finish_type__name }}</li>
                     </ul>
 
                     <button>
-                        Свободно
+                        {{  trans.text_free }}
                         <strong>{{ plan.flats_count }}</strong>
-                        квартир
+                        {{ trans.of_flats }}
                     </button>
 
                 </div>
@@ -65,5 +65,5 @@
 </div>
 
 <div class="pagination-wrapper" data-pagination>
-    {% include "default/includes/minimal_pagination.html" %}
+    {% include pagination_template %}
 </div>

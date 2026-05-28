@@ -1,0 +1,37 @@
+{% extends "default/base.html" %}
+
+{% block content %}
+
+<section class="error-page py-5">
+
+    <div class="container text-center">
+
+        <h1 class="display-1 fw-bold">
+            {{ trans.head_404 }}
+        </h1>
+
+        <p class="lead mb-4">
+            {{ trans.text_404 }}
+        </p>
+
+        <p class="text-muted mb-5">
+            {{ trans.404_notice }}
+        </p>
+
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+
+            <a href="/" class="btn btn-dark">
+                {{ trans.text_go_home }}
+            </a>
+
+            <a href="/estates/projects/" class="btn btn-outline-dark">
+                {{ trans.text_projects }}
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

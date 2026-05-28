@@ -3,31 +3,31 @@
 {% block content %}
 
 <h1>
-    Квартира {{ flat.number|default:"" }}
+    {{ trans.text_flat }} {{ flat.number|default:"" }}
 </h1>
 
 <p>
-    Проект: {{ flat.house.project.name }}
+    {{ trans.text_project }} {{ flat.house.project.name }}
 </p>
 
 <p>
-    Дом: {{ flat.house }}
+    {{ trans.text_house }} {{ flat.house }}
 </p>
 
 <hr>
 
-<h4>Характеристики</h4>
+<h4>{{ trans.text_specials }}</h4>
 
 {% if flat.params %}
-    <p>Комнат: {{ flat.params.rooms }}</p>
-    <p>Площадь: {{ flat.params.square }} м²</p>
-    <p>Этаж: {{ flat.params.floor }}</p>
-    <p>Планировка: <img src="{{ flat.plan }}"></p>
+    <p>{{ trans.of_rooms }} {{ flat.params.rooms }}</p>
+    <p>{{ trans.text_square }} {{ flat.params.square }} {{ trans.text_m2 }}</p>
+    <p>{{ trans.text_floor }} {{ flat.params.floor }}</p>
+    <p>{{ trans.text_flat_layout }} <img src="{{ flat.plan }}"></p>
 {% endif %}
 
 <hr>
 
-<h4>Предложения</h4>
+<h4>{{ trans.text_offers }}</h4>
 
 {% for deal in flat.deals.all %}
     <div>
@@ -35,7 +35,7 @@
         <strong>{{ deal.price }} {{ deal.currency }}</strong>
     </div>
 {% empty %}
-    <p>Нет предложений</p>
+    <p>{{ trans.no_offers }}</p>
 {% endfor %}
 
 {% endblock %}

@@ -23,22 +23,22 @@
 <hr>
 
 <div class="developer-stats mb-4">
-    <div>Проектов: {{ stats.total_projects }}</div>
-    <div>Домов: {{ stats.total_houses }}</div>
-    <div>Квартир: {{ stats.total_flats }}</div>
+    <div>{{ trans.of_projects }} {{ stats.total_projects }}</div>
+    <div>{{ trans.of_houses }} {{ stats.total_houses }}</div>
+    <div>{{ trans.details_of_flats }} {{ stats.total_flats }}</div>
 
     {% if stats.min_price %}
         <div>
-            Цены:
-            от {{ stats.min_price|floatformat:0 }}
-            до {{ stats.max_price|floatformat:0 }} ₽
+            {{ trans.prices }}
+            {{ trans.text_from }} {{ stats.min_price|floatformat:0 }}
+            {{ trans.text_to }} {{ stats.max_price|floatformat:0 }} ₽
         </div>
     {% endif %}
 </div>
 
 {# PROJECTS #}
 <h2 class="mt-5 mb-4">
-    Проекты
+    {{ trans.projects }}
 </h2>
 
 <div
@@ -62,7 +62,7 @@
 </div>
 
 <!-- Контакты -->
-<h3>Контакты</h3>
+<h3>{{ trans.contacts }}</h3>
 
 <ul>
 {% for c in developer.developercontacts.all %}
@@ -79,7 +79,7 @@
 <hr>
 
 <!-- Отделы -->
-<h3>Отделы</h3>
+<h3>{{ trans.departments }}</h3>
 
 {% for dept in developer.developerdepartments.all %}
     <div class="mb-3">

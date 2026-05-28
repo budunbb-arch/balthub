@@ -242,7 +242,14 @@ def project_list(request):
 
 def project_detail(request, project_slug):
 
-    project = Project.objects.only("id").get(slug=project_slug)
+    project = get_object_or_404(
+
+        Project.objects.only("id"),
+
+        slug=project_slug,
+        is_deleted=False,
+        is_public=True,
+    )
 
     cache_key = project_detail_key(project.id)
 

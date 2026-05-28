@@ -2,112 +2,39 @@
 
 {% extends "default/base.html" %}
 
+{% load localization %}
+
 {% load static %}
 
 {% block content %}
 
-<h1>{{ house.params.address|default:"Дом" }}</h1>
+<h1>{{ house.params.address|default:trans.text_house }}</h1>
 
-<p><strong>Проект:</strong> {{ house.project.name }}</p>
-<p><strong>Город:</strong> {{ house.project.params.city.name }}</p>
+<p><strong>{{ trans.text_project }}:</strong> {{ house.project.name }}</p>
+<p><strong>{{ trans.text_city }}:</strong> {{ house.project.params.city.name }}</p>
 
 <hr>
 
 <ul>
-    <li>Корпус: {{ house.params.corpus }}</li>
-    <li>Очередь: {{ house.params.phase }}</li>
-    <li>Этажность: {{ house.params.floors }}</li>
-    <li>Срок сдачи: {{ house.params.deadline }}</li>
-    <li>Год: {{ house.params.deadline_year }}</li>
-    <li>Тип: {{ house.params.house_structure_type }}</li>
-    <li>Статус: {{ house.params.building_status }}</li>
+    <li>{{ trans.text_corpus }}: {{ house.params.corpus }}</li>
+    <li>{{ trans.text_phase }}: {{ house.params.phase }}</li>
+    <li>{{ trans.text_floors }}: {{ house.params.floors }}</li>
+    <li>{{ trans.text_deadline }}: {{ house.params.deadline }}</li>
+    <li>{{ trans.text_deadline_year }}: {{ house.params.deadline_year }}</li>
+    <li>{{ trans.text_house_structure_type }}: {{ house.params.house_structure_type }}</li>
+    <li>{{ trans.text_building_status }}: {{ house.params.building_status }}</li>
 </ul>
 
 <hr>
 
 <p>
-    Паркинг: {{ house.params.parking|yesno:"Да,Нет" }}<br>
-    Лифт: {{ house.params.lift|yesno:"Да,Нет" }}
+    {{ trans.text_parking }}: {{ house.params.parking|yesno_i18n }}<br>
+    {{ trans.text_lift }}: {{ house.params.lift|yesno_i18n }}
 </p>
 
 <hr>
 
-<h2>Планировки</h2>
-
-<!--
-{% if flat_plans %}
-
-<div class="house-layouts">
-
-    {% for rooms, plans in flat_plans.items %}
-
-        <div class="rooms-group mb-5">
-
-            <h3>
-                {{ rooms }}-комнатные
-            </h3>
-
-            <div class="row g-4">
-
-                {% for plan in plans %}
-
-                    <div class="flatplan-card col-lg-4 col-md-6 col-12">
-
-                        <div class="row">
-                            <div class="flatplan-card-image col-9">
-                                <img src="{{ plan.plan_image }}" class="img-fluid" alt="">
-                            </div>
-
-                            <div class="flatplan-card-description col-3">
-                                <div class="flatplan-card-description-squareline">
-                                    <div class="flatplan-card-description-squareline-block text-center">
-                                        <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.square }}</strong> м²</span>
-                                        <span class="flatplan-card-description-squareline-block-hint uppercase">Общая</span>
-                                    </div>
-                                    <div class="flatplan-card-description-squareline-block text-center">
-                                        <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.living_square }}</strong> м²</span>
-                                        <span class="flatplan-card-description-squareline-block-hint uppercase">Жилая</span>
-                                    </div>
-                                    <div class="flatplan-card-description-squareline-block text-center">
-                                        <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.kitchen_square }}</strong> м²</span>
-                                        <span class="flatplan-card-description-squareline-block-hint uppercase">Кухня</span>
-                                    </div>
-                                    <div class="flatplan-card-description-squareline-block text-center">
-                                        <span class="flatplan-card-description-squareline-block-num">
-                                            <span class="flatplan-card-description-squareline-block-hint">от<br></span>
-                                            <strong>{{ plan.price_per_m2 }}</strong>
-                                        </span>
-                                        <span class="flatplan-card-description-squareline-block-hint">₽ / м²</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flatplan-card-content col-12">
-                                <ul class="list-unstyled">
-                                    <li>{{ plan.balcony_type__name }}</li>
-                                    <li>{{ plan.bathroom_unit_type__name }} санузел</li>
-                                    <li>{{ plan.finish_type__name }}</li>
-                                </ul>
-
-                                <button>Свободно <span class="flatplan-card-description-num"><strong>{{ plan.flats_count }}</strong></span> квартир</button>
-                            </div>
-
-                        </div>
-                            
-                    </div>
-
-                {% endfor %}
-
-            </div>
-
-        </div>
-
-    {% endfor %}
-
-</div>
-
-{% endif %}
--->
+<h2>{{ trans.text_layouts }}</h2>
 
 {% if rooms_groups %}
 
@@ -122,7 +49,7 @@
                     data-rooms="{{ rooms }}"
                     data-house="{{ house.slug }}"
                 >
-                    {{ rooms }}-комнатные
+                    {{ rooms }}-{{ trans.text_roomcols }}
                 </button>
 
                 <div

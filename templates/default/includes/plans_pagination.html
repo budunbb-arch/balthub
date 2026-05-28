@@ -1,0 +1,10 @@
+{% if page_obj.has_next %}
+    <div data-pagination>
+        <a
+            href="{{ plans_url }}?rooms={{ rooms }}&page={{ page_obj.next_page_number }}"
+            data-next-page
+        >
+            next
+        </a>
+    </div>
+{% endif %}

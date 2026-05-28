@@ -11,14 +11,14 @@
     </div>
 
     <div class="mt-2">
-        <div>Дом: {{ flat.house }}</div>
+        <div>{{ trans.text_house }} {{ flat.house }}</div>
 
         {% if flat.params.rooms %}
-            <div>Комнат: {{ flat.params.rooms }}</div>
+            <div>{{ trans.of_rooms }} {{ flat.params.rooms }}</div>
         {% endif %}
 
         {% if flat.params.square %}
-            <div>Площадь: {{ flat.params.square }} м²</div>
+            <div>{{ trans.text_square }} {{ flat.params.square }} {{ trans.text_m2 }}</div>
         {% endif %}
 
         {% with deal=flat.deals.first %}

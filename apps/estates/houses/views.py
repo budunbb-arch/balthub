@@ -6,6 +6,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.conf import settings
+from django.urls import reverse
 
 from collections import defaultdict
 
@@ -612,8 +613,9 @@ def house_detail(request, project_slug, house_slug):
         "page_range": page_range,
 
         "pickers": pickers,
-        #"flat_plans": flat_plans(house),
         "rooms_groups": rooms_groups,
+
+        "pagination_template": "default/includes/minimal_pagination.html",
     }
 
     # =====================================================
@@ -634,94 +636,13 @@ def house_detail(request, project_slug, house_slug):
         context
     )
 
-"""
-def flat_plans(house):
-
-    cache_key = f"house_flat_plans_{house.id}"
-
-    cached = cache.get(cache_key)
-
-    if cached:
-        return cached
-
-    plans = (
-        FlatParams.objects
-        .filter(
-            flat__house=house,
-            flat__is_deleted=False,
-        )
-
-        .exclude(
-            square__isnull=True
-        )
-
-        .exclude(
-            square=0
-        )
-
-        .annotate(
-
-            min_price=Min(
-                "flat__deals__price"
-            ),
-        )
-
-        .annotate(
-
-            price_per_m2=Round(
-
-                ExpressionWrapper(
-                    F("min_price") / F("square"),
-                    output_field=FloatField(),
-                ),
-
-                0
-            )
-        )
-        .values(
-            "rooms",
-            "square",
-            "living_square",
-            "kitchen_square",
-            "balcony_type__name",
-            "bathroom_unit_type__name",
-            "finish_type__name",
-            "price_per_m2",
-        )
-        .annotate(
-            flats_count=Count("flat_id", distinct=True),
-            plan_image=Min("flat__plan"),
-        )
-        .order_by(
-            "rooms",
-            "square",
-        )
-    )
-
-    grouped = defaultdict(list)
-
-    for item in plans:
-        grouped[item["rooms"]].append(item)
-
-    result = dict(grouped)
-
-    cache.set(
-        cache_key,
-        result,
-        60 * 30
-    )
-
-    return dict(grouped)
-"""
-
-def flat_plans(house, rooms=None, page=1, per_page=6):
+def flat_plans(house=None, rooms=None, page=1, per_page=6):
 
     qs = (
 
         FlatParams.objects
 
         .filter(
-            flat__house=house,
             flat__is_deleted=False,
         )
 
@@ -733,6 +654,9 @@ def flat_plans(house, rooms=None, page=1, per_page=6):
             square=0
         )
     )
+
+    if house is not None:
+        qs = qs.filter(flat__house=house)
 
     if rooms is not None:
 
@@ -820,5 +744,59 @@ def house_plans_ajax(request, house_slug):
             "page_range": page_range,
             "house": house,
             "rooms": rooms,
+            "pagination_template": "default/includes/minimal_pagination.html",
+        }
+    )
+
+
+def plans(request):
+    rooms_groups = (
+        FlatParams.objects
+        .exclude(rooms__isnull=True)
+        .values_list("rooms", flat=True)
+        .distinct()
+        .order_by("rooms")
+    )
+
+    first_room = rooms_groups[0] if rooms_groups else None
+    page_obj = None
+    page_range = None
+    paginator = None
+    if first_room is not None:
+        page_obj = flat_plans(house=None, rooms=first_room, page=1, per_page=6)
+        page_range = build_page_range(page_obj)
+        paginator = page_obj.paginator
+
+    context = {
+        "rooms_groups": rooms_groups,
+        "page_obj": page_obj,
+        "paginator": paginator,
+        "page_range": page_range,
+        "plans_url": reverse("plans_ajax"),
+        "pagination_template": "default/includes/plans_pagination.html",
+    }
+    return render(request, "default/pages/estates/plans.html", context)
+
+
+def plans_ajax(request):
+    rooms = request.GET.get("rooms")
+    if rooms in (None, "", "null"):
+        rooms = None
+    else:
+        rooms = int(rooms)
+    page = request.GET.get("page", 1)
+    page_obj = flat_plans(house=None, rooms=rooms, page=page, per_page=6)
+    page_range = build_page_range(page_obj)
+    return render(
+        request,
+        "default/pages/estates/ajax/_plans_items.html",
+        {
+            "page_obj": page_obj,
+            "paginator": page_obj.paginator,
+            "page_range": page_range,
+            "rooms": rooms,
+            "plans_url": reverse("plans_ajax"),
+            "pagination_template": "default/includes/plans_pagination.html",
+
         }
     )

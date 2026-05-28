@@ -5,11 +5,15 @@
 </div>
 
 <div class="row" data-items>
-    {% for flat in page_obj %}
-        <div class="col-md-3">
-            {% include "default/pages/estates/flat_card.html" with flat=flat %}
-        </div>
-    {% endfor %}
+    {% if page_obj %}
+        {% for flat in page_obj %}
+            <div class="col-md-3">
+                {% include "default/pages/estates/flat_card.html" with flat=flat %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>{{ trans.no_flats }}</p>
+    {% endif %}
 </div>
 
 <div class="pagination-wrapper" data-pagination>
