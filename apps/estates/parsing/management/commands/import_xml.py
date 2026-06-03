@@ -1,5 +1,11 @@
+# /opt/balthub/apps/estates/parsing/management/commands/import_xml.py
+
 from lxml import etree
 from pathlib import Path
+from urllib.parse import unquote, urlparse
+from urllib.request import Request, urlopen
+import hashlib
+import mimetypes
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -85,6 +91,12 @@ class Command(BaseCommand):
 
                 else:
                     project_images.append(url)
+
+            # download images to local media storage
+            flat_plan = self.download_image(flat_plan, "flat_plans") or flat_plan
+            house_image = self.download_image(house_image, "houses") or house_image
+            house_plan = self.download_image(house_plan, "house_plans") or house_plan
+            project_images = [self.download_image(url, "project_images") or url for url in project_images]
 
             # ------------------------
             # DEVELOPER
@@ -359,4 +371,47 @@ class Command(BaseCommand):
         try:
             return float(value)
         except:
+            return None
+
+    def download_image(self, url, subfolder):
+        if not url:
+            return None
+
+        normalized_url = url.strip()
+        if normalized_url.startswith("//"):
+            normalized_url = "https:" + normalized_url
+        if not normalized_url.lower().startswith(("http://", "https://")):
+            return None
+
+        media_root = Path(settings.MEDIA_ROOT)
+        target_dir = media_root / "imported_images" / subfolder
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+        try:
+            request = Request(normalized_url, headers={"User-Agent": "Mozilla/5.0"})
+            with urlopen(request, timeout=20) as response:
+                if getattr(response, "status", 200) != 200:
+                    return None
+
+                content = response.read()
+                if not content:
+                    return None
+
+                parsed = urlparse(normalized_url)
+                basename = Path(unquote(parsed.path)).name
+                ext = Path(basename).suffix.lower()
+                if not ext or len(ext) > 5:
+                    content_type = response.headers.get("Content-Type", "")
+                    ext = mimetypes.guess_extension(content_type.split(";")[0].strip() or "") or ".jpg"
+
+                file_hash = hashlib.md5(normalized_url.encode("utf-8")).hexdigest()
+                filename = f"{file_hash}{ext}"
+                target_path = target_dir / filename
+
+                if not target_path.exists():
+                    target_path.write_bytes(content)
+
+                return f"{settings.MEDIA_URL.rstrip('/')}/{Path('imported_images') / subfolder / filename}"
+        except Exception as exc:
+            self.stderr.write(f"Failed to download image {normalized_url}: {exc}")
             return None

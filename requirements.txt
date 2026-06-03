@@ -6,3 +6,4 @@ lxml
 django-redis
 python-slugify
 transliterate
+whitenoise
