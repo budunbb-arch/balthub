@@ -4,9 +4,9 @@
 <h5>{{ trans.latest_projects_title }}</h5>
 
 <div class="row mb-4">
-    {% for project in latest_projects %}
+    {% for project in latest_projects  %}
         <div class="col-md-3">
-            {% include "default/pages/estates/project_card.html" %}
+            {% include "default/pages/estates/project_card.html" with project=project %}
         </div>
     {% empty %}
         <p>{{ trans.projects_empty }}</p>

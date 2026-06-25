@@ -1,4 +1,4 @@
-# apps/projects/models.py
+# apps/estates/projects/models.py
 
 from django.db import models
 from transliterate import translit
@@ -8,6 +8,7 @@ from apps.core.common.mixins import UrlMixin, SeoMixin
 from apps.core.common.models import BaseModel
 from apps.estates.developers.models import Developer
 from apps.core.dictionaries.models import City, District, PropertyCategory, PropertyType
+from .queries import ProjectQuerySet
 
 
 def ru_slug(text):
@@ -15,6 +16,9 @@ def ru_slug(text):
 
 
 class Project(BaseModel, UrlMixin, SeoMixin):
+
+    objects = ProjectQuerySet.as_manager()
+
     external_id = models.CharField(max_length=100, unique=True, null=True)
 
     name = models.CharField(max_length=255)

@@ -1,0 +1,70 @@
+{# Модуль слайдшоу для project_detail #}
+{% load image_utils %}
+
+{% if project.images.all %}
+<div class="project-slideshow" data-slideshow>
+    
+    {# Основной слайд #}
+    <div class="slideshow-main">
+        <div class="slideshow-track">
+            <a href="#" class="slideshow-link" data-bs-toggle="modal" data-bs-target="#projectSlideshowModal" data-full="{{ project.images.first.image }}">
+                <img 
+                    class="slideshow-main-image"
+                    src="{{ project.images.first.image|image_variant:1200 }}"
+                    alt="{{ project.name }}"
+                >
+            </a>
+        </div>
+        
+        <button type="button" class="slideshow-btn slideshow-btn-prev" data-action="prev" aria-label="Previous slide">‹</button>
+        <button type="button" class="slideshow-btn slideshow-btn-next" data-action="next" aria-label="Next slide">›</button>
+        
+        <div class="slideshow-counter" data-counter>
+            <span data-current>1</span> / <span data-total>{{ project.images.count }}</span>
+        </div>
+    </div>
+
+    {# Миниатюры #}
+    <div class="slideshow-thumbs">
+        {% for img in project.images.all %}
+            <button 
+                class="slideshow-thumb{% if forloop.first %} is-active{% endif %}"
+                data-index="{{ forloop.counter0 }}"
+                data-full="{{ img.image }}"
+                data-src="{{ img.image|image_variant:1200 }}"
+                type="button"
+            >
+                <img 
+                    src="{{ img.image|image_variant:200 }}"
+                    alt="Slide {{ forloop.counter }}"
+                >
+            </button>
+        {% endfor %}
+    </div>
+
+</div>
+{% endif %}
+
+<!-- Bootstrap modal (replace custom modal) -->
+<div class="modal fade" id="projectSlideshowModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content bg-dark text-white border-0">
+      <div class="modal-header border-0">
+        <h5 class="modal-title visually-hidden">Gallery</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0 d-flex">
+        <div class="modal-thumbs flex-shrink-0 p-3" style="width:320px; overflow:auto;">
+          {% for img in project.images.all %}
+            <button class="btn p-0 mb-2 modal-thumb w-100 text-start" data-index="{{ forloop.counter0 }}" data-full="{{ img.image }}" data-src="{{ img.image|image_variant:1200 }}" type="button">
+              <img src="{{ img.image|image_variant:200 }}" alt="Thumb {{ forloop.counter }}" class="img-fluid">
+            </button>
+          {% endfor %}
+        </div>
+        <div class="modal-main flex-fill d-flex align-items-center justify-content-center p-3">
+          <img src="" alt="" id="projectSlideshowModalImage" class="img-fluid">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

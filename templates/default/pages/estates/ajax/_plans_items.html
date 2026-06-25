@@ -9,8 +9,12 @@
             <div class="row">
 
                 <div class="flatplan-card-image col-9">
+                    {% load image_utils %}
                     <img
-                        src="{{ plan.plan_image }}"
+                        src="{{ plan.plan_image|image_variant:480 }}"
+                        srcset="{{ plan.plan_image|image_srcset:'320,480' }}"
+                        sizes="(max-width: 768px) 100vw, 66vw"
+                        loading="lazy"
                         class="img-fluid"
                         alt=""
                     >

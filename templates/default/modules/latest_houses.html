@@ -5,7 +5,7 @@
 <div class="row mb-4">
     {% for house in latest_houses %}
         <div class="col-md-3">
-            {% include "default/pages/estates/house_card.html" %}
+            {% include "default/pages/estates/house_card.html" with house=house %}
         </div>
     {% empty %}
         <p>{{ trans.houses_empty }}</p>

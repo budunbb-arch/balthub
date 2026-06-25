@@ -37,27 +37,6 @@ def house_list(request):
     sort = state.get("sort", ["-id"])[0]
 
     # =====================================================
-    # SORT
-    # =====================================================
-
-    allowed_sort = {
-
-        # новизна
-        "-id": "-id",
-        "id": "id",
-
-        # срок сдачи
-        "deadline_year": "params__deadline_year",
-        "-deadline_year": "-params__deadline_year",
-
-        # этажность
-        "floors": "params__floors",
-        "-floors": "-params__floors",
-    }
-
-    order_by = allowed_sort.get(sort, "-id")
-
-    # =====================================================
     # QUERYSET
     # =====================================================
 
@@ -65,56 +44,25 @@ def house_list(request):
 
         House.objects
 
+        .active()
+
+        .deadline_years(selected_deadlines)
+
+        .building_statuses(selected_statuses)
+
+        .phases(selected_phases)
+
         .select_related(
             "project",
             "project__developer",
             "project__params__city",
-
             "params",
             "params__house_structure_type",
             "params__building_status",
         )
 
-        .filter(
-            is_deleted=False,
-        )
+        .sorted(sort)
     )
-
-    filters = Q()
-
-    # =====================================================
-    # DEADLINE
-    # =====================================================
-
-    if selected_deadlines:
-
-        filters &= Q(
-            params__deadline_year__in=selected_deadlines
-        )
-
-    # =====================================================
-    # BUILDING STATUS
-    # =====================================================
-
-    if selected_statuses:
-
-        filters &= Q(
-            params__building_status_id__in=selected_statuses
-        )
-
-    # =====================================================
-    # PHASE
-    # =====================================================
-
-    if selected_phases:
-
-        filters &= Q(
-            params__phase__in=selected_phases
-        )
-
-    qs = qs.filter(filters)
-
-    qs = qs.order_by(order_by, "id")
 
     # =====================================================
     # PAGINATION
@@ -131,7 +79,7 @@ def house_list(request):
     # =====================================================
 
     deadline_queryset = (
-        House.objects
+        House.objects.active()
         .exclude(params__deadline_year__isnull=True)
         .values_list("params__deadline_year", flat=True)
         .distinct()
@@ -139,7 +87,7 @@ def house_list(request):
     )
 
     phase_queryset = (
-        House.objects
+        House.objects.active()
         .exclude(params__phase__isnull=True)
         .exclude(params__phase__exact="")
         .values_list("params__phase", flat=True)
@@ -295,7 +243,7 @@ def house_detail(request, project_slug, house_slug):
 
     house = get_object_or_404(
 
-        House.objects.select_related(
+        House.objects.active().select_related(
             "project",
             "project__params__city",
             "params",
@@ -318,33 +266,12 @@ def house_detail(request, project_slug, house_slug):
     price_to = state.get("price_to", [""])[0]
 
     # =====================================================
-    # SORT
-    # =====================================================
-
-    allowed_sort = {
-
-        # комнаты
-        "rooms": "params__rooms",
-        "-rooms": "-params__rooms",
-
-        # площадь
-        "square": "params__square",
-        "-square": "-params__square",
-
-        # цена
-        "price": "price",
-        "-price": "-price",
-    }
-
-    order_by = allowed_sort.get(sort, "price")
-
-    # =====================================================
     # QUERYSET
     # =====================================================
 
     qs = (
 
-        house.flats
+        Flat.objects.active().for_house(house)
 
         .select_related(
             "params"
@@ -355,58 +282,20 @@ def house_detail(request, project_slug, house_slug):
             "deals__deal_type"
         )
 
-        .annotate(
-            price=Min("deals__price")
-        )
+        .min_price()
+
+        .rooms(selected_rooms)
+
+        .square_from(square_from)
+        .square_to(square_to)
+
+        .price_from(price_from)
+        .price_to(price_to)
+
+        .sorted(sort)
+
+        .distinct()
     )
-
-    filters = Q()
-
-    # =====================================================
-    # ROOMS
-    # =====================================================
-
-    if selected_rooms:
-
-        filters &= Q(
-            params__rooms__in=selected_rooms
-        )
-
-    # =====================================================
-    # SQUARE
-    # =====================================================
-
-    if square_from:
-
-        filters &= Q(
-            params__square__gte=square_from
-        )
-
-    if square_to:
-
-        filters &= Q(
-            params__square__lte=square_to
-        )
-
-    # =====================================================
-    # PRICE
-    # =====================================================
-
-    if price_from:
-
-        filters &= Q(
-            price__gte=price_from
-        )
-
-    if price_to:
-
-        filters &= Q(
-            price__lte=price_to
-        )
-
-    qs = qs.filter(filters)
-
-    qs = qs.order_by(order_by, "id").distinct()
 
     # =====================================================
     # PAGINATION
@@ -424,7 +313,7 @@ def house_detail(request, project_slug, house_slug):
 
     limits = (
 
-        house.flats
+        Flat.objects.active().for_house(house)
 
         .annotate(
             price=Min("deals__price")
@@ -438,7 +327,7 @@ def house_detail(request, project_slug, house_slug):
             min_price=Min("price"),
             max_price=Max("price"),
         )
-    )
+    )   
 
     # =====================================================
     # ROOMS QUERYSET
@@ -446,7 +335,7 @@ def house_detail(request, project_slug, house_slug):
 
     rooms_queryset = (
 
-        house.flats
+        Flat.objects.active().for_house(house)
 
         .exclude(
             params__rooms__isnull=True
@@ -587,7 +476,7 @@ def house_detail(request, project_slug, house_slug):
 
     rooms_groups = (
 
-        house.flats
+        Flat.objects.active().for_house(house)
 
         .exclude(
             params__rooms__isnull=True
@@ -638,21 +527,8 @@ def house_detail(request, project_slug, house_slug):
 
 def flat_plans(house=None, rooms=None, page=1, per_page=6):
 
-    qs = (
-
-        FlatParams.objects
-
-        .filter(
-            flat__is_deleted=False,
-        )
-
-        .exclude(
-            square__isnull=True
-        )
-
-        .exclude(
-            square=0
-        )
+    qs = FlatParams.objects.filter(
+        flat__in=Flat.objects.active()
     )
 
     if house is not None:
@@ -710,7 +586,7 @@ def flat_plans(house=None, rooms=None, page=1, per_page=6):
 def house_plans_ajax(request, house_slug):
 
     house = get_object_or_404(
-        House,
+        House.objects.active(),
         slug=house_slug
     )
 
@@ -751,13 +627,28 @@ def house_plans_ajax(request, house_slug):
 
 def plans(request):
     rooms_groups = (
-        FlatParams.objects
-        .exclude(rooms__isnull=True)
-        .values_list("rooms", flat=True)
+
+        Flat.objects
+
+        .active()
+
+        .exclude(
+            params__rooms__isnull=True
+        )
+
+        .values_list(
+            "params__rooms",
+            flat=True
+        )
+
         .distinct()
-        .order_by("rooms")
+
+        .order_by(
+            "params__rooms"
+        )
     )
 
+    rooms_groups = list(rooms_groups)
     first_room = rooms_groups[0] if rooms_groups else None
     page_obj = None
     page_range = None

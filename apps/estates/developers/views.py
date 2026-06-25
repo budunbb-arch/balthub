@@ -1,18 +1,13 @@
 # /opt/balthub/apps/estates/developers/views.py
 
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Min, Max, Count, Prefetch, Q
 
 from apps.core.pagination import paginate_queryset
 
-from apps.estates.developers.models import (
-    Developer,
-    DeveloperContact,
-    DeveloperDepartment,
-    DepartmentContact,
-)
+from apps.estates.developers.models import Developer
 from apps.core.dictionaries.models import City, PropertyCategory, District
 from apps.core.engines.picker import normalize_querydict
+from apps.estates.projects.models import Project
 
 
 def developer_list(request):
@@ -36,65 +31,29 @@ def developer_list(request):
     price_to = get_state_value("price_to")
 
     # =====================================================
-    # SORT
-    # =====================================================
-
-    allowed_sort = {
-        "name": "name",
-        "-name": "-name",
-
-        "projects": "projects_count",
-        "-projects": "-projects_count",
-
-        "price": "min_price",
-        "-price": "-min_price",
-    }
-
-    order_by = allowed_sort.get(sort, "name")
-
-    # =====================================================
     # BASE QUERYSET
     # =====================================================
 
-    qs = Developer.objects.filter(
-        is_deleted=False,
-        is_public=True
+    qs = (
+
+        Developer.objects
+
+        .active()
+
+        .cities(selected_cities)
+
+        .property_categories(selected_categories)
+
+        .with_list_stats()
+
+        .min_price_from(price_from)
+
+        .min_price_to(price_to)
+
+        .sorted(sort)
+
+        .distinct()
     )
-
-    filters = Q()
-
-    if selected_cities:
-        filters &= Q(
-            projects__params__city_id__in=selected_cities
-        )
-
-    if selected_categories:
-        filters &= Q(
-            projects__params__property_category_id__in=selected_categories
-        )
-
-    qs = qs.filter(filters)
-
-    qs = qs.annotate(
-        projects_count=Count("projects", distinct=True),
-        min_price=Min("projects__houses__flats__deals__price"),
-    )
-
-    # =====================================================
-    # PRICE RANGE
-    # =====================================================
-
-    if price_from:
-        qs = qs.filter(
-            min_price__gte=price_from
-        )
-
-    if price_to:
-        qs = qs.filter(
-            min_price__lte=price_to
-        )
-
-    qs = qs.order_by(order_by, "id").distinct()
         
 
     # =====================================================
@@ -108,10 +67,7 @@ def developer_list(request):
     # PICKER
     # =====================================================
 
-    price_limits = qs.aggregate(
-        min_price=Min("projects__houses__flats__deals__price"),
-        max_price=Max("projects__houses__flats__deals__price"),
-    )
+    price_limits = qs.price_limits()
 
     pickers = [
 
@@ -285,62 +241,10 @@ def developer_detail(request, slug):
 
         Developer.objects
 
-        .annotate(
-
-            projects_count=Count(
-                "projects",
-                distinct=True
-            ),
-
-            houses_count=Count(
-                "projects__houses",
-                distinct=True
-            ),
-
-            flats_count=Count(
-                "projects__houses__flats",
-                distinct=True
-            ),
-
-            min_price=Min(
-                "projects__houses__flats__deals__price"
-            ),
-
-            max_price=Max(
-                "projects__houses__flats__deals__price"
-            ),
-        )
-
-        .prefetch_related(
-
-            "developerdescriptions",
-
-            Prefetch(
-                "developercontacts",
-                queryset=DeveloperContact.objects.select_related(
-                    "contact_type"
-                )
-            ),
-
-            Prefetch(
-                "developerdepartments",
-                queryset=DeveloperDepartment.objects.prefetch_related(
-
-                    Prefetch(
-                        "contacts",
-                        queryset=DepartmentContact.objects.select_related(
-                            "contact_type"
-                        )
-                    )
-
-                )
-            )
-
-        ),
+        .active()
+        .detail(),
 
         slug=slug,
-        is_deleted=False,
-        is_public=True,
     )
 
     # =====================================================
@@ -354,24 +258,19 @@ def developer_detail(request, slug):
     selected_districts = state.get("district", [])
     sort = state.get("sort", ["name"])[0]
 
-    allowed_sort = {
-        "name": "name",
-        "-name": "-name",
-
-        "city": "params__city__name",
-        "-city": "-params__city__name",
-    }
-
-    order_by = allowed_sort.get(sort, "name")
-
     projects_qs = (
 
-        developer.projects
+        Project.objects
 
-        .filter(
-            is_deleted=False,
-            is_public=True,
-        )
+        .active()
+
+        .for_developer(developer)
+
+        .property_categories(selected_categories)
+
+        .cities(selected_cities)
+
+        .districts(selected_districts)
 
         .select_related(
             "developer",
@@ -382,24 +281,11 @@ def developer_detail(request, slug):
         .prefetch_related(
             "images"
         )
+
+        .sorted(sort)
+
+        .distinct()
     )
-
-    if selected_categories:
-        projects_qs = projects_qs.filter(
-            params__property_category_id__in=selected_categories
-        )
-
-    if selected_cities:
-        projects_qs = projects_qs.filter(
-            params__city_id__in=selected_cities
-        )
-
-    if selected_districts:
-        projects_qs = projects_qs.filter(
-            params__district_id__in=selected_districts
-        )
-
-    projects_qs = projects_qs.order_by(order_by, "id").distinct()
 
     page_obj, paginator, page_range = paginate_queryset(
         request,

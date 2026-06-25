@@ -6,6 +6,7 @@ from urllib.parse import unquote, urlparse
 from urllib.request import Request, urlopen
 import hashlib
 import mimetypes
+from PIL import Image, ImageOps
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -46,6 +47,26 @@ from apps.core.dictionaries.models import (
 
 class Command(BaseCommand):
     help = "Import XML feed"
+
+    IMAGE_VARIANTS = {
+        "flat_plans": [
+            (480, None),
+        ],
+        "house_plans": [
+            (800, 600),
+            (200, 150),
+        ],
+        "houses": [
+            (480, 640),
+            (800, 600),
+        ],
+        "project_images": [
+            (480, 640),
+            (800, 600),
+            (1200, 600),
+            (200, 150),
+        ],
+    }
 
     def add_arguments(self, parser):
         parser.add_argument("--file", type=str, default="test.xml")
@@ -96,7 +117,18 @@ class Command(BaseCommand):
             flat_plan = self.download_image(flat_plan, "flat_plans") or flat_plan
             house_image = self.download_image(house_image, "houses") or house_image
             house_plan = self.download_image(house_plan, "house_plans") or house_plan
-            project_images = [self.download_image(url, "project_images") or url for url in project_images]
+
+            # убрать дубли URL из фида
+            project_images = list(dict.fromkeys(project_images))
+
+            # скачать изображения
+            project_images = [
+                self.download_image(url, "project_images") or url
+                for url in project_images
+            ]
+
+            # убрать дубли после скачивания
+            project_images = list(dict.fromkeys(project_images))
 
             # ------------------------
             # DEVELOPER
@@ -194,11 +226,20 @@ class Command(BaseCommand):
                 }
             )
 
-            # PROJECT IMAGES
-            for url in project_images:
+            # PROJECT IMAGES SYNC
+
+            incoming_images = set(filter(None, project_images))
+
+            ProjectImage.objects.filter(
+                project=project
+            ).exclude(
+                image__in=incoming_images
+            ).delete()
+
+            for image_url in incoming_images:
                 ProjectImage.objects.get_or_create(
                     project=project,
-                    image=url
+                    image=image_url
                 )
 
             # ------------------------
@@ -404,14 +445,93 @@ class Command(BaseCommand):
                     content_type = response.headers.get("Content-Type", "")
                     ext = mimetypes.guess_extension(content_type.split(";")[0].strip() or "") or ".jpg"
 
-                file_hash = hashlib.md5(normalized_url.encode("utf-8")).hexdigest()
+                file_hash = hashlib.md5(content).hexdigest()
                 filename = f"{file_hash}{ext}"
                 target_path = target_dir / filename
 
                 if not target_path.exists():
                     target_path.write_bytes(content)
 
+                self.generate_image_variants(target_path, subfolder)
+
                 return f"{settings.MEDIA_URL.rstrip('/')}/{Path('imported_images') / subfolder / filename}"
         except Exception as exc:
             self.stderr.write(f"Failed to download image {normalized_url}: {exc}")
             return None
+
+    def generate_image_variants(self, original_path, subfolder):
+        """Создаёт копии изображений разных размеров и кэширует их на диске."""
+        variants = self.IMAGE_VARIANTS.get(subfolder, [])
+
+        for width, height in variants:
+            self.save_image_variant(original_path, width, height)
+
+    def save_image_variant(self, original_path, width, height=None):
+        """Сохраняет одну уменьшенную версию изображения."""
+        try:
+            image = Image.open(original_path)
+            image = ImageOps.exif_transpose(image)
+            image_format = image.format or "JPEG"
+
+            if height is None:
+                max_size = (width, 10000)
+                image.thumbnail(max_size, Image.LANCZOS)
+            else:
+                image = ImageOps.fit(
+                    image,
+                    (width, height),
+                    Image.LANCZOS
+                )
+
+            if image.mode in ("RGBA", "LA"):
+                background = Image.new("RGB", image.size, (255, 255, 255))
+                background.paste(image, mask=image.split()[3])
+                image = background
+            elif image.mode != "RGB":
+                image = image.convert("RGB")
+
+            base_name = original_path.stem
+            ext = original_path.suffix.lower() or ".jpg"
+            if height is None:
+                size_suffix = f"{width}xauto"
+            else:
+                size_suffix = f"crop_{width}x{height}"
+            variant_path = original_path.with_name(f"{base_name}_{size_suffix}{ext}")
+
+            if variant_path.exists():
+                return
+
+            image.save(
+                variant_path,
+                format=image_format,
+                quality=100,
+                optimize=True,
+            )
+        except Exception as exc:
+            self.stderr.write(f"Failed to create image variant for {original_path}: {exc}")
+
+    def save_image_crop_variant(self, original_path, width):
+        target_height = int(width * 4 / 3)
+
+        with Image.open(original_path) as image:
+            image = ImageOps.exif_transpose(image)
+            cropped = ImageOps.fit(
+                image,
+                (width, target_height),
+                Image.LANCZOS,
+                centering=(0.5, 0.5)
+            )
+
+            if cropped.mode in ("RGBA", "LA"):
+                background = Image.new("RGB", cropped.size, (255, 255, 255))
+                background.paste(cropped, mask=cropped.split()[3])
+                cropped = background
+            elif cropped.mode != "RGB":
+                cropped = cropped.convert("RGB")
+
+            base = original_path.stem
+            ext = original_path.suffix.lower() or ".jpg"
+            variant_path = original_path.with_name(f"{base}_crop_{width}x{target_height}{ext}")
+
+            if not variant_path.exists():
+                cropped.save(variant_path, quality=85, optimize=True)

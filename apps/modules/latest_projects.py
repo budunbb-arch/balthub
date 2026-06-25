@@ -9,6 +9,7 @@ def get_latest_projects(request):
     if projects is None:
         projects = list(
             Project.objects
+            .active()
             .select_related("developer", "params__city")
             .prefetch_related("images")
             .order_by("-id")[:8]

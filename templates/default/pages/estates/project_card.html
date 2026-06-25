@@ -1,10 +1,19 @@
 <!-- /opt/balthub/templates/default/pages/estates/project_card.html -->
 
+{# use optimized images #}
+{% load image_utils %}
+
 <div class="card mb-3"> 
   {# изображение проекта #} 
   {% if project.images.all %} 
     <div class="card-img-wrapper">
-      <img src="{{ project.images.first.image }}" class="card-img-top" alt="{{ project.name }}"> 
+      <img
+        src="{{ project.images.first.image|image_variant:480 }}"
+        srcset="{{ project.images.first.image|image_srcset:'320,480,640' }}"
+        sizes="(max-width: 768px) 100vw, 33vw"
+        loading="lazy"
+        class="card-img-top"
+        alt="{{ project.name }}">
     </div>
   {% endif %} 
 

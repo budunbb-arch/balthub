@@ -1,9 +1,17 @@
 {# templates/default/pages/estates/house_card.html #}
 
+{% load image_utils %}
+
 <div class="card mb-3">
     {% if house.image %}
         <div class="card-img-wrapper">
-            <img src="{{ house.image }}" class="card-img-top" alt="">
+            <img
+                src="{{ house.image|image_variant:480 }}"
+                srcset="{{ house.image|image_srcset:'320,480,640' }}"
+                sizes="(max-width: 768px) 100vw, 25vw"
+                loading="lazy"
+                class="card-img-top"
+                alt="">
         </div>
     {% endif %}
 

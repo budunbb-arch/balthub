@@ -2,10 +2,14 @@
 from django.db import models
 from apps.core.common.models import BaseModel
 from apps.core.common.mixins import SeoMixin
+from .queries import DeveloperQuerySet
 from django.utils.text import slugify
 
 
 class Developer(BaseModel, SeoMixin):
+
+    objects = DeveloperQuerySet.as_manager()
+
     name = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(unique=True, max_length=255, blank=True, null=True)
     logo = models.ImageField(upload_to="developers/logos/", null=True, blank=True)

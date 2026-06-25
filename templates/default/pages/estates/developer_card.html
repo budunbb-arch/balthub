@@ -3,7 +3,14 @@
 <div class="card p-3 mb-3">
 
     {% if developer.logo %}
-        <img src="{{ developer.logo.url }}" class="img-fluid mb-2" style="max-height:100px;">
+        {% load image_utils %}
+        <img
+            src="{{ developer.logo.url|image_variant:200 }}"
+            srcset="{{ developer.logo.url|image_srcset:'200,400' }}"
+            sizes="200px"
+            loading="lazy"
+            class="img-fluid mb-2"
+            style="max-height:100px;">
     {% endif %}
 
     <h5>

@@ -6,7 +6,7 @@ from apps.estates.flats.models import Flat
 
 def flat_detail(request, project_slug, house_slug, flat_slug):
     flat = get_object_or_404(
-        Flat.objects.select_related(
+        Flat.objects.active().select_related(
             "house",
             "house__project",
             "params",

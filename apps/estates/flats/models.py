@@ -14,9 +14,12 @@ from apps.core.dictionaries.models import (
     DealType,
     Currency,
 )
+from .queries import FlatQuerySet
 
 
 class Flat(BaseModel, UrlMixin, SeoMixin):
+
+    objects = FlatQuerySet.as_manager()
     external_id = models.CharField(max_length=100, unique=True, null=True)
 
     slug = models.SlugField(max_length=50, null=True, blank=True)

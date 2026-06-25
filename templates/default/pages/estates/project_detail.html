@@ -30,14 +30,8 @@
         </div>
     {% endif %}
 
-    <!-- Галерея -->
-    <div class="row mb-4">
-        {% for img in project.images.all %}
-            <div class="col-md-3 mb-3">
-                <img src="{{ img.image }}" class="img-fluid rounded">
-            </div>
-        {% endfor %}
-    </div>
+    <!-- Слайдшоу -->
+    {% include "default/modules/project_slideshow.html" with project=project %}
 
     <!-- Описание -->
     {% if project.description %}
@@ -79,4 +73,6 @@
 {% block extra_js %}
     <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
     <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+    <script src="{% static 'assets/js/house-plans.js' %}"></script>
+    <script src="{% static 'assets/js/project-slideshow.js' %}"></script>
 {% endblock %}

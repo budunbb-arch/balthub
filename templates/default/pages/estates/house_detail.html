@@ -34,6 +34,27 @@
 
 <hr>
 
+
+
+<h2>Квартиры</h2>
+
+
+<div
+    data-ajax-list
+    data-container="#flat-list-container"
+    data-form=".house-filter-form"
+    data-push-state="true"
+>
+
+    <div class="ajax-loader-overlay hidden">
+        <div class="spinner"></div>
+    </div>
+    
+    <div id="flat-list-container">
+        {% include "default/pages/estates/ajax/_flat_list.html" %}
+    </div>
+</div>
+
 <h2>{{ trans.text_layouts }}</h2>
 
 {% if rooms_groups %}

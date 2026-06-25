@@ -11,6 +11,8 @@ translations = {
 
     "text_from": "от",
     "text_to": "до",
+    "text_next": "Следующая",
+
     "specific_price": "₽ / м²",
 
 }
