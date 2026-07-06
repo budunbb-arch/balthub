@@ -6,15 +6,10 @@ from django.conf import settings
 
 from apps.estates.houses.models import House
 from apps.estates.projects.models import Project
-from apps.core.dictionaries.models import (
-    City,
-    District,
-    BuildingStatus
-)
-from apps.estates.developers.models import Developer
 from apps.core.cache_keys import project_detail_key
 from apps.core.pagination import paginate_queryset
 from apps.core.engines.picker import normalize_querydict
+from .pickers import project_list_pickers, project_detail_pickers
 
 
 def project_list(request):
@@ -60,125 +55,14 @@ def project_list(request):
         12
     )
 
-    # =====================================================
-    # DISTRICTS
-    # =====================================================
+    pickers = project_list_pickers(
 
-    district_queryset = District.objects.none()
+        sort=sort,
 
-    if selected_cities:
-
-        district_queryset = District.objects.filter(
-            city_id__in=selected_cities
-        ).select_related("city")
-
-    # =====================================================
-    # PICKERS
-    # =====================================================
-
-    pickers = [
-
-        # =====================================================
-        # SORT
-        # =====================================================
-
-        {
-            "name": "sort",
-            "placeholder": "Сортировка",
-            "auto_submit": True,
-            "input_type": "radio",
-
-            "options": [
-
-                {
-                    "value": "name",
-                    "label": "Название А-Я",
-                },
-
-                {
-                    "value": "-name",
-                    "label": "Название Я-А",
-                },
-
-                {
-                    "value": "city",
-                    "label": "Город А-Я",
-                },
-
-                {
-                    "value": "-city",
-                    "label": "Город Я-А",
-                },
-            ]
-        },
-
-        # =====================================================
-        # DEVELOPERS
-        # =====================================================
-
-        {
-            "name": "developer",
-            "placeholder": "Застройщик",
-            "auto_submit": False,
-            "multiple": True,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(dev.id),
-                    "label": dev.name,
-                }
-
-                for dev in Developer.objects.order_by("name")
-            ]
-        },
-
-        # =====================================================
-        # CITY
-        # =====================================================
-
-        {
-            "name": "city",
-            "placeholder": "Город",
-            "auto_submit": False,
-            "multiple": True,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(city.id),
-                    "label": city.name,
-                }
-
-                for city in City.objects.order_by("name")
-            ]
-        },
-
-        # =====================================================
-        # DISTRICT
-        # =====================================================
-
-        {
-            "name": "district",
-            "placeholder": "Район",
-            "auto_submit": False,
-            "multiple": True,
-            "disabled": not selected_cities,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(district.id),
-                    "label": district.name,
-                }
-
-                for district in district_queryset.order_by("name")
-            ]
-        },
-    ]
+        selected_developers=selected_developers,
+        selected_cities=selected_cities,
+        selected_districts=selected_districts,
+    )
 
     context = {
         "page_obj": page_obj,
@@ -305,130 +189,17 @@ def project_detail(request, project_slug):
     # PICKERS
     # =====================================================
 
-    deadline_queryset = (
-        project.houses
-        .active()
-        .available_deadline_years()
+    pickers = project_detail_pickers(
+
+        sort=sort,
+
+        selected_deadlines=selected_deadlines,
+        selected_statuses=selected_statuses,
+        selected_phases=selected_phases,
+
+        deadline_queryset=project.houses.active().available_deadline_years(),
+        phase_queryset=project.houses.active().available_phases(),
     )
-
-    phase_queryset = (
-        project.houses
-        .active()
-        .available_phases()
-    )
-
-    pickers = [
-
-        # =====================================================
-        # SORT
-        # =====================================================
-
-        {
-            "name": "sort",
-            "placeholder": "Сортировка",
-            "auto_submit": True,
-            "input_type": "radio",
-
-            "options": [
-
-                {
-                    "value": "-id",
-                    "label": "Сначала новые",
-                },
-
-                {
-                    "value": "id",
-                    "label": "Сначала старые",
-                },
-
-                {
-                    "value": "deadline_year",
-                    "label": "Срок сдачи ↑",
-                },
-
-                {
-                    "value": "-deadline_year",
-                    "label": "Срок сдачи ↓",
-                },
-
-                {
-                    "value": "floors",
-                    "label": "Этажность ↑",
-                },
-
-                {
-                    "value": "-floors",
-                    "label": "Этажность ↓",
-                },
-            ]
-        },
-
-        # =====================================================
-        # DEADLINE YEAR
-        # =====================================================
-
-        {
-            "name": "deadline_year",
-            "placeholder": "Срок сдачи",
-            "auto_submit": False,
-            "multiple": True,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(year),
-                    "label": str(year),
-                }
-
-                for year in deadline_queryset
-            ]
-        },
-
-        # =====================================================
-        # BUILDING STATUS
-        # =====================================================
-
-        {
-            "name": "building_status",
-            "placeholder": "Статус",
-            "auto_submit": False,
-            "multiple": True,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(status.id),
-                    "label": status.name,
-                }
-
-                for status in BuildingStatus.objects.order_by("name")
-            ]
-        },
-
-        # =====================================================
-        # PHASE
-        # =====================================================
-
-        {
-            "name": "phase",
-            "placeholder": "Очередь",
-            "auto_submit": False,
-            "multiple": True,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(phase),
-                    "label": str(phase),
-                }
-
-                for phase in phase_queryset
-            ]
-        },
-    ]
 
     context = {
         "project": project,

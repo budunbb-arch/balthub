@@ -6,8 +6,7 @@
 
 {% block content %}
 
-<h1>{{ seo.h1 }}</h1>
-<h1>{{ developer.name }}</h1>
+<h1>{{ seo.h1|default:developer.name }}</h1>
 
 {% if developer.logo %}
     <img src="{{ developer.logo.url }}" alt="{{ developer.name }}" style="max-width:200px;">

@@ -8,7 +8,7 @@
 <div class="container mt-4">
 
     <!-- Заголовок -->
-    <h1 class="mb-3">{{ project.name }}</h1>
+    <h1 class="mb-3">{{ seo.h1|default:project.name }}</h1>
 
     <!-- Застройщик -->
     {% if project.developer %}

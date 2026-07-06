@@ -8,7 +8,7 @@
 
 {% block content %}
 
-<h1>{{ house.params.address|default:trans.text_house }}</h1>
+<h1>{{ seo.h1|default:house.params.address|default:trans.text_house }}</h1>
 
 <p><strong>{{ trans.text_project }}:</strong> {{ house.project.name }}</p>
 <p><strong>{{ trans.text_city }}:</strong> {{ house.project.params.city.name }}</p>

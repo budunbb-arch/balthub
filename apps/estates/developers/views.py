@@ -8,6 +8,7 @@ from apps.estates.developers.models import Developer
 from apps.core.dictionaries.models import City, PropertyCategory, District
 from apps.core.engines.picker import normalize_querydict
 from apps.estates.projects.models import Project
+from .pickers import developer_list_pickers, developer_detail_pickers
 
 
 def developer_list(request):
@@ -69,121 +70,21 @@ def developer_list(request):
 
     price_limits = qs.price_limits()
 
-    pickers = [
+    print(qs.query)
+    print(price_limits)
 
-        # =====================================================
-        # SORT
-        # =====================================================
+    pickers = developer_list_pickers(
 
-        {
-            "name": "sort",
-            "value": sort,
-            "placeholder": "Сортировка",
-            "auto_submit": True,
-            "input_type": "radio",
-            "options": [
+        sort=sort,
 
-                {
-                    "value": "name",
-                    "label": "Название А-Я",
-                },
+        selected_cities=selected_cities,
+        selected_categories=selected_categories,
 
-                {
-                    "value": "-name",
-                    "label": "Название Я-А",
-                },
+        price_limits=price_limits,
 
-                {
-                    "value": "projects",
-                    "label": "Меньше проектов",
-                },
-
-                {
-                    "value": "-projects",
-                    "label": "Больше проектов",
-                },
-
-                {
-                    "value": "price",
-                    "label": "Сначала дешевле",
-                },
-
-                {
-                    "value": "-price",
-                    "label": "Сначала дороже",
-                },
-            ]
-        },
-
-        # =====================================================
-        # CITY
-        # =====================================================
-
-        {
-            "name": "city",
-            "label": "Город",
-            "placeholder": "Выберите города",
-            "value": selected_cities,
-            "multiple": True,
-            "auto_submit": False,
-            "input_type": "checkbox",
-            "options": [
-
-                {
-                    "value": str(city.id),
-                    "label": city.name,
-                }
-
-                for city in City.objects.order_by("name")
-            ]
-        },
-
-        # =====================================================
-        # PROPERTY CATEGORY
-        # =====================================================
-
-        {
-            "name": "property_category",
-            "label": "Тип недвижимости",
-            "placeholder": "Тип недвижимости",
-            "value": selected_categories,
-            "multiple": True,
-            "auto_submit": False,
-            "input_type": "checkbox",
-            "options": [
-
-                {
-                    "value": str(category.id),
-                    "label": category.name,
-                }
-
-                for category in PropertyCategory.objects.order_by("name")
-            ]
-        },
-
-        # =====================================================
-        # PRICE RANGE
-        # =====================================================
-
-        {
-            "name": "price",
-            "label": "Цена",
-            "placeholder": "Цена",
-            "type": "range",
-            "auto_submit": True,
-
-            "range": {
-                "from_name": "price_from",
-                "to_name": "price_to",
-
-                "from_value": price_from,
-                "to_value": price_to,
-
-                "from_placeholder": int(price_limits["min_price"] or 0),
-                "to_placeholder": int(price_limits["max_price"] or 0),
-            }
-        },
-    ]
+        price_from=price_from,
+        price_to=price_to,
+    )
 
 
     # =====================================================
@@ -214,21 +115,6 @@ def developer_list(request):
         "default/pages/estates/developer_list.html",
         context
     )
-
-
-def get_picker_label(picker, selected_values):
-    if not selected_values:
-        return picker["placeholder"]
-
-    if picker["name"] == "city":
-        labels = City.objects.filter(id__in=selected_values).values_list("name", flat=True)
-        return ", ".join(labels)
-
-    if picker["name"] == "property_category":
-        labels = PropertyCategory.objects.filter(id__in=selected_values).values_list("name", flat=True)
-        return ", ".join(labels)
-
-    return picker["placeholder"]
 
 
 # =========================================================
@@ -293,109 +179,14 @@ def developer_detail(request, slug):
         12
     )
 
-    # =====================================================
-    # DISTRICTS
-    # =====================================================
+    pickers = developer_detail_pickers(
 
-    district_queryset = District.objects.none()
+        sort=sort,
 
-    if selected_cities:
-
-        district_queryset = District.objects.filter(
-            city_id__in=selected_cities
-        ).select_related("city")
-
-    # =====================================================
-    # PICKERS
-    # =====================================================
-
-    pickers = [
-
-        {
-            "name": "sort",
-            "placeholder": "Сортировка",
-            "auto_submit": True,
-            "input_type": "radio",
-
-            "options": [
-
-                {
-                    "value": "name",
-                    "label": "Название А-Я",
-                },
-
-                {
-                    "value": "-name",
-                    "label": "Название Я-А",
-                },
-
-                {
-                    "value": "city",
-                    "label": "Город А-Я",
-                },
-
-                {
-                    "value": "-city",
-                    "label": "Город Я-А",
-                },
-            ]
-        },
-
-        {
-            "name": "property_category",
-            "placeholder": "Тип недвижимости",
-            "auto_submit": False,
-            "multiple": True,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(category.id),
-                    "label": category.name,
-                }
-
-                for category in PropertyCategory.objects.order_by("name")
-            ]
-        },
-
-        {
-            "name": "city",
-            "placeholder": "Город",
-            "auto_submit": False,
-            "multiple": True,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(city.id),
-                    "label": city.name,
-                }
-
-                for city in City.objects.order_by("name")
-            ]
-        },
-
-        {
-            "name": "district",
-            "placeholder": "Район",
-            "auto_submit": False,
-            "multiple": True,
-            "disabled": not selected_cities,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(district.id),
-                    "label": district.name,
-                }
-
-                for district in district_queryset.order_by("name")
-            ]
-        },
-    ]
+        selected_categories=selected_categories,
+        selected_cities=selected_cities,
+        selected_districts=selected_districts,
+    )
 
     # =====================================================
     # STATS

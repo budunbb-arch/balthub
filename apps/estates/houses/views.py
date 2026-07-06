@@ -1,29 +1,18 @@
 # /opt/balthub/apps/estates/houses/views.py
 
-from django.db.models import Q, Min, Max, Count, F, FloatField, ExpressionWrapper
+from django.db.models import Min, Count, F, FloatField, ExpressionWrapper
 from django.db.models.functions import Round
 from django.shortcuts import render, get_object_or_404
-from django.core.cache import cache
 from django.core.paginator import Paginator
-from django.conf import settings
 from django.urls import reverse
-
-from collections import defaultdict
 
 from apps.estates.houses.models import House
 from apps.estates.projects.models import Project
-from apps.estates.developers.models import Developer
 from apps.estates.flats.models import Flat, FlatParams
-
-from apps.core.dictionaries.models import BuildingStatus
-
-from apps.core.cache_keys import (
-    house_list_key,
-    project_detail_key,
-)
 
 from apps.core.pagination import paginate_queryset, build_page_range
 from apps.core.engines.picker import normalize_querydict
+from .pickers import house_list_pickers, house_detail_pickers
 
 
 def house_list(request):
@@ -74,139 +63,14 @@ def house_list(request):
         12
     )
 
-    # =====================================================
-    # PICKERS
-    # =====================================================
+    pickers = house_list_pickers(
 
-    deadline_queryset = (
-        House.objects.active()
-        .exclude(params__deadline_year__isnull=True)
-        .values_list("params__deadline_year", flat=True)
-        .distinct()
-        .order_by("params__deadline_year")
+        sort=sort,
+
+        selected_deadlines=selected_deadlines,
+        selected_statuses=selected_statuses,
+        selected_phases=selected_phases,
     )
-
-    phase_queryset = (
-        House.objects.active()
-        .exclude(params__phase__isnull=True)
-        .exclude(params__phase__exact="")
-        .values_list("params__phase", flat=True)
-        .distinct()
-        .order_by("params__phase")
-    )
-
-    pickers = [
-
-        # =====================================================
-        # SORT
-        # =====================================================
-
-        {
-            "name": "sort",
-            "placeholder": "Сортировка",
-            "auto_submit": True,
-            "input_type": "radio",
-
-            "options": [
-
-                {
-                    "value": "-id",
-                    "label": "Сначала новые",
-                },
-
-                {
-                    "value": "id",
-                    "label": "Сначала старые",
-                },
-
-                {
-                    "value": "deadline_year",
-                    "label": "Срок сдачи ↑",
-                },
-
-                {
-                    "value": "-deadline_year",
-                    "label": "Срок сдачи ↓",
-                },
-
-                {
-                    "value": "floors",
-                    "label": "Этажность ↑",
-                },
-
-                {
-                    "value": "-floors",
-                    "label": "Этажность ↓",
-                },
-            ]
-        },
-
-        # =====================================================
-        # DEADLINE YEAR
-        # =====================================================
-
-        {
-            "name": "deadline_year",
-            "placeholder": "Срок сдачи",
-            "auto_submit": False,
-            "multiple": True,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(year),
-                    "label": str(year),
-                }
-
-                for year in deadline_queryset
-            ]
-        },
-
-        # =====================================================
-        # BUILDING STATUS
-        # =====================================================
-
-        {
-            "name": "building_status",
-            "placeholder": "Статус",
-            "auto_submit": False,
-            "multiple": True,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(status.id),
-                    "label": status.name,
-                }
-
-                for status in BuildingStatus.objects.order_by("name")
-            ]
-        },
-
-        # =====================================================
-        # PHASE
-        # =====================================================
-
-        {
-            "name": "phase",
-            "placeholder": "Очередь",
-            "auto_submit": False,
-            "multiple": True,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(phase),
-                    "label": str(phase),
-                }
-
-                for phase in phase_queryset
-            ]
-        },
-    ]
 
     context = {
         "page_obj": page_obj,
@@ -311,187 +175,34 @@ def house_detail(request, project_slug, house_slug):
     # PICKER LIMITS
     # =====================================================
 
-    limits = (
-
-        Flat.objects.active().for_house(house)
-
-        .annotate(
-            price=Min("deals__price")
-        )
-
-        .aggregate(
-
-            min_square=Min("params__square"),
-            max_square=Max("params__square"),
-
-            min_price=Min("price"),
-            max_price=Max("price"),
-        )
-    )   
-
-    # =====================================================
-    # ROOMS QUERYSET
-    # =====================================================
-
-    rooms_queryset = (
-
-        Flat.objects.active().for_house(house)
-
-        .exclude(
-            params__rooms__isnull=True
-        )
-
-        .values_list(
-            "params__rooms",
-            flat=True
-        )
-
-        .distinct()
-
-        .order_by(
-            "params__rooms"
-        )
+    square_limits = (
+        Flat.objects
+        .active()
+        .for_house(house)
+        .square_limits()
     )
+
+    price_limits = qs.price_limits()
 
     # =====================================================
     # PICKERS
     # =====================================================
 
-    pickers = [
-
-        # =====================================================
-        # SORT
-        # =====================================================
-
-        {
-            "name": "sort",
-            "placeholder": "Сортировка",
-            "auto_submit": True,
-            "input_type": "radio",
-
-            "options": [
-
-                {
-                    "value": "rooms",
-                    "label": "Комнат ↑",
-                },
-
-                {
-                    "value": "-rooms",
-                    "label": "Комнат ↓",
-                },
-
-                {
-                    "value": "square",
-                    "label": "Площадь ↑",
-                },
-
-                {
-                    "value": "-square",
-                    "label": "Площадь ↓",
-                },
-
-                {
-                    "value": "price",
-                    "label": "Цена ↑",
-                },
-
-                {
-                    "value": "-price",
-                    "label": "Цена ↓",
-                },
-            ]
-        },
-
-        # =====================================================
-        # ROOMS
-        # =====================================================
-
-        {
-            "name": "rooms",
-            "placeholder": "Комнаты",
-            "auto_submit": False,
-            "multiple": True,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(room),
-                    "label": f"{room} комн.",
-                }
-
-                for room in rooms_queryset
-            ]
-        },
-
-        # =====================================================
-        # SQUARE RANGE
-        # =====================================================
-
-        {
-            "name": "square",
-            "label": "Площадь",
-            "placeholder": "Площадь",
-            "type": "range",
-            "auto_submit": True,
-
-            "range": {
-
-                "from_name": "square_from",
-                "to_name": "square_to",
-
-                "from_value": square_from,
-                "to_value": square_to,
-
-                "from_placeholder": int(limits["min_square"] or 0),
-                "to_placeholder": int(limits["max_square"] or 0),
-            }
-        },
-
-        # =====================================================
-        # PRICE RANGE
-        # =====================================================
-
-        {
-            "name": "price",
-            "label": "Цена",
-            "placeholder": "Цена",
-            "type": "range",
-            "auto_submit": True,
-
-            "range": {
-
-                "from_name": "price_from",
-                "to_name": "price_to",
-
-                "from_value": price_from,
-                "to_value": price_to,
-
-                "from_placeholder": int(limits["min_price"] or 0),
-                "to_placeholder": int(limits["max_price"] or 0),
-            }
-        },
-    ]
-
     rooms_groups = (
 
-        Flat.objects.active().for_house(house)
+        Flat.objects.active().for_house(house).available_rooms()
+    )
 
-        .exclude(
-            params__rooms__isnull=True
-        )
-
-        .values_list(
-            "params__rooms",
-            flat=True
-        )
-
-        .distinct()
-
-        .order_by(
-            "params__rooms"
-        )
+    pickers = house_detail_pickers(
+        sort=sort,
+        selected_rooms=selected_rooms,
+        square_from=square_from,
+        square_to=square_to,
+        price_from=price_from,
+        price_to=price_to,
+        price_limits=price_limits,
+        rooms_queryset=rooms_groups,
+        square_limits=square_limits,
     )
 
     context = {

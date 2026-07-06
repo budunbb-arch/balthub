@@ -3,7 +3,11 @@
 {% block content %}
 
 <h1>
-    {{ trans.text_flat }} {{ flat.number|default:"" }}
+    {% if seo.h1 %}
+        {{ seo.h1 }}
+    {% else %}
+        {{ trans.text_flat }} {{ flat.number|default:"" }}
+    {% endif %}
 </h1>
 
 <p>

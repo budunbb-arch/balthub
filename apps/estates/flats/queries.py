@@ -1,5 +1,5 @@
 from apps.core.common.querysets import PublicQuerySet
-from django.db.models import Min
+from django.db.models import Min, Max
 
 
 class FlatQuerySet(PublicQuerySet):
@@ -103,4 +103,33 @@ class FlatQuerySet(PublicQuerySet):
         return self.order_by(
             allowed.get(value, "price"),
             "id"
+        )
+
+
+    def price_limits(self):
+        return self.aggregate(
+            min_price=Min("deals__price"),
+            max_price=Max("deals__price"),
+        )
+    
+
+    def square_limits(self):
+
+        return self.aggregate(
+            min_square=Min("params__square"),
+            max_square=Max("params__square"),
+        )
+    
+
+    def available_rooms(self):
+
+        return (
+            self
+            .exclude(params__rooms__isnull=True)
+            .values_list(
+                "params__rooms",
+                flat=True,
+            )
+            .distinct()
+            .order_by("params__rooms")
         )
