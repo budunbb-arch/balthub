@@ -4,6 +4,10 @@ python-dotenv
 Pillow
 lxml
 django-redis
+django-celery-beat
 python-slugify
 transliterate
 whitenoise
+celery
+requests
+croniter

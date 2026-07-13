@@ -36,12 +36,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.core',
     'apps.core.common',
+    'apps.estates',
     'apps.estates.developers',
     'apps.estates.parsing',
     'apps.estates.projects',
     'apps.estates.houses',
     'apps.estates.flats',
     'apps.core.dictionaries',
+    'django_celery_beat',
     'apps.modules.apps.ModulesConfig',
 ]
 
@@ -164,6 +166,13 @@ CACHES = {
 
 CACHE_TTL = 60 * 10
 
+CELERY_BROKER_URL = "redis://:1T4jpiMv4hYZOfjv6Umvkm82o2r6jAYS@redis:6379/0"
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

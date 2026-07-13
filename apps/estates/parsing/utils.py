@@ -163,7 +163,7 @@ def resolve_entity(model, value: str):
     if updated_fields:
         obj.save(update_fields=updated_fields)
 
-    return obj
+    return obj, created
 
 def parse_and_resolve(model, text: str, patterns: list[str], normalize_rules=None):
     raw = extract_value_from_text(text, patterns)

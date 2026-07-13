@@ -22,6 +22,41 @@ services:
       - "8002:8000"
     depends_on:
       - db
+      - redis
+    environment:
+      DB_NAME: bh_database
+      DB_USER: bh_database_connect
+      DB_PASSWORD: nomdQo1DMxjaINVOrir68pKZ8MfYsMI3
+      DB_HOST: db
+      DB_PORT: 5432
+      DJANGO_SETTINGS_MODULE: config.settings
+
+  celery_worker:
+    build: .
+    container_name: balthub_celery_worker_box
+    command: celery -A config worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      DB_NAME: bh_database
+      DB_USER: bh_database_connect
+      DB_PASSWORD: nomdQo1DMxjaINVOrir68pKZ8MfYsMI3
+      DB_HOST: db
+      DB_PORT: 5432
+      DJANGO_SETTINGS_MODULE: config.settings
+
+  celery_beat:
+    build: .
+    container_name: balthub_celery_beat_box
+    command: celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
     environment:
       DB_NAME: bh_database
       DB_USER: bh_database_connect

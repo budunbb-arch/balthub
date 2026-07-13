@@ -1,8 +1,10 @@
 # apps/core/common/admin.py
 
 from django.contrib import admin
-from .models import Module
-from apps.core.models import SiteSettings
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from apps.core.models import Module, SiteSettings
+
 
 @admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):
@@ -14,7 +16,13 @@ class ModuleAdmin(admin.ModelAdmin):
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
-    list_display = ("site_name", "is_disabled", "default_title", "default_canonical", "default_robots")
+    list_display = (
+        "site_name",
+        "is_disabled",
+        "default_title",
+        "default_canonical",
+        "default_robots",
+    )
     fieldsets = (
         (None, {
             "fields": (
@@ -28,3 +36,22 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             )
         }),
     )
+
+    def has_add_permission(self, request):
+        return not SiteSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        qs = self.get_queryset(request)
+        obj = qs.first()
+        if obj:
+            opts = self.model._meta
+            return HttpResponseRedirect(
+                reverse(
+                    "admin:%s_%s_change" % (opts.app_label, opts.model_name),
+                    args=(obj.pk,),
+                )
+            )
+        return super().changelist_view(request, extra_context=extra_context)
