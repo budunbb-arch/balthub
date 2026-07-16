@@ -11,7 +11,7 @@ import requests
 
 from apps.core.models import Parser, ParserRun
 from django.core.management import call_command
-from apps.estates.parsing.services.importer import FeedImporter
+from apps.estates.parsing.services.registry import get_importer
 
 
 import traceback
@@ -31,6 +31,9 @@ def run_parser_task(self, parser_id: int):
 
     if not parser:
         return "parser_not_found"
+
+    logger.info("Using importer: %s", parser.engine)
+    Importer = get_importer(parser.engine)
 
     run = ParserRun.objects.create(
         parser=parser,
@@ -54,7 +57,7 @@ def run_parser_task(self, parser_id: int):
 
         logger.info("Running import_xml...")
 
-        result = FeedImporter(feed_path).run()
+        result = Importer(feed_path).run()
 
         stats = result["stats"]
 
@@ -113,7 +116,9 @@ def download_feed(parser: Parser):
     headers = parser.headers or {}
     response = requests.get(parser.source_url, headers=headers, auth=auth, timeout=120)
     response.raise_for_status()
-    filename = f"{parser.slug}-{timezone.now().strftime('%Y%m%d%H%M%S')}.xml"
+
+    prefix = parser.slug or parser.engine
+    filename = f"{prefix}-{timezone.now().strftime('%Y%m%d%H%M%S')}.xml"
     return response.content, filename
 
 

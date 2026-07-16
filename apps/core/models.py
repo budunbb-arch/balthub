@@ -59,6 +59,13 @@ class SiteSettings(models.Model):
 
 
 class Parser(models.Model):
+
+    ENGINE_NMARKET = "nmarket"
+
+    ENGINE_CHOICES = [
+        (ENGINE_NMARKET, "НМаркет"),
+    ]
+
     STATUS_PENDING = "pending"
     STATUS_STARTED = "started"
     STATUS_SUCCESS = "success"
@@ -73,6 +80,12 @@ class Parser(models.Model):
 
     name = models.CharField(max_length=255, verbose_name="Название парсера")
     slug = models.SlugField(max_length=255, unique=True, blank=True, verbose_name="Идентификатор")
+    engine = models.CharField(
+        max_length=30,
+        choices=ENGINE_CHOICES,
+        default=ENGINE_NMARKET,
+        verbose_name="Движок",
+    )
     is_active = models.BooleanField(default=True, verbose_name="Активен")
     source_url = models.URLField(blank=True, verbose_name="URL фида")
     auth_username = models.CharField(max_length=255, blank=True, verbose_name="Имя пользователя")

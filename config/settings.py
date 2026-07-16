@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'apps.estates.houses',
     'apps.estates.flats',
     'apps.core.dictionaries',
+    'apps.parsing_section',
     'django_celery_beat',
     'apps.modules.apps.ModulesConfig',
 ]

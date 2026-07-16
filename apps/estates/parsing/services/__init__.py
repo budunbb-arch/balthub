@@ -1,3 +1,3 @@
-from .importer import FeedImporter
+from .nmarket.importer import NMarketImporter
 
-__all__ = ["FeedImporter"]
+__all__ = ["NMarketImporter"]
