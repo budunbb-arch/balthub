@@ -173,3 +173,6 @@ class DeveloperQuerySet(PublicQuerySet):
             .with_departments()
             .prefetch_related("developerdescriptions")
         )
+    
+    def published(self):
+        return self.filter(is_public=True)

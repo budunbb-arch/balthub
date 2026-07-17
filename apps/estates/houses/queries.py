@@ -93,4 +93,4 @@ class HouseQuerySet(PublicQuerySet):
             )
             .distinct()
             .order_by("params__phase")
-        )    
+        )  

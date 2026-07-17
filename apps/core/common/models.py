@@ -2,9 +2,11 @@
 
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class BaseModel(models.Model):
+
     # --- Статусы ---
     is_public = models.BooleanField(default=False, db_index=True)
     is_edited = models.BooleanField(default=False)
@@ -69,6 +71,36 @@ class BaseModel(models.Model):
 
     class Meta:
         abstract = True
+
+    def delete(self, using=None, keep_parents=False, user=None):
+        self.is_deleted = True
+        self.is_public = False
+        self.deleted_at = timezone.now()
+
+        if user:
+            self.deleted_by = user
+
+        self.save(update_fields=[
+            "is_deleted",
+            "is_public",
+            "deleted_at",
+            "deleted_by",
+        ])
+
+
+    def hard_delete(self):
+        super().delete()
+
+
+    def restore(self):
+        self.is_deleted = False
+        self.deleted_at = None
+        self.deleted_by = None
+        self.save(update_fields=[
+            "is_deleted",
+            "deleted_at",
+            "deleted_by",
+        ])
 
 
 POSITIONS = [

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Flat, FlatParams, FlatDeal
+from apps.core.common.admin import SoftDeleteAdmin
+from .models import FlatParams, FlatDeal
 
 
 class FlatParamsInline(admin.StackedInline):
@@ -25,7 +26,7 @@ class FlatDealInline(admin.TabularInline):
     extra = 1
 
 
-class FlatAdmin(admin.ModelAdmin):
+class FlatAdmin(SoftDeleteAdmin):
     list_display = (
         "external_id",
         "house",

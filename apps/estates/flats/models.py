@@ -7,7 +7,6 @@ from apps.core.common.models import BaseModel
 from apps.core.common.mixins import UrlMixin, SeoMixin
 from apps.estates.houses.models import House
 from apps.core.dictionaries.models import (
-    PropertyType,
     FinishType,
     BalconyType,
     BathroomUnitType,
@@ -20,6 +19,8 @@ from .queries import FlatQuerySet
 class Flat(BaseModel, UrlMixin, SeoMixin):
 
     objects = FlatQuerySet.as_manager()
+
+    
     external_id = models.CharField(max_length=100, unique=True, null=True)
 
     slug = models.SlugField(max_length=50, null=True, blank=True)

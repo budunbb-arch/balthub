@@ -16,6 +16,7 @@ from apps.core.dictionaries.models import (
 
 class House(BaseModel, UrlMixin, SeoMixin):
     objects = HouseQuerySet.as_manager()
+    
     external_id = models.CharField(max_length=100, unique=True, null=True)
 
     slug = models.SlugField(max_length=255, null=True, blank=True)

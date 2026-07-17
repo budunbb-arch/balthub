@@ -1,4 +1,5 @@
 from django.contrib import admin
+from apps.core.common.admin import SoftDeleteAdmin
 from .models import House, HouseParams
 
 
@@ -22,7 +23,7 @@ class HouseParamsInline(admin.StackedInline):
     )
 
 
-class HouseAdmin(admin.ModelAdmin):
+class HouseAdmin(SoftDeleteAdmin):
     list_display = (
         "external_id",
         "project",

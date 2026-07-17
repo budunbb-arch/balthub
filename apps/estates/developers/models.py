@@ -1,4 +1,5 @@
 # /opt/balthub/apps/estates/developers/models.py
+
 from django.db import models
 from apps.core.common.models import BaseModel
 from apps.core.common.mixins import SeoMixin

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Project, ProjectParams, ProjectDescription, ProjectImage
+from apps.core.common.admin import SoftDeleteAdmin
+from .models import ProjectParams, ProjectDescription, ProjectImage
 
 
 class ProjectParamsInline(admin.StackedInline):
@@ -25,7 +26,7 @@ class ProjectImageInline(admin.TabularInline):
     model = ProjectImage
     extra = 1
 
-class ProjectAdmin(admin.ModelAdmin):
+class ProjectAdmin(SoftDeleteAdmin):
     list_display = (
         "name",
         "developer",

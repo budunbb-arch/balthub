@@ -4,6 +4,8 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from apps.core.models import Module, SiteSettings
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 
 @admin.register(Module)
@@ -55,3 +57,26 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 )
             )
         return super().changelist_view(request, extra_context=extra_context)
+
+
+class SoftDeleteAdmin(admin.ModelAdmin):
+
+    def delete_queryset(self, request, queryset):
+        queryset.soft_delete(request.user)
+
+    def delete_view(self, request, object_id, extra_context=None):
+        obj = self.get_object(request, object_id)
+
+        if request.method == "POST":
+            obj.soft_delete(request.user)
+
+            return HttpResponseRedirect(
+                reverse(
+                    f"admin:{self.opts.app_label}_{self.opts.model_name}_changelist"
+                )
+            )
+
+        return super().delete_view(request, object_id, extra_context)
+
+    def delete_model(self, request, obj):
+        obj.soft_delete(request.user)
