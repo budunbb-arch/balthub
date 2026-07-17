@@ -140,17 +140,67 @@ class ParserAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.run_parser_view),
                 name="parsing_section_parserproxy_run",
             ),
+            path(
+                "<int:parser_id>/stop/",
+                self.admin_site.admin_view(
+                    self.stop_parser_view
+                ),
+                name="parsing_section_parserproxy_stop",
+            ),
         ]
 
         return custom_urls + urls
 
     def run_now_button(self, obj):
-        if not obj.pk:
-            return "-"
 
         opts = self.model._meta
 
-        url = reverse(f"admin:{opts.app_label}_{opts.model_name}_run", args=[obj.pk])
+        if not obj.pk:
+            return "-"
+
+        current = (
+            ParserRun.objects
+            .filter(status=Parser.STATUS_STARTED)
+            .select_related("parser")
+            .first()
+        )
+
+        if current:
+
+            if current.parser_id == obj.id:
+                stop_url = reverse(
+                    f"admin:{opts.app_label}_{opts.model_name}_stop",
+                    args=[obj.pk],
+                )
+
+                return format_html(
+                    '''
+                    <span style="color:green;font-weight:bold">
+                        ⏳ Этот парсер уже выполняется
+                    </span>
+                    &nbsp;&nbsp;
+                    <a class="button"
+                    style="background:#ba2121;color:white"
+                    href="{}">
+                    ■ Остановить
+                    </a>
+                    ''',
+                    stop_url,
+                )
+
+            return format_html(
+                '<span style="color:#d98400;font-weight:bold">'
+                '⛔ Выполняется "{}"'
+                '</span>',
+                current.parser.name,
+            )
+
+        opts = self.model._meta
+
+        url = reverse(
+            f"admin:{opts.app_label}_{opts.model_name}_run",
+            args=[obj.pk],
+        )
 
         return format_html(
             '<a class="button" href="{}">▶ Запустить сейчас</a>',
@@ -182,6 +232,40 @@ class ParserAdmin(admin.ModelAdmin):
 
         return redirect(
             reverse(f"admin:{opts.app_label}_{opts.model_name}_change", args=[parser.id])
+        )
+    
+    def stop_parser_view(self, request, parser_id):
+
+        run = (
+            ParserRun.objects
+            .filter(
+                parser_id=parser_id,
+                status=Parser.STATUS_STARTED,
+            )
+            .first()
+        )
+
+        if run:
+
+            run.cancel_requested = True
+
+            run.save(
+                update_fields=[
+                    "cancel_requested",
+                ]
+            )
+
+            self.message_user(
+                request,
+                "Остановка запрошена.",
+                level=messages.WARNING,
+            )
+
+        return redirect(
+            reverse(
+                "admin:parsing_section_parserproxy_change",
+                args=[parser_id],
+            )
         )
 
     def last_file_link(self, obj):

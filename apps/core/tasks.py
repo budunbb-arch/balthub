@@ -9,9 +9,14 @@ from django.core.files.base import ContentFile
 from pathlib import Path
 import requests
 
-from apps.core.models import Parser, ParserRun
-from django.core.management import call_command
+from apps.core.models import Parser
 from apps.estates.parsing.services.registry import get_importer
+from apps.estates.parsing.management.execution.parser_execution import (
+    parser_lock,
+    SameParserRunningError,
+)
+from apps.estates.parsing.management.execution.advisory_lock import ParserBusyError
+from apps.estates.parsing.management.execution.parser_cancel import ParserCancelled
 
 
 import traceback
@@ -20,89 +25,178 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@shared_task(bind=True)
-def run_parser_task(self, parser_id: int):
+@shared_task
+def run_parser_task(parser_id: int):
 
-    logger.info("Parser task started: %s", parser_id)
-
-    parser = Parser.objects.filter(pk=parser_id).first()
-
-    logger.info("Parser found: %s", parser)
-
-    if not parser:
-        return "parser_not_found"
-
-    logger.info("Using importer: %s", parser.engine)
-    Importer = get_importer(parser.engine)
-
-    run = ParserRun.objects.create(
-        parser=parser,
-        status=Parser.STATUS_STARTED,
-        started_at=timezone.now(),
-    )
+    logger.info("Parser task received: %s", parser_id)
 
     try:
-        logger.info("Downloading feed...")
-        feed_content, filename = download_feed(parser)
-        logger.info("Feed downloaded: %s", filename)
 
-        run.feed_file.save(filename, ContentFile(feed_content), save=False)
-        parser.last_file.save(filename, ContentFile(feed_content), save=False)
+        with parser_lock(parser_id) as (parser, run):
 
-        feed_path = write_import_file(
-            parser,
-            filename,
-            feed_content,
+            logger.info("Parser found: %s", parser.name)
+            logger.info("Using importer: %s", parser.engine)
+
+            Importer = get_importer(parser.engine)
+
+            logger.info("Downloading feed...")
+
+            feed_content, filename = download_feed(parser)
+
+            logger.info(
+                "Feed downloaded: %s (%d bytes)",
+                filename,
+                len(feed_content),
+            )
+
+            run.feed_file.save(
+                filename,
+                ContentFile(feed_content),
+                save=False,
+            )
+
+            parser.last_file.save(
+                filename,
+                ContentFile(feed_content),
+                save=False,
+            )
+
+            logger.info("Writing feed to %s", filename)
+
+            feed_path = write_import_file(
+                parser,
+                filename,
+                feed_content,
+            )
+
+            logger.info("Starting importer...")
+
+            result = Importer(feed_path, run).run()
+
+            logger.info(
+                "Importer finished (%s objects)",
+                result["items_processed"],
+            )
+
+            stats = result["stats"]
+
+            run.items_processed = result["items_processed"]
+
+            run.projects_created = stats["projects_created"]
+            run.projects_updated = stats["projects_updated"]
+
+            run.houses_created = stats["houses_created"]
+            run.houses_updated = stats["houses_updated"]
+
+            run.flats_created = stats["flats_created"]
+            run.flats_updated = stats["flats_updated"]
+
+            run.developers_created = stats["developers_created"]
+            run.developers_updated = stats["developers_updated"]
+
+            run.save(update_fields=[
+                "items_processed",
+                "projects_created",
+                "projects_updated",
+                "houses_created",
+                "houses_updated",
+                "flats_created",
+                "flats_updated",
+                "developers_created",
+                "developers_updated",
+                "message",
+            ])
+
+            logger.info("Parser %s finished successfully", parser.name)
+
+            run.status = Parser.STATUS_SUCCESS
+            run.finished_at = timezone.now()
+            run.message = "ok"
+
+            parser.last_status = Parser.STATUS_SUCCESS
+            parser.last_message = "ok"
+
+    except SameParserRunningError:
+
+        logger.warning(
+            "Parser %s already running",
+            parser_id,
         )
 
-        logger.info("Running import_xml...")
+        return "already_running"
 
-        result = Importer(feed_path).run()
+    except ParserBusyError:
 
-        stats = result["stats"]
+        logger.warning(
+            "This parser is already running",
+        )
 
-        run.items_processed = result["items_processed"]
+        return "busy"
+    
+    except ParserCancelled:
 
-        run.projects_created = stats["projects_created"]
-        run.projects_updated = stats["projects_updated"]
+        logger.info(
+            "Parser %s cancelled by user",
+            parser.name,
+        )
 
-        run.houses_created = stats["houses_created"]
-        run.houses_updated = stats["houses_updated"]
-
-        run.flats_created = stats["flats_created"]
-        run.flats_updated = stats["flats_updated"]
-
-        run.developers_created = stats["developers_created"]
-        run.developers_updated = stats["developers_updated"]
-
-        logger.info("Import finished.")
-
-        run.status = Parser.STATUS_SUCCESS
+        run.status = Parser.STATUS_CANCELLED
         run.finished_at = timezone.now()
-        run.items_processed = result.get("items_processed")
-        run.message = "ok"
-        parser.last_status = run.status
+        run.message = "Cancelled by user"
+
+        run.cancel_requested = False
+
+        parser.last_status = Parser.STATUS_CANCELLED
         parser.last_message = run.message
-    except Exception as exc:
-        logger.exception(
-            "Parser %s failed",
-            parser.pk,
+
+        run.save(
+            update_fields=[
+                "status",
+                "finished_at",
+                "message",
+                "cancel_requested",
+            ]
         )
+
+        return "cancelled"
+
+
+    except Exception as exc:
+
         run.status = Parser.STATUS_FAILED
         run.finished_at = timezone.now()
-
-        tb = traceback.format_exc()
-
         run.message = str(exc)
-        run.traceback = tb
-        parser.last_status = Parser.STATUS_FAILED
-        parser.last_message = str(exc)
-    finally:
-        run.save()
-        parser.last_run = run.finished_at or timezone.now()
-        parser.save(update_fields=["last_run", "last_status", "last_message", "last_file"])  # type: ignore
+        run.traceback = traceback.format_exc()
 
-    return run.status
+        run.save()
+
+        raise
+
+    except Exception:
+
+        logger.exception(
+            "Parser %s crashed",
+            parser_id,
+        )
+
+        raise
+
+    finally:
+
+        if "parser" in locals():
+
+            parser.last_run = timezone.now()
+
+            parser.save(
+                update_fields=[
+                    "last_run",
+                    "last_status",
+                    "last_message",
+                    "last_file",
+                ]
+            )
+
+    return "success"
 
 
 def download_feed(parser: Parser):

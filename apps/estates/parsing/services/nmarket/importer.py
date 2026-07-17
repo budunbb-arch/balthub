@@ -1,7 +1,6 @@
 # /opt/balthub/apps/estates/parsing/services/importer.py
 
 from lxml import etree
-from pathlib import Path
 from django.utils import timezone
 
 from apps.estates.parsing.utils import (
@@ -33,6 +32,9 @@ from apps.core.dictionaries.models import (
     DealType,
     Currency,
 )
+from apps.estates.parsing.management.execution.parser_control import check_cancel
+from apps.estates.parsing.management.execution.parser_cancel import ParserCancelChecker, ParserCancelled
+
 
 from . import helpers
 from . import images
@@ -44,10 +46,16 @@ logger = logging.getLogger(__name__)
 
 class NMarketImporter:
 
-    def __init__(self, feed_path):
-        self.feed_path = Path(feed_path)
+    def __init__(self, feed_path, parser_run):
+        self.feed_path = feed_path
+        self.parser_run = parser_run
 
     def run(self):
+
+        source_parser = self.parser_run.parser
+
+        logger.warning("IMPORTER RUN STARTED")
+        logger.warning(__file__)
         processed = 0
 
         stats = {
@@ -62,13 +70,48 @@ class NMarketImporter:
             "flats_updated": 0,
         }
 
-        parser = etree.XMLParser(recover=True)
-        tree = etree.parse(str(self.feed_path), parser)
+        cancel = ParserCancelChecker(self.parser_run)
+        logger.warning("CANCEL CHECKER CREATED")
+
+        logger.info("Unpublishing previously imported objects...")
+
+        Developer.objects.filter(
+            origin_type="parser",
+            origin_parser=source_parser,
+            is_public=True,
+        ).update(is_public=False)
+
+        Project.objects.filter(
+            origin_type="parser",
+            origin_parser=source_parser,
+            is_public=True,
+        ).update(is_public=False)
+
+        House.objects.filter(
+            origin_type="parser",
+            origin_parser=source_parser,
+            is_public=True,
+        ).update(is_public=False)
+
+        Flat.objects.filter(
+            origin_type="parser",
+            origin_parser=source_parser,
+            is_public=True,
+        ).update(is_public=False)
+
+        logger.info("Previous objects unpublished")
+
+        xml_parser = etree.XMLParser(recover=True)
+        tree = etree.parse(str(self.feed_path), xml_parser)
         root = tree.getroot()
 
         ns = {"y": "http://webmaster.yandex.ru/schemas/feed/realty/2010-06"}
 
         for offer in root.findall("y:offer", ns):
+
+            processed += 1
+
+            cancel.tick()
 
             description = helpers.get_text(offer, "y:description", ns)
 
@@ -137,6 +180,7 @@ class NMarketImporter:
                 stats,
                 "developers_created",
                 "developers_updated",
+                origin_parser=source_parser,
                 is_public=True,
                 published_at=developer.published_at or timezone.now(),
             )
@@ -160,6 +204,7 @@ class NMarketImporter:
                 stats,
                 "projects_created",
                 "projects_updated",
+                origin_parser=source_parser,
                 is_public=True,
                 published_at=project.published_at or timezone.now(),
                 developer=developer,
@@ -253,6 +298,7 @@ class NMarketImporter:
                 stats,
                 "houses_created",
                 "houses_updated",
+                origin_parser=source_parser,
                 project=project,
                 image=house_image or house.image,
                 plan=house_plan or house.plan,
@@ -316,6 +362,7 @@ class NMarketImporter:
                 stats,
                 "flats_created",
                 "flats_updated",
+                origin_parser=source_parser,
                 house=house,
                 number=apartment.strip() if apartment else None,
                 plan=flat_plan,
@@ -393,8 +440,6 @@ class NMarketImporter:
                 deal_type_obj,
             )
 
-            processed += 1
-
             stats["offers"] += 1
 
         return {
@@ -409,3 +454,4 @@ class NMarketImporter:
                 f"Flats: {stats['flats_created'] + stats['flats_updated']}." 
             )
         }
+    

@@ -45,6 +45,27 @@ class BaseModel(models.Model):
         blank=True,
         related_name="%(class)s_deleted"
     )
+    origin_type = models.CharField(
+        max_length=20,
+        choices=[
+            ("manual", "Ручной ввод"),
+            ("parser", "Парсер"),
+            ("api", "API"),
+            ("import", "Импорт"),
+        ],
+        default="manual",
+        db_index=True,
+        verbose_name="Источник создания",
+    )
+
+    origin_parser = models.ForeignKey(
+        "core.Parser",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="%(class)s_origin",
+        verbose_name="Парсер-источник",
+    )
 
     class Meta:
         abstract = True

@@ -1,3 +1,5 @@
+# /opt/balthub/apps/estates/parsing/services/registry.py
+
 from apps.estates.parsing.services.nmarket.importer import NMarketImporter
 
 IMPORTERS = {

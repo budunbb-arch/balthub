@@ -29,8 +29,14 @@ def touch_instance(
     stats,
     created_key,
     updated_key,
+    origin_parser=None,
     **fields,
 ):
+
+    if origin_parser is not None:
+        fields.setdefault("origin_type", "parser")
+        fields.setdefault("origin_parser", origin_parser)
+
     """
     Обновляет объект только если изменились данные и ведет статистику.
     """

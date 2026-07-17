@@ -70,12 +70,14 @@ class Parser(models.Model):
     STATUS_STARTED = "started"
     STATUS_SUCCESS = "success"
     STATUS_FAILED = "failed"
+    STATUS_CANCELLED = "cancelled"
 
     STATUS_CHOICES = [
         (STATUS_PENDING, "Ожидает"),
         (STATUS_STARTED, "Выполняется"),
         (STATUS_SUCCESS, "Успешно"),
         (STATUS_FAILED, "Ошибка"),
+        (STATUS_CANCELLED, "Отменено")
     ]
 
     name = models.CharField(max_length=255, verbose_name="Название парсера")
@@ -221,6 +223,11 @@ class ParserRun(models.Model):
     developers_updated = models.PositiveIntegerField(default=0)
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+
+    cancel_requested = models.BooleanField(
+        default=False,
+        verbose_name="Запрошена остановка",
+    )
 
     class Meta:
         verbose_name = "Запуск парсера"
