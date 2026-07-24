@@ -72,6 +72,24 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+    def save(self, *args, **kwargs):
+        now = timezone.now()
+
+        # Авто-простановка published_at при публикации
+        if self.is_public and not self.published_at:
+            self.published_at = now
+
+        # Авто-простановка deleted_at при удалении
+        if self.is_deleted and not self.deleted_at:
+            self.deleted_at = now
+
+        # Авто-простановка edited_at при любом изменении (кроме создания)
+        if self.pk:
+            self.edited_at = now
+            self.is_edited = True
+
+        super().save(*args, **kwargs)
+
     def delete(self, using=None, keep_parents=False, user=None):
         self.is_deleted = True
         self.is_public = False
@@ -109,6 +127,8 @@ POSITIONS = [
     ("sidebar", "Сайдбар"),
     ("content_top", "Верх страницы"),
     ("content_bottom", "Низ страницы"),
+    ("footer", "Футер"),
+    ("house_detail_map", "Карточка дома — карта"),
 ]
 
 class Module(models.Model):
@@ -129,5 +149,3 @@ class Module(models.Model):
 
     def __str__(self):
         return self.name
-
-

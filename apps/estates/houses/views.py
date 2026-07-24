@@ -216,6 +216,14 @@ def house_detail(request, project_slug, house_slug):
         "rooms_groups": rooms_groups,
 
         "pagination_template": "default/includes/minimal_pagination.html",
+
+        # Карта
+        "map": {
+            "lat": house.params.latitude,
+            "lon": house.params.longitude,
+            "title": house.params.address or house.project.name,
+            "zoom": 16,
+        },
     }
 
     # =====================================================

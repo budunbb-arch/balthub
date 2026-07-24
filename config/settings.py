@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-oeese^5es8x##x_=gtl)sv==see)*fna(n4mbfwyc(v0hq!*81'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     '*',
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.parsing_section',
     'django_celery_beat',
     'apps.modules.apps.ModulesConfig',
+    'apps.maps',
 ]
 
 MIDDLEWARE = [
@@ -83,6 +84,7 @@ TEMPLATES[0]['OPTIONS']['context_processors'] += [
     'apps.core.engines.context_processors.breadcrumbs',
     'apps.core.engines.context_processors.seo',
     'apps.core.engines.context_processors.localization',
+    'apps.maps.context_processors.maps',
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
@@ -179,3 +181,5 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Yandex Maps secret_key: pXYYru0Js2EhZk_QEqtMFg==

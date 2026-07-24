@@ -4,7 +4,6 @@ import re
 import hashlib
 
 from django.utils import timezone
-from apps.core.dictionaries.models import City, District
 from slugify import slugify
 
 
@@ -74,108 +73,6 @@ def normalize_text_block(text: str) -> str:
     return text.strip()
 
 
-_DICT_CACHE = {}
-
-
-def resolve_dictionary(model, value: str, mapping: dict = None):
-    if not value:
-        return None
-
-    value = value.strip()
-
-    if mapping:
-        value = mapping.get(value.lower(), value)
-
-    model_name = model.__name__
-
-    if model_name not in _DICT_CACHE:
-        _DICT_CACHE[model_name] = {}
-
-    cache = _DICT_CACHE[model_name]
-    key = value.lower()
-
-    if key in cache:
-        return cache[key]
-
-    obj = model.objects.filter(name__iexact=value).first()
-
-    if not obj:
-        obj = model.objects.create(name=value)
-
-    cache[key] = obj
-    return obj
-
-
-def resolve_district(city, name):
-    if not city or not name:
-        return None
-
-    obj, _ = District.objects.get_or_create(
-        city=city,
-        name=name.strip()
-    )
-    return obj
-    
-
-def resolve_city(value: str):
-    if not value:
-        return None
-
-    value = value.strip()
-
-    # нормализация только для города
-    value = value[:1].upper() + value[1:].lower()
-
-    obj, _ = City.objects.get_or_create(
-        name__iexact=value,
-        defaults={"name": value}
-    )
-
-    return obj
-
-
-def resolve_entity(model, value: str):
-    if not value:
-        return None
-
-    obj, created = model.objects.get_or_create(
-        name=value,
-        defaults={
-            "is_public": True,
-            "published_at": timezone.now(),
-        }
-    )
-
-    updated_fields = []
-
-    # публикация для уже существующих
-    if not obj.is_public:
-        obj.is_public = True
-        if not obj.published_at:
-            obj.published_at = timezone.now()
-        updated_fields += ["is_public", "published_at"]
-
-    # slug
-    if not obj.slug:
-        obj.slug = slugify(obj.name)
-        updated_fields.append("slug")
-
-    if updated_fields:
-        obj.save(update_fields=updated_fields)
-
-    return obj, created
-
-def parse_and_resolve(model, text: str, patterns: list[str], normalize_rules=None):
-    raw = extract_value_from_text(text, patterns)
-
-    if not raw:
-        return None
-
-    normalized = normalize_value(raw, normalize_rules)
-
-    return resolve_entity(model, normalized)
-
-
 def to_bool(value):
     if value is None:
         return False
@@ -197,3 +94,10 @@ def extract_project_description(text: str) -> str | None:
     result = text[match.end():]
 
     return result.strip()
+
+
+def cache_key(value: str) -> str:
+    if not value:
+        return ""
+
+    return value.strip().lower()

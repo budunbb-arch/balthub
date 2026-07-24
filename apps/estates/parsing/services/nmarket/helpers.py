@@ -23,48 +23,7 @@ def to_float(value):
         return None
 
 
-def touch_instance(
-    instance,
-    created,
-    stats,
-    created_key,
-    updated_key,
-    origin_parser=None,
-    **fields,
-):
-
-    if origin_parser is not None:
-        fields.setdefault("origin_type", "parser")
-        fields.setdefault("origin_parser", origin_parser)
-
-    """
-    Обновляет объект только если изменились данные и ведет статистику.
-    """
-
-    changed = created
-
-    for field, value in fields.items():
-        if getattr(instance, field) != value:
-            setattr(instance, field, value)
-            changed = True
-
-    if changed:
-        instance.save()
-
-    if created:
-        stats[created_key] += 1
-    elif changed:
-        stats[updated_key] += 1
-
-    return instance
-
-
 def update_instance(instance, **fields):
-    """
-    Обновляет только изменившиеся поля.
-    Возвращает True, если объект был изменен.
-    """
-
     changed_fields = []
 
     for field, value in fields.items():
@@ -72,29 +31,66 @@ def update_instance(instance, **fields):
             setattr(instance, field, value)
             changed_fields.append(field)
 
-    if changed_fields:
-        instance.save(update_fields=changed_fields)
-
-    return bool(changed_fields)
+    return changed_fields
 
 
-def update_or_create_changed(model, lookup, defaults):
-    """
-    Аналог update_or_create(), но возвращает:
-        (obj, created, changed)
-    """
+def pick_downloaded(url, download_map):
+    """Вернуть локальный media URL, если изображение было скачано, иначе None.
+    download_map — словарь {исходный_url: media_url} из download_images.
+    URL ожидается уже нормализованным (из _collect_images)."""
+    if not url or not download_map:
+        return None
+    return download_map.get(url)
 
-    obj, created = model.objects.get_or_create(
-        **lookup,
-        defaults=defaults,
-    )
 
-    if created:
-        return obj, True, True
+def pick_downloaded_list(urls, download_map):
+    """Вернуть список локальных media URL для успешно скачанных изображений.
+    download_map — словарь {исходный_url: media_url} из download_images.
+    URL ожидаются уже нормализованными (из _collect_images)."""
+    if not urls or not download_map:
+        return []
+    result = []
+    for url in urls:
+        if not url:
+            continue
+        media_url = download_map.get(url)
+        if media_url:
+            result.append(media_url)
+    return result
 
-    changed = update_instance(
-        obj,
-        **defaults,
-    )
 
-    return obj, False, changed
+class BulkUpdater:
+
+    def __init__(self):
+        self.data = {}
+
+    def add(self, obj, fields):
+
+        if not fields:
+            return
+
+        model = obj.__class__
+
+        bucket = self.data.setdefault(model, [])
+
+        bucket.append((obj, tuple(sorted(fields))))
+
+    def flush(self):
+
+        from collections import defaultdict
+
+        for model, objects in self.data.items():
+
+            by_fields = defaultdict(list)
+
+            for obj, fields in objects:
+                by_fields[fields].append(obj)
+
+            for fields, objs in by_fields.items():
+                model.objects.bulk_update(
+                    objs,
+                    list(fields),
+                    batch_size=500,
+                )
+
+        self.data.clear()

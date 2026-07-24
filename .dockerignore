@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# Media files (загружаются в runtime, не нужны при сборке)
+media/
+staticfiles/
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Logs
+*.log

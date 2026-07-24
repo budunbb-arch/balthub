@@ -9,6 +9,7 @@ from PIL import Image, ImageOps
 import hashlib
 import mimetypes
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 logger = logging.getLogger(__name__)
 
@@ -37,14 +38,26 @@ IMAGE_VARIANTS: dict[str, list[tuple[int, int | None]]] = {
     ],
 }
 
-def download_image(url, subfolder):
+MAX_WORKERS = 10
+
+
+def normalize_image_url(url):
+    """Нормализовать URL: убрать пробелы, добавить https: если без схемы.
+    Должно совпадать с нормализацией в _collect_images (importer.py)."""
     if not url:
         return None
-
     normalized_url = url.strip()
     if normalized_url.startswith("//"):
         normalized_url = "https:" + normalized_url
     if not normalized_url.lower().startswith(("http://", "https://")):
+        return None
+    return normalized_url
+
+
+def _download_single_image(url, subfolder):
+    """Скачать одно изображение, сохранить оригинал. Вернуть media URL или None."""
+    normalized_url = normalize_image_url(url)
+    if not normalized_url:
         return None
 
     media_root = Path(settings.MEDIA_ROOT)
@@ -75,18 +88,81 @@ def download_image(url, subfolder):
             if not target_path.exists():
                 target_path.write_bytes(content)
 
-            generate_image_variants(target_path, subfolder)
-
             return f"{settings.MEDIA_URL.rstrip('/')}/{Path('imported_images') / subfolder / filename}"
     except Exception as exc:
-
         logger.warning(
             "Image download failed: %s (%s)",
             normalized_url,
             exc
         )
-
         return None
+
+
+def download_images(urls, subfolder):
+    """Параллельно скачать список URL изображений.
+    Возвращает словарь {нормализованный_url: media_url} для успешно скачанных."""
+    if not urls:
+        return {}
+
+    # Нормализовать все URL для единообразия
+    normalized_urls = []
+    for url in urls:
+        n = normalize_image_url(url)
+        if n:
+            normalized_urls.append(n)
+
+    # Убрать дубли
+    unique_urls = list(dict.fromkeys(normalized_urls))
+
+    result_map = {}
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        future_map = {
+            executor.submit(_download_single_image, url, subfolder): url
+            for url in unique_urls
+        }
+        for future in as_completed(future_map):
+            original_url = future_map[future]
+            try:
+                media_url = future.result()
+                if media_url:
+                    result_map[original_url] = media_url
+            except Exception:
+                pass
+
+    return result_map
+
+
+def download_image(url, subfolder):
+    """Одиночная загрузка (для совместимости, но лучше использовать download_images)."""
+    if not url:
+        return None
+    normalized_url = normalize_image_url(url)
+    if not normalized_url:
+        return None
+    return _download_single_image(normalized_url, subfolder)
+
+
+def generate_all_variants():
+    """Сгенерировать variants для всех скачанных изображений.
+    Вызывать однократно после цикла импорта."""
+    media_root = Path(settings.MEDIA_ROOT)
+    imported_root = media_root / "imported_images"
+
+    if not imported_root.exists():
+        return
+
+    for subfolder in IMAGE_VARIANTS:
+        subfolder_path = imported_root / subfolder
+        if not subfolder_path.exists():
+            continue
+        for img_path in subfolder_path.iterdir():
+            if img_path.is_file() and img_path.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp"):
+                # Проверить, что это не вариант (не содержит _crop_ или _auto)
+                name = img_path.stem
+                if not any(marker in name for marker in ("_crop_", "_auto", "xauto")):
+                    generate_image_variants(img_path, subfolder)
+
 
 def generate_image_variants(original_path, subfolder):
     """Создаёт копии изображений разных размеров и кэширует их на диске."""
@@ -94,6 +170,7 @@ def generate_image_variants(original_path, subfolder):
 
     for width, height in variants:
         save_image_variant(original_path, width, height)
+
 
 def save_image_variant(original_path, width, height=None):
     """Сохраняет одну уменьшенную версию изображения."""
@@ -141,6 +218,7 @@ def save_image_variant(original_path, width, height=None):
             "Failed to create image variant for %s",
             original_path,
         )
+
 
 def save_image_crop_variant(original_path, width):
     target_height = int(width * 4 / 3)

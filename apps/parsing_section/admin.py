@@ -2,6 +2,7 @@
 
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils import timezone
 from apps.core.models import Parser, ParserRun
 from apps.core.tasks import run_parser_task
 
@@ -10,7 +11,6 @@ from django.shortcuts import redirect
 from django.contrib import messages
 
 from .models import ParserProxy, ParserRunProxy
-
 
 
 class ParserRunInline(admin.TabularInline):
@@ -208,7 +208,7 @@ class ParserAdmin(admin.ModelAdmin):
         )
 
     run_now_button.short_description = ""
-    
+
     def run_parser_view(self, request, parser_id):
         opts = self.model._meta
         parser = Parser.objects.filter(pk=parser_id).first()
@@ -233,7 +233,7 @@ class ParserAdmin(admin.ModelAdmin):
         return redirect(
             reverse(f"admin:{opts.app_label}_{opts.model_name}_change", args=[parser.id])
         )
-    
+
     def stop_parser_view(self, request, parser_id):
 
         run = (
@@ -295,75 +295,145 @@ class ParserAdmin(admin.ModelAdmin):
     disable_parsers.short_description = "Выключить выбранные парсеры"
 
 
+def _status_colored(obj):
+    colors = {
+        "started": "#b8860b",
+        "pending": "#6c757d",
+        "success": "#28a745",
+        "failed": "#dc3545",
+        "cancelled": "#d98400",
+    }
+    color = colors.get(obj.status, "#6c757d")
+    label = dict(Parser.STATUS_CHOICES).get(obj.status, obj.status)
+    return format_html(
+        '<span style="color:{};font-weight:bold">{}</span>',
+        color,
+        label,
+    )
+
+
+def _duration(obj):
+    if obj.started_at and obj.finished_at:
+        delta = obj.finished_at - obj.started_at
+        total_seconds = int(delta.total_seconds())
+        hours, remainder = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        if hours:
+            return f"{hours}ч {minutes}м {seconds}с"
+        elif minutes:
+            return f"{minutes}м {seconds}с"
+        return f"{seconds}с"
+    return "-"
+
 
 @admin.register(ParserRunProxy)
 class ParserRunAdmin(admin.ModelAdmin):
+    list_display = (
+        "parser_link",
+        "started_at",
+        "finished_at",
+        "colored_status",
+        "duration",
+        "items_processed",
+        "developers_summary",
+        "projects_summary",
+        "houses_summary",
+        "flats_summary",
+    )
+    list_display_links = ("started_at",)
+    list_filter = ("status", "parser", "started_at")
+    search_fields = ("parser__name", "message")
+    date_hierarchy = "started_at"
+    ordering = ("-started_at",)
 
     readonly_fields = (
         "parser",
-
         "started_at",
         "finished_at",
-
         "status",
-
         "items_processed",
-
         "developers_created",
         "developers_updated",
-
         "projects_created",
         "projects_updated",
-
         "houses_created",
         "houses_updated",
-
         "flats_created",
         "flats_updated",
-
         "message",
-
         "feed_file_link",
-
         "traceback_pre",
+        "duration",
     )
 
     fields = (
         "parser",
         "started_at",
         "finished_at",
+        "duration",
         "status",
         "items_processed",
-        "developers_created",
-        "developers_updated",
-
-        "projects_created",
-        "projects_updated",
-
-        "houses_created",
-        "houses_updated",
-
-        "flats_created",
-        "flats_updated",
+        ("developers_created", "developers_updated"),
+        ("projects_created", "projects_updated"),
+        ("houses_created", "houses_updated"),
+        ("flats_created", "flats_updated"),
         "message",
         "feed_file_link",
         "traceback_pre",
     )
 
-    def traceback_pre(self, obj):
-        return format_html(
-            "<pre style='white-space:pre-wrap'>{}</pre>",
-            obj.traceback,
-        )
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("parser")
 
-    traceback_pre.short_description = "Traceback"
+    def parser_link(self, obj):
+        url = reverse(
+            "admin:parsing_section_parserproxy_change",
+            args=[obj.parser_id],
+        )
+        return format_html('<a href="{}">{}</a>', url, obj.parser.name)
+    parser_link.short_description = "Парсер"
+    parser_link.admin_order_field = "parser__name"
+
+    def colored_status(self, obj):
+        return _status_colored(obj)
+    colored_status.short_description = "Статус"
+    colored_status.admin_order_field = "status"
+
+    def duration(self, obj):
+        return _duration(obj)
+    duration.short_description = "Длительность"
+
+    def developers_summary(self, obj):
+        return f"{obj.developers_created}/{obj.developers_updated}"
+    developers_summary.short_description = "Застройщики (созд/обн)"
+
+    def projects_summary(self, obj):
+        return f"{obj.projects_created}/{obj.projects_updated}"
+    projects_summary.short_description = "Проекты (созд/обн)"
+
+    def houses_summary(self, obj):
+        return f"{obj.houses_created}/{obj.houses_updated}"
+    houses_summary.short_description = "Дома (созд/обн)"
+
+    def flats_summary(self, obj):
+        return f"{obj.flats_created}/{obj.flats_updated}"
+    flats_summary.short_description = "Квартиры (созд/обн)"
 
     def feed_file_link(self, obj):
         if obj.feed_file:
-            return format_html("<a href='{}'>{}</a>", obj.feed_file.url, obj.feed_file.name)
-        return ""
-
+            return format_html(
+                "<a href='{}'>{}</a>",
+                obj.feed_file.url,
+                obj.feed_file.name,
+            )
+        return "-"
     feed_file_link.short_description = "Файл фида"
 
-    def has_add_permission(self, request):
-        return False
+    def traceback_pre(self, obj):
+        if not obj.traceback:
+            return "-"
+        return format_html(
+            "<pre style='white-space:pre-wrap;max-height:400px;overflow:auto'>{}</pre>",
+            obj.traceback,
+        )
+    traceback_pre.short_description = "Трассировка ошибки"

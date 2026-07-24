@@ -25,15 +25,35 @@ class Project(BaseModel, UrlMixin, SeoMixin):
 
     slug = models.SlugField(max_length=255, unique=True, blank=True)
 
+
+    def ensure_slug(self):
+        if self.slug:
+            return
+
+        RESERVED_SLUGS = {"projects", "houses", "flats"}
+
+        base_slug = ru_slug(self.name)
+
+        if base_slug in RESERVED_SLUGS:
+            base_slug = f"project-{base_slug}"
+
+        slug = base_slug
+        i = 1
+
+        while (
+            Project.objects
+            .filter(slug=slug)
+            .exclude(pk=self.pk)
+            .exists()
+        ):
+            slug = f"{base_slug}-{i}"
+            i += 1
+
+        self.slug = slug
+
+
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = ru_slug(self.name)
-
-        RESERVED_SLUGS = ["projects", "houses", "flats"]
-
-        if self.slug in RESERVED_SLUGS:
-            self.slug = f"{self.slug}-{self.id}"
-
+        self.ensure_slug()
         super().save(*args, **kwargs)
 
     developer = models.ForeignKey(

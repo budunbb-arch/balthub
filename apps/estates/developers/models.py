@@ -21,19 +21,25 @@ class Developer(BaseModel, SeoMixin):
         verbose_name_plural = "Застройщики"
         ordering = ["name"]
 
+    def ensure_slug(self):
+
+        if self.slug:
+            return
+
+        base_slug = slugify(self.name)
+
+        slug = base_slug
+        i = 1
+
+        while Developer.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            slug = f"{base_slug}-{i}"
+            i += 1
+
+        self.slug = slug
+
+
     def save(self, *args, **kwargs):
-        if not self.slug:
-            base_slug = slugify(self.name)
-
-            slug = base_slug
-            i = 1
-
-            while Developer.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-                slug = f"{base_slug}-{i}"
-                i += 1
-
-            self.slug = slug
-
+        self.ensure_slug()
         super().save(*args, **kwargs)
 
     def __str__(self):

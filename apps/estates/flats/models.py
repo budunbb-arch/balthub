@@ -25,29 +25,28 @@ class Flat(BaseModel, UrlMixin, SeoMixin):
 
     slug = models.SlugField(max_length=50, null=True, blank=True)
 
+
+    def ensure_slug(self):
+
+        if self.slug:
+            return
+
+        base_slug = slugify(f"kv{self.number}" or f"kvartira")
+
+        slug = base_slug
+        i = 1
+
+        while Flat.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            slug = f"{base_slug}{i}"
+            i += 1
+
+        self.slug = slug
+
+
     def save(self, *args, **kwargs):
-        if not self.slug:
-            number = self.number or ""
-
-            base_slug = slugify(f"kv{number}") if number else None
-
-            if not base_slug:
-                super().save(*args, **kwargs)
-                base_slug = f"kv{self.id}"
-
-            slug = base_slug
-            counter = 1
-
-            while Flat.objects.filter(
-                house=self.house,
-                slug=slug
-            ).exclude(pk=self.pk).exists():
-                slug = f"{base_slug}-{counter}"
-                counter += 1
-
-            self.slug = slug
-
+        self.ensure_slug()
         super().save(*args, **kwargs)
+        
 
     house = models.ForeignKey(
         House,

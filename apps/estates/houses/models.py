@@ -21,26 +21,26 @@ class House(BaseModel, UrlMixin, SeoMixin):
 
     slug = models.SlugField(max_length=255, null=True, blank=True)
 
+
+    def ensure_slug(self):
+
+        if self.slug:
+            return
+
+        base_slug = slugify(self.external_id or f"{Project.name}-dom")
+
+        slug = base_slug
+        i = 1
+
+        while House.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            slug = f"{base_slug}{i}"
+            i += 1
+
+        self.slug = slug
+
+
     def save(self, *args, **kwargs):
-        if not self.slug:
-            corpus = None
-
-            if hasattr(self, "params") and self.params:
-                corpus = self.params.corpus
-
-            base = self.external_id or str(self.pk or "")
-
-            base_slug = slugify(translit(base, 'ru', reversed=True)) or "house"
-
-            slug = base_slug
-            counter = 1
-
-            while House.objects.filter(project=self.project, slug=slug).exclude(pk=self.pk).exists():
-                slug = f"{base_slug}-{counter}"
-                counter += 1
-
-            self.slug = slug
-
+        self.ensure_slug()
         super().save(*args, **kwargs)
 
     project = models.ForeignKey(

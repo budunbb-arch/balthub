@@ -1,0 +1,14 @@
+{% load maps %}
+
+{% if map.lat and map.lon %}
+
+<div class="ymap"
+    data-lat="{{ map.lat }}"
+    data-lon="{{ map.lon }}"
+    data-title="{{ map.title }}"
+    data-zoom="{{ map.zoom }}">
+</div>
+
+{% yandex_maps %}
+
+{% endif %}

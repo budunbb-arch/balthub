@@ -1,3 +1,5 @@
+# /opt/balthub/apps/core/models.py
+
 import json
 import logging
 

@@ -14,4 +14,8 @@
 
 <script src="https://kit.fontawesome.com/9103525273.js" crossorigin="anonymous"></script>
 
+{% if MAP_JS_URL %}
+    <script src="{{ MAP_JS_URL }}"></script>
+{% endif %}
+
 {% block extra_js %}{% endblock %}

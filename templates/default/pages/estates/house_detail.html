@@ -107,15 +107,18 @@
 
 {% endif %}
 
+{% include "default/includes/render_modules.html" with position="house_detail_map" %}
 
 {% endblock %}
 
 {% block extra_css%}
     <link rel="stylesheet" href="{% static 'assets/css/picker.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/maps.css' %}">
 {% endblock %}
 
 {% block extra_js %}
     <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
     <script src="{% static 'assets/js/picker_stable.js' %}"></script>
     <script src="{% static 'assets/js/house-plans.js' %}"></script>
+    <script src="{% static 'assets/js/maps.js' %}"></script>
 {% endblock %}

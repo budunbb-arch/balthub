@@ -1,7 +1,5 @@
 # /opt/balthub/apps/modules/latest_houses.py
 
-from django.conf import settings
-from django.core.cache import cache
 from apps.estates.houses.models import House
 
 
@@ -22,32 +20,20 @@ def get_latest_houses(request):
     if view_name != "home":
         return {}
 
-    cache_key = "latest_houses"
+    houses = list(
 
-    houses = cache.get(cache_key)
-
-    if houses is None:
-
-        houses = list(
-
-            House.objects
-
-            .select_related(
-                "project",
-                "project__params__city",
-                "params",
-                "params__house_structure_type",
-                "params__building_status",
-            )
-
-            .order_by("-id")[:8]
+        House.objects
+        .active()
+        .select_related(
+            "project",
+            "project__params__city",
+            "params",
+            "params__house_structure_type",
+            "params__building_status",
         )
 
-        cache.set(
-            cache_key,
-            houses,
-            settings.CACHE_TTL
-        )
+        .order_by("-id")[:8]
+    )
 
     return {
         "latest_houses": houses
