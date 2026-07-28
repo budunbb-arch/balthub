@@ -1,0 +1,25 @@
+<!-- /opt/balthub/templates/default/modules/ymaps.html -->
+
+{% load static %}
+
+{% if map_settings.enabled and map_settings.provider == "yandex" %}
+
+<link rel="stylesheet" href="{% static 'assets/css/maps.css' %}">
+
+<section class="main-map">
+
+    <h2>Новостройки на карте</h2>
+
+    <div id="collection-map"></div>
+
+    {{ data.points|json_script:"collection-map-data" }}
+
+</section>
+
+<script src="https://api-maps.yandex.ru/v3/?apikey={{ map_settings.api_key }}&lang={{ map_settings.language }}"></script>
+
+<script src="{% static 'assets/js/maps/yandex.js' %}"></script>
+
+<script src="{% static 'assets/js/maps/all_objects.js' %}"></script>
+
+{% endif %}

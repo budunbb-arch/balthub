@@ -1,8 +1,14 @@
-# latest_projects.py
+# /opt/balthub/apps/modules/latest_projects.py
+
 from apps.estates.projects.models import Project
 
 
-def get_latest_projects(request):
+# apps/modules/latest_projects.py
+
+MODULE = "default/modules/latest_projects.html"
+
+
+def get_context(request, module):
     projects = list(
         Project.objects
         .active()

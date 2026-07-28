@@ -10,6 +10,8 @@ from apps.core.cache_keys import project_detail_key
 from apps.core.pagination import paginate_queryset
 from apps.core.engines.picker import normalize_querydict
 from .pickers import project_list_pickers, project_detail_pickers
+from apps.maps.engine import MapEngine
+import json
 
 
 def project_list(request):
@@ -210,6 +212,30 @@ def project_detail(request, project_slug):
 
         "pickers": pickers,
     }
+
+    houses = (
+        project.houses
+        .exclude(params__latitude__isnull=True)
+        .exclude(params__longitude__isnull=True)
+        .select_related("params")
+    )
+
+    map_points = []
+
+    for house in houses:
+        map_points.append({
+            "lat": house.params.latitude,
+            "lon": house.params.longitude,
+            "title": house.params.address,
+            "url": house.get_absolute_url(),
+        })
+
+    context["map_points"] = map_points
+
+    context["map_points_json"] = json.dumps(
+        MapEngine.project_houses(project),
+        ensure_ascii=False,
+    )
 
     # =====================================================
     # AJAX

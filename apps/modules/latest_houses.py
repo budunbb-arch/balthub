@@ -3,7 +3,12 @@
 from apps.estates.houses.models import House
 
 
-def get_latest_houses(request):
+# apps/modules/latest_houses.py
+
+MODULE = "default/modules/latest_houses.html"
+
+
+def get_context(request, module):
 
     resolver_match = getattr(
         request,

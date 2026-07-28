@@ -7,6 +7,7 @@ from apps.core.pagination import paginate_queryset
 from apps.estates.developers.models import Developer
 from apps.core.dictionaries.models import City, PropertyCategory, District
 from apps.core.engines.picker import normalize_querydict
+from apps.estates.houses.models import House
 from apps.estates.projects.models import Project
 from .pickers import developer_list_pickers, developer_detail_pickers
 
@@ -134,6 +135,30 @@ def developer_detail(request, slug):
     )
 
     # =====================================================
+    # MAP
+    # =====================================================
+
+    house_map_points = list(
+        House.objects
+        .active()
+        .for_developer(developer)
+        .exclude(params__latitude__isnull=True)
+        .exclude(params__longitude__isnull=True)
+        .select_related("params", "project")
+        .order_by("-id")
+    )
+
+    map_points = [
+        {
+            "lat": h.params.latitude,
+            "lon": h.params.longitude,
+            "title": h.params.address or str(h),
+            "url": h.get_absolute_url(),
+        }
+        for h in house_map_points
+    ]
+
+    # =====================================================
     # PROJECTS
     # =====================================================
 
@@ -213,6 +238,8 @@ def developer_detail(request, slug):
         "pickers": pickers,
 
         "stats": stats,
+
+        "map_points": map_points,
     }
 
     # =====================================================

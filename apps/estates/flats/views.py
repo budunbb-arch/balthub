@@ -2,6 +2,7 @@
 
 from django.shortcuts import render, get_object_or_404
 from apps.estates.flats.models import Flat
+from apps.maps.engine import MapEngine
 
 
 def flat_detail(request, project_slug, house_slug, flat_slug):
@@ -19,6 +20,14 @@ def flat_detail(request, project_slug, house_slug, flat_slug):
         house__project__slug=project_slug,
     )
 
-    return render(request, "default/pages/estates/flat_detail.html", {
-        "flat": flat
-    })
+    try:
+        map_points = MapEngine.one_house(flat.house)
+    except Exception:
+        map_points = []
+
+    context = {
+        "flat": flat,
+        "map_points": map_points,
+    }
+
+    return render(request, "default/pages/estates/flat_detail.html", context)

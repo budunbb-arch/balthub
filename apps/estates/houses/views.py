@@ -9,10 +9,14 @@ from django.urls import reverse
 from apps.estates.houses.models import House
 from apps.estates.projects.models import Project
 from apps.estates.flats.models import Flat, FlatParams
+from apps.maps.models import MapSettings
+from apps.maps.engine import MapEngine
 
 from apps.core.pagination import paginate_queryset, build_page_range
 from apps.core.engines.picker import normalize_querydict
 from .pickers import house_list_pickers, house_detail_pickers
+
+import json
 
 
 def house_list(request):
@@ -205,6 +209,8 @@ def house_detail(request, project_slug, house_slug):
         square_limits=square_limits,
     )
 
+    settings = MapSettings.get_solo()
+
     context = {
         "house": house,
 
@@ -217,14 +223,10 @@ def house_detail(request, project_slug, house_slug):
 
         "pagination_template": "default/includes/minimal_pagination.html",
 
-        # Карта
-        "map": {
-            "lat": house.params.latitude,
-            "lon": house.params.longitude,
-            "title": house.params.address or house.project.name,
-            "zoom": 16,
-        },
+        "YANDEX_API_KEY": settings.api_key if settings.provider == MapSettings.PROVIDER_YANDEX else "",
     }
+
+    context["map_points"] = MapEngine.one_house(house)
 
     # =====================================================
     # AJAX

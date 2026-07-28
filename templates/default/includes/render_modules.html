@@ -1,5 +1,5 @@
 <!-- /opt/balthub/templates/default/includes/render_modules.html -->
 
-{% for module in modules %}
-    {% include module %}
+{% for item in modules %}
+    {% include item.module.template with module=item.module data=item.data %}
 {% endfor %}

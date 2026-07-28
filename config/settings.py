@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-oeese^5es8x##x_=gtl)sv==see)*fna(n4mbfwyc(v0hq!*81'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '*',
@@ -84,7 +84,7 @@ TEMPLATES[0]['OPTIONS']['context_processors'] += [
     'apps.core.engines.context_processors.breadcrumbs',
     'apps.core.engines.context_processors.seo',
     'apps.core.engines.context_processors.localization',
-    'apps.maps.context_processors.maps',
+    'apps.core.engines.context_processors.map_settings',
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
@@ -178,7 +178,9 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-
+
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

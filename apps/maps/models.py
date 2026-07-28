@@ -1,3 +1,5 @@
+# /opt/balthub/apps/maps/models.py
+
 from django.db import models
 
 

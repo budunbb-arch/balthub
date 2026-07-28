@@ -48,6 +48,15 @@ class HouseQuerySet(PublicQuerySet):
             project=project
         )
 
+    def for_developer(self, developer):
+
+        if not developer:
+            return self
+
+        return self.filter(
+            project__developer=developer
+        )
+
     def sorted(self, value):
 
         allowed = {

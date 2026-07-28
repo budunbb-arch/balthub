@@ -1,14 +1,13 @@
 # apps/core/engines/context_processors.py
 
 from django.core.cache import cache
-from django.urls import resolve
-from django.conf import settings
 from django.utils.translation import get_language
 
 from apps.core.common.models import Module
 from apps.core.localization import load_locale
+from apps.maps.models import MapSettings
 
-from apps.modules.registry import MODULE_FUNCTIONS
+from apps.modules.registry import MODULE_HANDLERS
 
 from .breadcrumbs import build_breadcrumbs
 from .builders import build_seo
@@ -29,90 +28,57 @@ def localization(request):
 
 def layout_modules(request):
 
-    resolver_match = getattr(
-        request,
-        "resolver_match",
-        None
-    )
-
-    view_name = getattr(
-        resolver_match,
-        "view_name",
-        None
-    )
-
-    module_context = {}
-
-    for module_func in MODULE_FUNCTIONS:
-
-        try:
-
-            module_context.update(
-                module_func(request)
-            )
-
-        except Exception as e:
-
-            logger.exception(
-                "[MODULE ERROR] %s: %s",
-                module_func.__name__,
-                str(e)
-            )
-
-    cache_key = f"layout:{view_name}"
-
-    layout = cache.get(cache_key)
-
-    if layout is None:
-
-        layout = {
-            "main_menu": [],
-            "account_menu": [],
-            "sidebar": [],
-            "content_top": [],
-            "content_bottom": [],
-        }
-
-        modules = (
-            Module.objects
-            .filter(is_active=True)
-            .order_by("position", "id")
-        )
-
-        for module in modules:
-
-            if module.route:
-
-                if module.route != view_name:
-                    continue
-
-            if module.position not in layout:
-                layout[module.position] = []
-
-            layout[module.position].append(
-                module.template
-            )
-
-        cache.set(
-            cache_key,
-            layout,
-            settings.CACHE_TTL
-        )
-
-    custom_layout = getattr(
-        request,
-        "layout",
-        {}
-    )
+    resolver_match = getattr(request, "resolver_match", None)
+    view_name = getattr(resolver_match, "view_name", None)
 
     layout = {
-        **layout,
-        **custom_layout
+        "main_menu": [],
+        "account_menu": [],
+        "sidebar": [],
+        "content_top": [],
+        "content_bottom": [],
     }
+
+    modules = (
+        Module.objects
+        .filter(is_active=True)
+        .order_by("position", "order", "id")
+    )
+
+    for module in modules:
+
+        if module.route and module.route != view_name:
+            continue
+
+        # ---------------------------------------
+        # Загружаем контекст модуля
+        # ---------------------------------------
+
+        data = {}
+
+        handler = MODULE_HANDLERS.get(module.template)
+
+        if handler:
+            try:
+                data = handler(
+                    request=request,
+                    module=module,
+                )
+            except Exception:
+                logger.exception(
+                    "[MODULE ERROR] %s",
+                    module.template,
+                )
+
+        layout[module.position].append(
+            {
+                "module": module,
+                "data": data,
+                }
+            )
 
     return {
         "layout": layout,
-        **module_context,
     }
 
 
@@ -154,4 +120,10 @@ def seo(request):
 
     return {
         "seo": data
+    }
+
+
+def map_settings(request):
+    return {
+        "map_settings": MapSettings.get_solo(),
     }

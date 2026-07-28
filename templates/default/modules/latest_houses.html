@@ -1,9 +1,11 @@
+<!-- /opt/balthub/templates/default/modules/latest_houses.html -->
+
 <div class="container">
 
 <h5>{{ trans.latest_houses_title }}</h5>
 
 <div class="row mb-4">
-    {% for house in latest_houses %}
+    {% for house in data.latest_houses %}
         <div class="col-md-3">
             {% include "default/pages/estates/house_card.html" with house=house %}
         </div>
