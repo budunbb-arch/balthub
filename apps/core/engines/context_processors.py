@@ -34,6 +34,8 @@ def layout_modules(request):
     layout = {
         "main_menu": [],
         "account_menu": [],
+        "sitename": [],
+        "search": [],
         "sidebar": [],
         "content_top": [],
         "content_bottom": [],

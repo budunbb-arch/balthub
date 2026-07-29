@@ -1,5 +1,4 @@
 {# templates/default/modules/main_menu.html #}
-<!-- MODULE: main_menu -->
 
 <ul class="navbar-nav flex-row gap-3">
 
@@ -7,14 +6,37 @@
         <a class="nav-link" href="{% url 'home' %}">{{ trans.home }}</a>
     </li>
 
+    <!--
     <li class="nav-item">
         <a class="nav-link" href="{% url 'developer_list' %}">{{ trans.developer_list }}</a>
     </li>
+    -->
 
     <li class="nav-item">
         <a class="nav-link" href="{% url 'project_list' %}">{{ trans.project_list }}</a>
     </li>
 
+    <li class="nav-item">
+        <a class="nav-link" href="#">{{ trans.mortgage }}</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#">{{ trans.kaliningrad }}</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#">{{ trans.suburb }}</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#">{{ trans.seaside }}</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#">{{ trans.contacts }}</a>
+    </li>
+
+    <!--
     <li class="nav-item">
         <a class="nav-link" href="{% url 'house_list' %}">{{ trans.house_list }}</a>
     </li>
@@ -22,5 +44,6 @@
     <li class="nav-item">
         <a class="nav-link" href="{% url 'plans' %}">{{ trans.plans }}</a>
     </li>
+    -->
 
 </ul>

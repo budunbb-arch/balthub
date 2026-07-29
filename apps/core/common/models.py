@@ -124,6 +124,8 @@ class BaseModel(models.Model):
 POSITIONS = [
     ("main_menu", "Главное меню"),
     ("account_menu", "Меню аккаунта"),
+    ("sitename", "Заголовок сайта"),
+    ("search", "Поиск по сайту"),
     ("sidebar", "Сайдбар"),
     ("content_top", "Верх страницы"),
     ("content_bottom", "Низ страницы"),
