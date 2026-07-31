@@ -19,8 +19,11 @@
                 </div>
             </nav>
         </div>
-        <div class="row">
+        <div class="row mb-5">
             {% include "default/includes/render_modules.html" with modules=layout.sitename %}
+        </div>
+        <div class="row">
+            {% include "default/includes/render_modules.html" with modules=layout.search %}
         </div>
     </div>
 </header>

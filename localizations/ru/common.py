@@ -3,6 +3,7 @@
 translations = {
 
     "button_more": "Подробнее",
+    "text_more": "Подробнее",
     "text_choose": "Выберите",
     "sitename": "Balthub",
 
@@ -12,6 +13,15 @@ translations = {
     "text_from": "от",
     "text_to": "до",
     "text_next": "Следующая",
+    "text_city": "Город",
+    "text_district": "Район",
+    "text_property_type": "Тип",
+    "text_rooms": "Комнат",
+    "text_price": "Цена",
+    "text_developers": "Застройщики",
+    "text_projects": "Жилые комплексы",
+    "text_flats": "Квартиры",
+
 
     "specific_price": "₽ / м²",
 

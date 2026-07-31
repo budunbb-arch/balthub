@@ -1,0 +1,17 @@
+<!-- /opt/balthub/templates/default/pages/search/ajax/_flats_list.html -->
+
+<div class="row" data-items>
+    {% if flats %}
+        {% for flat in flats %}
+            <div class="col-md-4 mb-4">
+                {% include "default/pages/estates/house_card.html" with house=flat.house %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>{{ trans.empty_search }}</p>
+    {% endif %}
+</div>
+
+<div class="pagination-wrapper" data-pagination>
+    {% include "default/includes/infinite_pagination.html" with page_obj=flats %}
+</div>

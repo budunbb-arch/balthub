@@ -1,0 +1,61 @@
+{% extends "default/base.html" %}
+
+{% load static %}
+
+{% block title %}{{ trans.search_title }}{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
+    <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2>{{ trans.search_title }}</h2>
+
+    {% if query or city_id or district_id or property_type_id or rooms_alias or price_band %}
+        <div class="search-criteria mb-3">
+            {% if query %}
+                <span class="badge bg-primary me-2">{{ trans.search }}: {{ query }}</span>
+            {% endif %}
+            {% if city_id %}
+                <span class="badge bg-secondary me-2">{{ trans.text_city }}: {{ city_name }}</span>
+            {% endif %}
+            {% if district_id %}
+                <span class="badge bg-secondary me-2">{{ trans.text_district }}: {{ district_name }}</span>
+            {% endif %}
+            {% if property_type_id %}
+                <span class="badge bg-secondary me-2">{{ trans.text_property_type }}: {{ property_type_name }}</span>
+            {% endif %}
+            {% if rooms_alias %}
+                <span class="badge bg-secondary me-2">{{ trans.text_rooms }}: {{ rooms_alias }}</span>
+            {% endif %}
+            {% if price_band %}
+                <span class="badge bg-secondary me-2">{{ trans.text_price }}: {{ price_band }}</span>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div 
+        data-ajax-list
+        data-container="#search-results-container"
+        data-form=".search.module-search"
+        data-scroll="top"
+        data-push-state="true"
+    >
+        <div class="ajax-loader-overlay hidden">
+            <div class="spinner"></div>
+        </div>
+
+        {% if results %}
+        <div id="search-results-container">
+            {% include "default/pages/search/ajax/_results_list.html" with results=results %}
+        </div>
+        {% else %}
+            <p class="text-muted">{{ trans.empty_search }}</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

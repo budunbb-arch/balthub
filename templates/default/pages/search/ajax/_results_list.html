@@ -1,0 +1,17 @@
+<!-- /opt/balthub/templates/default/pages/search/ajax/_results_list.html -->
+
+{% load i18n %}
+
+<div data-items>
+    <div class="row">
+        {% for item_type, item in results %}
+            <div class="col-md-4 mb-4">
+                {% include "default/pages/estates/project_card.html" with project=item %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="pagination-wrapper" data-pagination>
+    {% include "default/includes/infinite_pagination.html" with page_obj=results %}
+</div>

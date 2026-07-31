@@ -20,20 +20,32 @@
 
 :root {
     --icon-font: 'Font Awesome 7 Free';
+    --cgr: 'CenturyGothic';
+    --nicoletta: 'NicolettaScript';
     --bg-color: #333;
     --text-color: #fff;
     --hover-color: #ddd;
     --animation-05: all .5s;
-    --cgr: 'CenturyGothic';
-    --nicoletta: 'NicolettaScript';
 }
+
+::-webkit-input-placeholder { transition: all 1s; }
+::-moz-placeholder          { transition: all 1s; } /*Firefox 19+*/
+:-moz-placeholder           { transition: all 1s; } /*Firefox 18-*/
+:-ms-input-placeholder      { transition: all 1s; }
+
+:focus::-webkit-input-placeholder { transform: translateX(120%); }
+:focus::-moz-placeholder          { transform: translateX(120%); }
+:focus:-moz-placeholder           { transform: translateX(120%); }
+:focus:-ms-input-placeholder      { transform: translateX(120%); }
 
 html {
     overflow-anchor: none;
-    background: var(--bg-color);
 }
 body {
     color: var(--text-color);
+    background: var(--bg-color);
+    font-family: var(--cgr);
+    line-height: 1.7;
 }
 header {
     aspect-ratio: 16/10;
@@ -50,9 +62,6 @@ header {
 }
 header a.nav-link {
     position: relative;
-    font-family: var(--cgr);
-    font-weight: 400;
-    font-style: normal;
     text-transform: uppercase;
     font-size: smaller;
     color: var(--text-color);
@@ -81,7 +90,6 @@ header a.nav-link:hover::after {
 }
 h1 {
     text-transform: uppercase;
-    font-family: var(--cgr);
 }
 h1 small {
     display: block;
@@ -92,6 +100,94 @@ h1 small {
 }
 .nicoletta {
     font-family: var(--nicoletta);
+}
+
+
+.form-field input.form-control, .search-filter select.form-select {
+    height: 60px;
+    padding-left: 60px;
+    border-radius: 50vh;
+    background: rgb(255 255 255 / 70%);
+}
+.search-filter select.form-select {
+    height: 40px;
+    padding-left: 1em;
+    padding-right: 40px;
+}
+.search-filter label {
+    display: none;
+}
+select {
+    -webkit-appearance: none; /* Для Safari и старых версий Chrome */
+    -moz-appearance: none;    /* Для Firefox */
+    appearance: none;         /* Стандартное свойство */
+  
+    padding-right: 30px;      /* Важно: освобождаем место справа под вашу новую иконку */
+}
+
+/* Специально для Internet Explorer / Edge (на всякий случай) */
+select::-ms-expand {
+    display: none;
+}
+select:disabled + label.position-absolute {
+    display: block;
+    height: 40px;
+    line-height: 40px;
+    top: 0;
+    left: 1em;
+    color: rgb(50 50 50 / 70%);
+}
+.form-field input.form-control:focus {
+    background: rgb(255 255 255 / 90%);
+}
+.form-field input.form-control.field-search + span.form-field-icon::after {
+    content: '\f002';
+}
+.search-filter::after {
+    content: '\f107';
+}
+.form-field input.form-control + span.form-field-icon::after, .search-filter::after {
+    font-family: var(--icon-font);
+    font-weight: 900;
+    display: block;
+    position: absolute;
+    width: 50px;
+    line-height: 50px;
+    top: 5px;
+    left: 5px;
+    text-align: center;
+    font-size: x-large;
+    color: rgb(50 50 50 / 70%);
+}
+.search-filter::after {
+    width: 40px;
+    line-height: 40px;
+    top: 0;
+    right: 5px;
+    left: auto;
+    font-size: small;
+}
+.form-field input.form-control:focus + span.form-field-icon::after, .search-filter.is-open::after {
+    color: var(--bg-color);
+}
+
+button.btn.btn-primary {
+    display: block;
+    width: 100%;
+    height: 60px;
+    border-radius: 50vh;
+    text-transform: uppercase;
+    background: rgb(255 255 255 / 70%);
+    color: rgb(50 50 50 / 70%);
+    border: none;
+}
+button.btn.btn-primary:hover, button.btn.btn-primary:active, .btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
+    background:rgb(255 255 255 / 70%);
+    color: var(--bg-color);
+}
+button.btn.btn-primary:active, button.btn.btn-primary:active:focus {
+    box-shadow: inset 0px 5px 5px rgb(200 200 200 / 70%);
+    font-size: 0.9rem;
 }
 
 

@@ -443,10 +443,19 @@ class NMarketImporter:
 
             flat_params, _ = self.cache.resolve_flat_params(flat)
 
+            rooms_value = helpers.to_int(data["rooms"])
+            if rooms_value is not None:
+                rooms_alias = (
+                    "Студия" if rooms_value == 0
+                    else f"{rooms_value}-комнатная"
+                )
+            else:
+                rooms_alias = None
+
             self.bulk_update(
                 flat_params,
-                rooms=helpers.to_int(data["rooms"]),
-                rooms_alias=f"{data['rooms']}к" if data["rooms"] else None,
+                rooms=rooms_value,
+                rooms_alias=rooms_alias,
                 square=helpers.to_float(data["area_value"]),
                 floor=helpers.to_int(data["floor"]),
                 finish_type=self.cache.resolve_dictionary(FinishType, data["renovation"]),

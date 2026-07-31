@@ -1,0 +1,63 @@
+{# /opt/balthub/templates/default/modules/search.html #}
+
+{% load static %}
+
+<div class="col-12 col-md-10 offset-md-1 col-lg-6 offset-lg-2 search module module-search">
+
+    <div class="row">
+        <h2 class="search-heading mb-2" data-textfit data-fill="0.7">{{ trans.search_heading }}</h2>
+        <form action="{% url 'search_results' %}" method="get" class="row g-2 align-items-end" id="searchForm">
+
+            <div class="col-10 form-field position-relative">
+                <input type="text" name="q" class="form-control field-search" placeholder="{{ trans.search }}" value="{{ request.GET.q|default:'' }}">
+                <span class="form-field-icon"></span>
+            </div>
+            <div class="col-2">
+                <button type="submit" class="btn btn-primary">{{ trans.button_search }}</button>
+            </div>
+            <div class="col-2 search-filter position-relative">
+                <select name="city" class="form-select">
+                    <option value="">{{ trans.text_city }}</option>
+                    {% for city in data.cities %}
+                        <option value="{{ city.id }}" {% if request.GET.city == city.id|stringformat:"s" %}selected{% endif %}>{{ city.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-2 search-filter position-relative">
+                <select name="district" class="form-select">
+                    <option value="">{{ trans.text_district }}</option>
+                    {% for district in data.districts %}
+                        <option value="{{ district.id }}" data-city-id="{{ district.city_id }}" {% if request.GET.district == district.id|stringformat:"s" %}selected{% endif %}>{{ district.name }}</option>
+                    {% endfor %}
+                </select>
+                <label class="position-absolute">{{ trans.text_district }}</label>
+            </div>
+            <div class="col-2 search-filter position-relative">
+                <select name="property_type" class="form-select">
+                    <option value="">{{ trans.text_property_type }}</option>
+                    {% for pt in data.property_types %}
+                        <option value="{{ pt.id }}" {% if request.GET.property_type == pt.id|stringformat:"s" %}selected{% endif %}>{{ pt.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-2 search-filter position-relative">
+                <select name="rooms_alias" class="form-select">
+                        <option value="">{{ trans.text_rooms }}</option>
+                    {% for alias in data.rooms_aliases %}
+                        <option value="{{ alias }}" {% if request.GET.rooms_alias == alias %}selected{% endif %}>{{ alias }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-2 search-filter position-relative">
+                <select name="price_band" class="form-select">
+                    <option value="">{{ trans.text_price }}</option>
+                    {% for min_p, max_p, label in data.price_bands %}
+                        <option value="{{ min_p }}-{{ max_p }}" {% if price_band == min_p|stringformat:"s"|add:"-"|add:max_p|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+        </form>
+    </div>
+    <script src="{% static 'assets/js/search.js' %}"></script>
+</div>
