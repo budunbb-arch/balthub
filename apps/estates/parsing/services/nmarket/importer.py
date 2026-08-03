@@ -72,6 +72,9 @@ class NMarketImporter:
 
 
     def bulk_update(self, obj, **fields):
+        if helpers.should_skip_parser_update(obj):
+            return
+
         changed = helpers.update_instance(obj, **fields)
 
         if changed:
@@ -88,8 +91,6 @@ class NMarketImporter:
         **fields,
     ):
 
-        changed = helpers.update_instance(instance, **fields)
-
         if created:
             helpers.update_instance(instance, **fields)
             instance.ensure_slug()
@@ -97,7 +98,12 @@ class NMarketImporter:
             stats[created_key] += 1
             return []
 
-        elif changed:
+        if helpers.should_skip_parser_update(instance):
+            return []
+
+        changed = helpers.update_instance(instance, **fields)
+
+        if changed:
             self.bulk.add(instance, changed)
             stats[updated_key] += 1
 
@@ -291,17 +297,20 @@ class NMarketImporter:
             if developer is None:
                 continue
 
-            self.save_or_bulk(
-                developer,
-                created,
-                stats,
-                "developers_created",
-                "developers_updated",
-                origin_type="parser",
-                origin_parser=source_parser,
-                is_public=True,
-                published_at=developer.published_at or timezone.now(),
-            )
+            if helpers.should_skip_parser_update(developer):
+                developer = None
+            else:
+                self.save_or_bulk(
+                    developer,
+                    created,
+                    stats,
+                    "developers_created",
+                    "developers_updated",
+                    origin_type="parser",
+                    origin_parser=source_parser,
+                    is_public=True,
+                    published_at=developer.published_at or timezone.now(),
+                )
 
             # ------------------------
             # PROJECT
@@ -312,18 +321,19 @@ class NMarketImporter:
                 name=data["building_name"],
             )
 
-            self.save_or_bulk(
-                project,
-                created,
-                stats,
-                "projects_created",
-                "projects_updated",
-                origin_type="parser",
-                origin_parser=source_parser,
-                is_public=True,
-                published_at=project.published_at or timezone.now(),
-                developer=developer,
-            )
+            if developer is not None and not helpers.should_skip_parser_update(project):
+                self.save_or_bulk(
+                    project,
+                    created,
+                    stats,
+                    "projects_created",
+                    "projects_updated",
+                    origin_type="parser",
+                    origin_parser=source_parser,
+                    is_public=True,
+                    published_at=project.published_at or timezone.now(),
+                    developer=developer,
+                )
 
 
             # ------------------------
@@ -343,11 +353,12 @@ class NMarketImporter:
                     description_hash,
                 )
 
-                self.bulk_update(
-                    project_description_obj,
-                    description=project_description,
-                    hash=description_hash,
-                )
+                if project_description_obj is not None and not helpers.should_skip_parser_update(project_description_obj):
+                    self.bulk_update(
+                        project_description_obj,
+                        description=project_description,
+                        hash=description_hash,
+                    )
 
 
             # PROJECT PARAMS
@@ -360,13 +371,14 @@ class NMarketImporter:
 
             project_params, _ = self.cache.resolve_project_params(project)
 
-            self.bulk_update(
-                project_params,
-                city=city,
-                district=district,
-                property_type=self.cache.resolve_dictionary(PropertyType, data["property_type"]),
-                property_category=self.cache.resolve_dictionary(PropertyCategory, data["category"]),
-            )
+            if project_params is not None and not helpers.should_skip_parser_update(project_params):
+                self.bulk_update(
+                    project_params,
+                    city=city,
+                    district=district,
+                    property_type=self.cache.resolve_dictionary(PropertyType, data["property_type"]),
+                    property_category=self.cache.resolve_dictionary(PropertyCategory, data["category"]),
+                )
 
             # ------------------------
             # HOUSE
@@ -378,19 +390,20 @@ class NMarketImporter:
                 project,
             )
 
-            self.save_or_bulk(
-                house,
-                created,
-                stats,
-                "houses_created",
-                "houses_updated",
-                origin_type="parser",
-                origin_parser=source_parser,
-                project=project,
-                image=house_image,
-                plan=house_plan,
-                is_public=True,
-            )
+            if project is not None and not helpers.should_skip_parser_update(house):
+                self.save_or_bulk(
+                    house,
+                    created,
+                    stats,
+                    "houses_created",
+                    "houses_updated",
+                    origin_type="parser",
+                    origin_parser=source_parser,
+                    project=project,
+                    image=house_image,
+                    plan=house_plan,
+                    is_public=True,
+                )
 
             # HOUSE PARAMS
             deadline_raw = extract_deadline(data["description"])
@@ -398,21 +411,22 @@ class NMarketImporter:
 
             house_params, _ = self.cache.resolve_house_params(house)
 
-            self.bulk_update(
-                house_params,
-                address=data["address"],
-                corpus=data["building_section"],
-                phase=data["building_phase"],
-                deadline=deadline,
-                deadline_year=helpers.to_int(data["built_year"]),
-                floors=helpers.to_int(data["floors_total"]),
-                house_structure_type=self.cache.resolve_dictionary(HouseStructureType, data["building_type"]),
-                building_status=self.cache.resolve_dictionary(BuildingStatus, data["building_state"], mapping=BUILDING_STATUS_MAPPING),
-                lift=to_bool(data["lift"]),
-                parking=to_bool(data["parking"]),
-                latitude=helpers.to_float(data["latitude"]),
-                longitude=helpers.to_float(data["longitude"]),
-            )
+            if house_params is not None and not helpers.should_skip_parser_update(house_params):
+                self.bulk_update(
+                    house_params,
+                    address=data["address"],
+                    corpus=data["building_section"],
+                    phase=data["building_phase"],
+                    deadline=deadline,
+                    deadline_year=helpers.to_int(data["built_year"]),
+                    floors=helpers.to_int(data["floors_total"]),
+                    house_structure_type=self.cache.resolve_dictionary(HouseStructureType, data["building_type"]),
+                    building_status=self.cache.resolve_dictionary(BuildingStatus, data["building_state"], mapping=BUILDING_STATUS_MAPPING),
+                    lift=to_bool(data["lift"]),
+                    parking=to_bool(data["parking"]),
+                    latitude=helpers.to_float(data["latitude"]),
+                    longitude=helpers.to_float(data["longitude"]),
+                )
 
             # ------------------------
             # FLAT
@@ -426,20 +440,21 @@ class NMarketImporter:
                 plan=flat_plan,
             )
 
-            self.save_or_bulk(
-                flat,
-                created,
-                stats,
-                "flats_created",
-                "flats_updated",
-                origin_type="parser",
-                origin_parser=source_parser,
-                house=house,
-                number=apartment.strip() if apartment else None,
-                plan=flat_plan,
-                is_public=True,
-                published_at=flat.published_at or timezone.now()
-            )
+            if house is not None and not helpers.should_skip_parser_update(flat):
+                self.save_or_bulk(
+                    flat,
+                    created,
+                    stats,
+                    "flats_created",
+                    "flats_updated",
+                    origin_type="parser",
+                    origin_parser=source_parser,
+                    house=house,
+                    number=apartment.strip() if apartment else None,
+                    plan=flat_plan,
+                    is_public=True,
+                    published_at=flat.published_at or timezone.now()
+                )
 
             flat_params, _ = self.cache.resolve_flat_params(flat)
 
@@ -452,19 +467,20 @@ class NMarketImporter:
             else:
                 rooms_alias = None
 
-            self.bulk_update(
-                flat_params,
-                rooms=rooms_value,
-                rooms_alias=rooms_alias,
-                square=helpers.to_float(data["area_value"]),
-                floor=helpers.to_int(data["floor"]),
-                finish_type=self.cache.resolve_dictionary(FinishType, data["renovation"]),
-                balcony_type=self.cache.resolve_dictionary(BalconyType, data["balcony"]),
-                bathroom_unit_type=self.cache.resolve_dictionary(BathroomUnitType, data["bathroom_unit"]),
-                living_square=helpers.to_float(data["living_space_value"]),
-                kitchen_square=helpers.to_float(data["kitchen_space_value"]),
-                ceiling_height=helpers.to_float(data["ceiling_height"]),
-            )
+            if flat_params is not None and not helpers.should_skip_parser_update(flat_params):
+                self.bulk_update(
+                    flat_params,
+                    rooms=rooms_value,
+                    rooms_alias=rooms_alias,
+                    square=helpers.to_float(data["area_value"]),
+                    floor=helpers.to_int(data["floor"]),
+                    finish_type=self.cache.resolve_dictionary(FinishType, data["renovation"]),
+                    balcony_type=self.cache.resolve_dictionary(BalconyType, data["balcony"]),
+                    bathroom_unit_type=self.cache.resolve_dictionary(BathroomUnitType, data["bathroom_unit"]),
+                    living_square=helpers.to_float(data["living_space_value"]),
+                    kitchen_square=helpers.to_float(data["kitchen_space_value"]),
+                    ceiling_height=helpers.to_float(data["ceiling_height"]),
+                )
 
             # ------------------------
             # FLAT DEAL
@@ -479,20 +495,21 @@ class NMarketImporter:
 
             deal, _ = self.cache.resolve_flat_deal(flat)
 
-            self.bulk_update(
-                deal,
-                deal_type=deal_type_obj,
-                price=price_value,
-                currency=currency,
-                mortgage=(
-                    data["mortgage"].lower() == "true"
-                    if data["mortgage"] else False
-                ),
-                haggle=(
-                    data["haggle"].lower() == "true"
-                    if data["haggle"] else False
-                ),
-            )
+            if deal is not None and not helpers.should_skip_parser_update(deal):
+                self.bulk_update(
+                    deal,
+                    deal_type=deal_type_obj,
+                    price=price_value,
+                    currency=currency,
+                    mortgage=(
+                        data["mortgage"].lower() == "true"
+                        if data["mortgage"] else False
+                    ),
+                    haggle=(
+                        data["haggle"].lower() == "true"
+                        if data["haggle"] else False
+                    ),
+                )
 
             logger.info(
                 "Flat %s imported (deal: %s)",

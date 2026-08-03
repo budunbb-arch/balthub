@@ -1,7 +1,5 @@
 # apps/estates/parsing/services/nmarket/helpers.py
 
-
-
 def get_text(parent, path, ns):
     el = parent.find(path, ns)
     return el.text.strip() if el is not None and el.text else None
@@ -32,6 +30,28 @@ def update_instance(instance, **fields):
             changed_fields.append(field)
 
     return changed_fields
+
+
+def should_skip_parser_update(instance):
+    """Не обновлять объект парсером, если он уже был изменён вручную.
+
+    Для этого используем поля edited_at / edited_by из базовой модели.
+    Если они заполнены, значит объект уже редактировался после создания.
+    """
+    if instance is None:
+        return True
+
+    pk = getattr(instance, "pk", None)
+    if pk is None:
+        return False
+
+    if getattr(instance, "edited_at", None) is not None:
+        return True
+
+    if getattr(instance, "edited_by", None) is not None:
+        return True
+
+    return False
 
 
 def pick_downloaded(url, download_map):
