@@ -30,29 +30,30 @@
 
     {% include "default/layout/header.html" %}
 
-    {% include "default/includes/breadcrumbs.html" %}
+    
 
     {% include "default/layout/content_top.html" %}
 
     {% block layout %}
-    <div class="container">
-        <div class="row">
+        <div class="container content-wrapper {% if is_home %}d-none{% endif %}">
+            <div class="row">
+                {% include "default/includes/breadcrumbs.html" %}
 
-            {% if layout.sidebar %}
-                <aside class="col-md-3">
-                    {% include "default/includes/render_modules.html" with modules=layout.sidebar %}
-                </aside>
-                <main class="col-md-9">
-            {% else %}
-                <main class="col-12">
-            {% endif %}
+                {% if layout.sidebar %}
+                    <aside class="col-md-3">
+                        {% include "default/includes/render_modules.html" with modules=layout.sidebar %}
+                    </aside>
+                    <main class="col-md-9">
+                {% else %}
+                    <main class="col-12">
+                {% endif %}
 
-    {% block content %}{% endblock %}
+                        {% block content %}{% endblock %}
 
-</main>
+                    </main>
 
+            </div>
         </div>
-    </div>
     {% endblock %}
 
     {% include "default/layout/content_bottom.html" %}

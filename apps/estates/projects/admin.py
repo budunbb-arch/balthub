@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.core.common.admin import SoftDeleteAdmin
+from apps.core.common.admin import RelativeURLTabularInline, SoftDeleteAdmin
 from .models import ProjectParams, ProjectDescription, ProjectImage
 
 
@@ -22,7 +22,7 @@ class ProjectDescriptionInline(admin.StackedInline):
     fields = ("description",)
 
 
-class ProjectImageInline(admin.TabularInline):
+class ProjectImageInline(RelativeURLTabularInline):
     model = ProjectImage
     extra = 1
 

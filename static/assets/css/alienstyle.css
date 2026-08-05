@@ -24,7 +24,8 @@
     --nicoletta: 'NicolettaScript';
     --bg-color: #333;
     --text-color: #fff;
-    --hover-color: #ddd;
+    --hover-color: #888;
+    --hover-light: #ddd;
     --animation-05: all .5s;
 }
 
@@ -48,14 +49,29 @@ body {
     line-height: 1.7;
 }
 header {
-    aspect-ratio: 16/10;
+}
+.header-bg {
+    position: fixed;
+    inset: 0;
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/static/assets/images/header-bg.png');
-    background-size: contain;
+    background-size: cover;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
 }
 
 .header-row {
     display: flex;
     align-items: center;
+}
+.content-wrapper {
+    background: rgb(255 255 255 / 75%);
+    border-radius: 1em;
+    padding: 1em;
+    color: var(--bg-color);
 }
 #mainNavbar {
     padding: 2em;
@@ -69,7 +85,7 @@ header a.nav-link {
     overflow: hidden;
 }
 header a.nav-link:hover {
-    color: var(--hover-color);
+    color: var(--hover-light);
 }
 header a.nav-link::after {
     content: '';
@@ -98,8 +114,24 @@ h1 small {
     font-size: medium;
     margin-bottom: 1em;
 }
+h4 small {
+    display: block;
+    text-transform: none;
+    font-size: small;
+}
 .nicoletta {
     font-family: var(--nicoletta);
+}
+.module-search {
+    margin-bottom: 5em;
+}
+
+a {
+    color: seagreen;
+    text-decoration: none;
+}
+a:hover, a:focus, a:active {
+    color: var(--hover-color);
 }
 
 
@@ -195,12 +227,21 @@ button.btn.btn-primary:active, button.btn.btn-primary:active:focus {
  .uppercase {
     text-transform: uppercase;
  }
+ .unpadded {
+    padding: 0;
+    margin: 0;
+ }
+ .module-row {
+    margin-right: calc(-.5 * var(--bs-gutter-x));
+    margin-left: calc(-.5 * var(--bs-gutter-x));
+ }
 
 /* modules card styles */
 
 .card {
-border: none;
-overflow: hidden;
+    border: none;
+    overflow: hidden;
+    border-radius: 0;
 }
 
 .card-img-wrapper {
@@ -215,6 +256,158 @@ overflow: hidden;
     object-fit: cover;        /* ВАЖНО */
     object-position: center;  /* центрируем */
     border-radius: 0;
+}
+
+@media (min-width: 1400px) {
+    .module-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+        gap: 0;
+    }
+    .project-block {
+        overflow: hidden;
+        min-width: 0;
+        min-height: 0;
+    }
+    .project-block .module-card {
+        height: 100%;
+    }
+    .project-block .card-img-wrapper img {
+        height: auto;
+        transition: var(--animation-05);
+    }
+    .project-block:hover .card-img-wrapper img {
+        transform: scale(1.1);
+    }
+    .project-block:nth-child(3) {
+        grid-column: 3;
+        grid-row: span 2;
+    }
+    .project-block:nth-child(1), .project-block:nth-child(2), .project-block:nth-child(4), .project-block:nth-child(5) {
+        aspect-ratio: 2 / 1;
+    }
+    .project-block:nth-child(3) .card-img-wrapper {
+        aspect-ratio: auto;
+        height: 100%;
+    }
+    .project-block:nth-child(3) .card-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .project-block:nth-child(3) .project-description, .project-block:nth-child(3) .project-developer {
+        display: none;
+    }
+    .project-block-row {
+        display: flex;
+        grid-column: 1 / -1;
+        width: 100%;
+        min-width: 0;
+        overflow: hidden;
+        height: 500px;
+        align-items: stretch;
+    }
+    .project-block-row .project-block,
+    .project-block-row .project-block-secondary {
+        flex: 0 0 20%;
+        max-width: 20%;
+        height: 100%;
+        transition: var(--animation-05);
+        overflow: hidden;
+    }
+    .project-block-row .project-block:first-child {
+        flex-basis: 40%;
+        max-width: 40%;
+    }
+    .project-block-row .project-block-secondary img {
+        height: 100%;
+    }
+    .project-block-bg {
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+
+
+    .project-title {
+        height: 3em;
+        line-height: 3em;
+        left: 0;
+        top: calc(50% - 1.5em);
+        width: 100%;
+        color: var(--text-color);
+        z-index: 2;
+        transition: var(--animation-05);
+    }
+    .project-block-row .project-block:first-child .project-title {
+        top: 1em;
+        transform: scale(0.7);
+    }
+    a.project-title:hover, a.project-title:focus, a.project-title:active {
+        color: var(--hover-color);
+    }
+    .project-block-row .project-block:hover .project-title {
+        top: 1em;
+    }
+    .project-city {
+        top: 1em;
+        left: 1em;
+        background: rgb(88 88 88 / 60%);
+        padding: .25em 1em;
+        border-radius: 50vh;
+        z-index: 2;
+    }
+    .project-block-row .project-block .additional-info {
+        bottom: -100%;
+        left: 0;
+        width: 100%;
+        max-height: 50%;
+        padding: 1em;
+        z-index: 2;
+        transition: var(--animation-05);
+        background: rgb(88 88 88 / 60%);
+    }
+    .project-block-row .project-block:first-child .additional-info, .project-block-row .project-block:hover .additional-info {
+        bottom: 0;
+    }
+    .project-block-row .project-block:nth-child(3) .project-developer {
+        display: block;
+    }
+    .project-description {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -moz-box;
+        -moz-box-orient: vertical;
+        display: -webkit-box;
+        -webkit-line-clamp: 6;
+        -webkit-box-orient: vertical;
+        line-clamp: 6;
+        box-orient: vertical;
+    }
+
+}
+
+.module-homepage-text, .module-homepage-icons {
+    padding-top: 5em;
+    padding-bottom: 5em;
+}
+.module-homepage-icons {
+    background: var(--bg-color);
+}
+.module-homepage-icons figcaption {
+    font-weight: 700;
+    padding: 0 1em;
+    padding-top: 1em;
+}
+.module-homepage-text .text-center {
+    padding: 2em;
+    background: rgb(88 88 88 / 60%);
+    font-weight: 700;
+    line-height: 2;
 }
 
 /* Slideshow styles */
@@ -246,7 +439,7 @@ overflow: hidden;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     object-position: center;
     transition: transform 0.35s ease;
 }

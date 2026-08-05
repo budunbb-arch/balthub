@@ -32,28 +32,6 @@ def update_instance(instance, **fields):
     return changed_fields
 
 
-def should_skip_parser_update(instance):
-    """Не обновлять объект парсером, если он уже был изменён вручную.
-
-    Для этого используем поля edited_at / edited_by из базовой модели.
-    Если они заполнены, значит объект уже редактировался после создания.
-    """
-    if instance is None:
-        return True
-
-    pk = getattr(instance, "pk", None)
-    if pk is None:
-        return False
-
-    if getattr(instance, "edited_at", None) is not None:
-        return True
-
-    if getattr(instance, "edited_by", None) is not None:
-        return True
-
-    return False
-
-
 def pick_downloaded(url, download_map):
     """Вернуть локальный media URL, если изображение было скачано, иначе None.
     download_map — словарь {исходный_url: media_url} из download_images.

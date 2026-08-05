@@ -113,7 +113,7 @@ class ImportCache:
 
         self.developers = {
             cache_key(d.name): d
-            for d in Developer.objects.all().only("id", "name", "is_deleted", "edited_at", "edited_by_id")
+            for d in Developer.objects.all().only("id", "name", "is_deleted")
         }
 
 
@@ -126,8 +126,6 @@ class ImportCache:
                 "external_id",
                 "developer_id",
                 "is_deleted",
-                "edited_at",
-                "edited_by_id",
             )
         }
 
@@ -169,8 +167,6 @@ class ImportCache:
                 "external_id",
                 "project_id",
                 "is_deleted",
-                "edited_at",
-                "edited_by_id",
             )
         }
 
@@ -196,8 +192,6 @@ class ImportCache:
                 "house_id",
                 "number",
                 "is_deleted",
-                "edited_at",
-                "edited_by_id",
             )
         }
 
@@ -253,7 +247,7 @@ class ImportCache:
         for pattern in patterns:
             m = re.search(pattern, description)
             if m:
-                return m.group(1).strip()
+                return m.group(1).strip().rstrip(".")
 
         return None
 

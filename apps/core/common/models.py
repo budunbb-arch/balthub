@@ -133,8 +133,15 @@ POSITIONS = [
     ("house_detail_map", "Карточка дома — карта"),
 ]
 
+MODULE_TYPES = [
+    ("latest_projects", "Последние проекты"),
+    ("html", "HTML модуль"),
+]
+
+
 class Module(models.Model):
     name = models.CharField(max_length=200, verbose_name="Название модуля")
+    type = models.CharField(max_length=50, choices=MODULE_TYPES, default="latest_projects", verbose_name="Тип модуля")
     template = models.CharField(max_length=255, verbose_name="Путь к шаблону")
     position = models.CharField(max_length=50, choices=POSITIONS, verbose_name="Позиция")
     route = models.CharField(
@@ -143,6 +150,14 @@ class Module(models.Model):
     )
     is_active = models.BooleanField(default=True, verbose_name="Активен")
     order = models.PositiveIntegerField(default=0, verbose_name="Порядок")
+    html_module = models.ForeignKey(
+        "modules.HtmlModule",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="modules",
+        verbose_name="HTML модуль",
+    )
 
     class Meta:
         ordering = ["position", "id"]

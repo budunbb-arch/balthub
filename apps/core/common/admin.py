@@ -2,18 +2,169 @@
 
 from django import forms
 from django.contrib import admin
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
+from django.db import models
+from django.forms.models import construct_instance
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from apps.core.models import Module, SiteSettings
+from apps.modules.models import HtmlModule
+
+
+class RelativeURLModelForm(forms.ModelForm):
+    """ModelForm, которая разрешает относительные пути /media/... в URL-полях.
+
+    Django в ModelForm._post_clean() вызывает instance.full_clean(),
+    которая запускает валидаторы полей модели, включая URLValidator.
+    Здесь мы временно отключаем URLValidator у URL-полей модели,
+    потому что валидацию URL уже выполнила форма (RelativeURLField).
+    """
+
+    def _post_clean(self):
+        opts = self._meta
+        exclude = self._get_validation_exclusions()
+
+        # Сохраняем оригинальные валидаторы URL-полей модели,
+        # чтобы временно убрать из них URLValidator
+        saved_validators = {}
+        url_fields = []
+        for field in self.instance._meta.fields:
+            if isinstance(field, models.URLField):
+                url_fields.append(field)
+                saved_validators[field] = list(field.validators)
+                field.validators = [
+                    v for v in field.validators
+                    if not isinstance(v, URLValidator)
+                ]
+
+        try:
+            try:
+                self.instance = construct_instance(
+                    self, self.instance, opts.fields, opts.exclude
+                )
+            except ValidationError as e:
+                self._update_errors(e)
+
+            try:
+                self.instance.full_clean(exclude=exclude, validate_unique=False)
+            except ValidationError as e:
+                self._update_errors(e)
+
+            # Validate uniqueness if needed.
+            if self._validate_unique:
+                self.validate_unique()
+        finally:
+            for field, validators in saved_validators.items():
+                field.validators = validators
+
+
+class RelativeURLField(forms.URLField):
+    """Allow both absolute URLs and relative media paths like /media/..."""
+
+    def _is_relative(self, value):
+        if not isinstance(value, str):
+            return False
+
+        value = value.strip()
+
+        return value.startswith(("/", "media/", "uploads/"))
+
+    def to_python(self, value):
+        if value in self.empty_values:
+            return value
+
+        value = str(value)
+        if self.strip:
+            value = value.strip()
+
+        # Относительные пути вида /media/... не должны получать схему http://
+        if self._is_relative(value):
+            return value
+
+        return super().to_python(value)
+
+    def validate(self, value):
+        if value in self.empty_values:
+            return
+
+        if self._is_relative(value):
+            return
+
+        super().validate(value)
+
+    def run_validators(self, value):
+        if value in self.empty_values:
+            return
+
+        if self._is_relative(value):
+            return
+
+        super().run_validators(value)
+
+
+class RelativeURLAdminMixin:
+    form = RelativeURLModelForm
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if isinstance(db_field, models.URLField):
+            kwargs["form_class"] = RelativeURLField
+            return db_field.formfield(**kwargs)
+
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
+
+
+class RelativeURLStackedInline(RelativeURLAdminMixin, admin.StackedInline):
+    pass
+
+
+class RelativeURLTabularInline(RelativeURLAdminMixin, admin.TabularInline):
+    pass
+
+
+@admin.register(HtmlModule)
+class HtmlModuleAdmin(admin.ModelAdmin):
+    list_display = ("name", "code")
+    search_fields = ("name", "code", "content")
 
 
 @admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):
-    list_display = ("name", "position", "route", "is_active", "order")
-    list_filter = ("position", "is_active")
-    search_fields = ("name", "template", "route")
+    list_display = ("name", "type", "position", "route", "html_module", "is_active", "order")
+    list_filter = ("position", "is_active", "type")
+    search_fields = ("name", "template", "route", "html_module__name", "html_module__code")
     ordering = ("position", "order")
+
+    fieldsets = (
+        (None, {
+            "fields": (
+                "name",
+                "type",
+                "template",
+                "position",
+                "route",
+                "html_module",
+                "is_active",
+                "order",
+            )
+        }),
+    )
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.type == "html":
+            return ("template", "route")
+        return ()
+
+    def get_exclude(self, request, obj=None):
+        if obj and obj.type == "html":
+            return ("template", "route")
+        return ()
+
+    def save_model(self, request, obj, form, change):
+        if obj.type == "html" and not obj.template:
+            obj.template = "default/modules/html_module.html"
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(SiteSettings)
@@ -59,10 +210,17 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         return super().changelist_view(request, extra_context=extra_context)
 
 
-class SoftDeleteAdmin(admin.ModelAdmin):
+class SoftDeleteAdmin(RelativeURLAdminMixin, admin.ModelAdmin):
     """Базовый класс для админок с мягким удалением.
     Автоматически проставляет created_by/edited_by из request.user,
     а также даты *__at при изменении статусов."""
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if isinstance(db_field, models.URLField):
+            kwargs["form_class"] = RelativeURLField
+            return db_field.formfield(**kwargs)
+
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
     # Поля, которые исключаем из формы — они проставляются автоматически
     auto_fields = [

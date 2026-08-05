@@ -1,27 +1,23 @@
 {% if breadcrumbs %}
-<div class="container">
-    <div class="row">
-        <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
 
-                {% for item in breadcrumbs %}
+            {% for item in breadcrumbs %}
 
-                    {% if item.url %}
-                        <li class="breadcrumb-item">
-                            <a href="{{ item.url }}">
-                                {{ item.title }}
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="breadcrumb-item active" aria-current="page">
+                {% if item.url %}
+                    <li class="breadcrumb-item">
+                        <a href="{{ item.url }}">
                             {{ item.title }}
-                        </li>
-                    {% endif %}
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="breadcrumb-item active" aria-current="page">
+                        {{ item.title }}
+                    </li>
+                {% endif %}
 
-                {% endfor %}
+            {% endfor %}
 
-            </ol>
-        </nav>
-    </div>
-</div>
+        </ol>
+    </nav>
 {% endif %}

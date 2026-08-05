@@ -9,7 +9,7 @@ def home(request):
     cache_key = "home_page"
 
     return render(request, "default/pages/common/home.html", {
-        
+        "is_home": True,
     })
 
 

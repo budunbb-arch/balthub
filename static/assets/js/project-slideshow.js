@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
             nextImage.style.left = '0';
             nextImage.style.width = '100%';
             nextImage.style.height = '100%';
-            nextImage.style.objectFit = 'contain';
+            nextImage.style.objectFit = 'cover';
             nextImage.style.objectPosition = 'center';
             nextImage.style.transition = 'transform 0.35s ease';
             nextImage.style.transform = direction === 'next'

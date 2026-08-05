@@ -1,15 +1,80 @@
-<!-- /opt/balthub/templates/default/modules/latest_projects.html -->
-
 {# latest_projects.html #}
-<div class="container">
+{% load image_utils %}
+<div class="container-fluid">
 
-<h5>{{ trans.latest_projects_title }}</h5>
+<!--<h5>{{ trans.latest_projects_title }}</h5>-->
 
-<div class="row mb-4">
+<div class="module-row">
     {% for project in data.latest_projects  %}
-        <div class="col-md-3">
-            {% include "default/pages/estates/project_card.html" with project=project %}
-        </div>
+        {% if forloop.counter <= 5 %}
+            <div class="project-block position-relative">
+                <div class="module-card">
+                    {# изображение проекта #}
+                    {% if project.images.all %}
+                        <div class="card-img-wrapper">
+                            <img
+                                src="{{ project.images.first.image|image_variant:480 }}"
+                                srcset="{{ project.images.first.image|image_srcset:'320,480,640' }}"
+                                sizes="(max-width: 768px) 100vw, 33vw"
+                                loading="lazy"
+                                class="card-img-top"
+                                alt="{{ project.name }}">
+                        </div>
+                    {% endif %}
+
+                    <div class="project-block-bg position-absolute"></div>
+
+                    {# название проекта #}
+
+                    <a href="{% url 'project_detail' project.slug %}" class="project-title d-block position-absolute text-center" data-textfit data-padding="30" data-fill="0.7" data-max-size="60">{{ project.name }}</a>
+                    
+                    {# город через ProjectParams #}
+                    {% if project.params and project.params.city %}
+                        <div class="project-city position-absolute">{{ project.params.city.name }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            {% if forloop.counter == 6 %}
+                <div class="project-block-row">
+            {% endif %}
+            <div class="project-block position-relative project-block-secondary">
+                <div class="module-card">
+                    {% if project.images.all %}
+                        <div class="card-img-wrapper">
+                            <img
+                                src="{{ project.images.first.image|image_variant:320 }}"
+                                srcset="{{ project.images.first.image|image_srcset:'320,480,640' }}"
+                                loading="lazy"
+                                class="card-img-top"
+                                alt="{{ project.name }}">
+                        </div>
+                    {% endif %}
+
+                    <div class="project-block-bg position-absolute"></div>
+
+                    <a href="{% url 'project_detail' project.slug %}" class="project-title d-block position-absolute text-center" data-textfit data-padding="30" data-fill="0.7" data-max-size="60">{{ project.name }}</a>
+
+
+                    {% if project.params and project.params.city %}
+                        <div class="project-city position-absolute">{{ project.params.city.name }}</div>
+                    {% endif %}
+
+                    <div class="additional-info position-absolute">
+                        {% if project.developer %}
+                            <div class="project-developer">{{ trans.text_developer }}: {{ project.developer.name }}</div>
+                        {% endif %}
+
+                        {% if project.description %}
+                            <div class="project-description">{{ project.description.description|safe }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% if forloop.last %}
+                </div>
+            {% endif %}
+        {% endif %}
     {% empty %}
         <p>{{ trans.projects_empty }}</p>
     {% endfor %}
