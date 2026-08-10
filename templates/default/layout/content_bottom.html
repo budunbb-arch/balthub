@@ -1,3 +1,7 @@
 <!-- /opt/balthub/templates/default/layout/content_bottom.html -->
 
-{% include "default/includes/render_modules.html" with modules=layout.content_bottom %}
+{% if layout.content_bottom %}
+    {% include "default/includes/render_modules.html" with modules=layout.content_bottom %}
+{% else %}
+    <!-- content_bottom is empty -->
+{% endif %}

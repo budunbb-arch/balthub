@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-oeese^5es8x##x_=gtl)sv==see)*fna(n4mbfwyc(v0hq!*81'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '*',
@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     'apps.parsing_section',
     'django_celery_beat',
     'apps.modules.apps.ModulesConfig',
+    'apps.leads',
     'apps.maps',
+    'apps.core.documents',
 ]
 
 MIDDLEWARE = [
@@ -183,5 +185,19 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
 
 # Yandex Maps secret_key: pXYYru0Js2EhZk_QEqtMFg==

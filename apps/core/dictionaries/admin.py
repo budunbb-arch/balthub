@@ -5,6 +5,7 @@ from .models import (
     BuildingStatus,
     City,
     ContactType,
+    Country,
     Currency,
     DealType,
     District,
@@ -31,6 +32,11 @@ class ContactTypeAdmin(DictionaryAdmin):
     search_fields = ("code", "name")
 
 
+class CountryAdmin(DictionaryAdmin):
+    list_display = ("code", "name", "phone_code")
+    search_fields = ("code", "name", "phone_code")
+
+
 class DistrictAdmin(admin.ModelAdmin):
     list_display = ("city", "name")
     list_filter = ("city",)
@@ -55,4 +61,5 @@ admin.site.register(
 
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(ContactType, ContactTypeAdmin)
+admin.site.register(Country, CountryAdmin)
 admin.site.register(District, DistrictAdmin)

@@ -136,6 +136,7 @@ POSITIONS = [
 MODULE_TYPES = [
     ("latest_projects", "Последние проекты"),
     ("html", "HTML модуль"),
+    ("feedback", "Обратная связь"),
 ]
 
 

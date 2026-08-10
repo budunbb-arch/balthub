@@ -1,0 +1,6 @@
+{% if document.document_content %}
+    <div class="document-content">{{ document.document_content|safe }}</div>
+{% endif %}
+{% if document.document_file %}
+    <p><a href="{{ document.document_file.url }}" target="_blank" class="btn btn-primary mt-3">Скачать файл</a></p>
+{% endif %}

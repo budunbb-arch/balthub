@@ -7,6 +7,8 @@ from django.conf.urls.static import static
 from django.views.static import serve
 
 from apps.core.common.views import home
+from apps.core.documents.views import documents_list, document_modal
+from apps.leads.views import feedback_send
 
 
 urlpatterns = [
@@ -14,6 +16,9 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("estates/", include("apps.estates.urls")),
     path("api/", include("apps.core.dictionaries.urls")),
+    path("documents/", documents_list, name="documents"),
+    path("documents/modal/<int:document_id>/", document_modal, name="document_modal"),
+    path("feedback/send/", feedback_send, name="feedback_send"),
 ]
 
 #urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

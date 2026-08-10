@@ -46,6 +46,23 @@ class SiteSettings(models.Model):
         verbose_name="Выключить сайт",
         help_text="Показывать заглушку всем пользователям, кроме администраторов.",
     )
+    turnstile_enabled = models.BooleanField(
+        default=False,
+        verbose_name="Включить Turnstile",
+        help_text="Показывать капчу Cloudflare Turnstile в форме обратной связи.",
+    )
+    turnstile_site_key = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="Ключ сайта (Site Key)",
+        help_text="Публичный ключ из консоли Cloudflare. Меняется в админке без деплоя.",
+    )
+    turnstile_secret_key = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="Секретный ключ (Secret Key)",
+        help_text="Секретный ключ серверной проверки. Хранится только в БД.",
+    )
 
     class Meta:
         db_table = "core_sitesettings"

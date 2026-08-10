@@ -15,6 +15,7 @@ translations = {
     "text_next": "Следующая",
     "text_city": "Город",
     "text_district": "Район",
+    "text_country": "Страна",
     "text_property_type": "Тип",
     "text_rooms": "Комнат",
     "text_price": "Цена",

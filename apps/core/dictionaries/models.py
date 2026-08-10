@@ -84,6 +84,23 @@ class ContactType(BaseDictionary):
         verbose_name_plural = "Типы контактов"
 
 
+class Country(BaseDictionary):
+    code = models.CharField(max_length=10, unique=True, verbose_name="Код страны (ISO)")
+    phone_code = models.CharField(
+        max_length=10,
+        verbose_name="Телефонный код",
+        help_text="Цифры без плюса. Например: 7, 375, 380",
+    )
+
+    class Meta:
+        verbose_name = "Страна"
+        verbose_name_plural = "Страны"
+        ordering = ["name"]
+
+    def __str__(self):
+        return f"{self.code} — {self.name} (+{self.phone_code})"
+
+
 class Meta:
     abstract = True
     indexes = [

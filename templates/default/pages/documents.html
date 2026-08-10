@@ -1,0 +1,34 @@
+{% extends "default/base.html" %}
+
+{% block title %}Документы{% endblock %}
+
+{% block content %}
+<div class="container content-wrapper">
+    <div class="row">
+        <div class="col-12">
+            <h1>Документы</h1>
+            {% if documents %}
+                <ul class="list-group">
+                    {% for document in documents %}
+                        <li class="list-group-item">
+                            <h5>{{ document.document_name }}</h5>
+                            <div class="small text-muted">{{ document.document_date|date:"d.m.Y" }}</div>
+                            {% if document.document_file %}
+                                <p><a href="{{ document.document_file.url }}" target="_blank">Открыть файл</a></p>
+                            {% endif %}
+                            {% if document.document_content %}
+                                <div class="document-content">{{ document.document_content|safe }}</div>
+                            {% endif %}
+                            {% if document.document_comment %}
+                                <p class="mb-0">{{ document.document_comment }}</p>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Документы не найдены.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

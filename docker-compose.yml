@@ -31,6 +31,7 @@ services:
       DB_PORT: 5432
       DJANGO_SETTINGS_MODULE: config.settings
 
+
   celery_worker:
     build: .
     container_name: balthub_celery_worker_box

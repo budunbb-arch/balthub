@@ -59,6 +59,7 @@ def layout_modules(request):
         data = {}
 
         handler = MODULE_HANDLERS.get(module.template)
+        logger.info("[MODULE] template=%s handler=%s", module.template, bool(handler))
 
         if handler:
             try:
@@ -66,6 +67,7 @@ def layout_modules(request):
                     request=request,
                     module=module,
                 )
+                logger.info("[MODULE] rendered template=%s data_keys=%s", module.template, list(data.keys()) if isinstance(data, dict) else type(data).__name__)
             except Exception:
                 logger.exception(
                     "[MODULE ERROR] %s",
@@ -78,6 +80,8 @@ def layout_modules(request):
                 "data": data,
                 }
             )
+
+    logger.info("[LAYOUT] content_bottom=%d", len(layout["content_bottom"]))
 
     return {
         "layout": layout,

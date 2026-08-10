@@ -114,6 +114,11 @@ h1 small {
     font-size: medium;
     margin-bottom: 1em;
 }
+h3 {
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 26px;
+}
 h4 small {
     display: block;
     text-transform: none;
@@ -135,7 +140,7 @@ a:hover, a:focus, a:active {
 }
 
 
-.form-field input.form-control, .search-filter select.form-select {
+.form-field input.form-control, .search-filter select.form-select, .form-field select.form-select, textarea.form-control {
     height: 60px;
     padding-left: 60px;
     border-radius: 50vh;
@@ -156,6 +161,11 @@ select {
   
     padding-right: 30px;      /* Важно: освобождаем место справа под вашу новую иконку */
 }
+textarea.form-control {
+    border-radius: 1em;
+    padding: 1em;
+    overflow: hidden;
+}
 
 /* Специально для Internet Explorer / Edge (на всякий случай) */
 select::-ms-expand {
@@ -169,7 +179,7 @@ select:disabled + label.position-absolute {
     left: 1em;
     color: rgb(50 50 50 / 70%);
 }
-.form-field input.form-control:focus {
+.form-field input.form-control:focus, .form-field select.form-select:focus, .search-filter select.form-select:focus, textarea.form-control:focus {
     background: rgb(255 255 255 / 90%);
 }
 .form-field input.form-control.field-search + span.form-field-icon::after {
@@ -178,7 +188,16 @@ select:disabled + label.position-absolute {
 .search-filter::after {
     content: '\f107';
 }
-.form-field input.form-control + span.form-field-icon::after, .search-filter::after {
+.field-user span.form-field-icon::after {
+    content: '\f007';
+}
+.field-country span.form-field-icon::after {
+    content: '\f57d';
+}
+.field-phone span.form-field-icon::after {
+    content: '\f095';
+}
+.form-field input.form-control + span.form-field-icon::after, .search-filter::after, .form-field select.form-select + span.form-field-icon::after {
     font-family: var(--icon-font);
     font-weight: 900;
     display: block;
@@ -234,6 +253,43 @@ button.btn.btn-primary:active, button.btn.btn-primary:active:focus {
  .module-row {
     margin-right: calc(-.5 * var(--bs-gutter-x));
     margin-left: calc(-.5 * var(--bs-gutter-x));
+ }
+
+
+ .document-content ol,
+ ol.document {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+    counter-reset: section;
+ }
+ .document-content ol li,
+ ol.document li {
+    counter-increment: section;
+    display: block;
+    position: relative;
+    padding-left: 2em;
+ }
+ ol.document li li {
+    padding-left: 2.5em;
+ }
+ .document-content ol li::before,
+ ol.document li::before {
+    content: counters(section, ".") " ";
+    position: absolute;
+    left: 0;
+ }
+ .document-content ol li ol,
+ ol.document li ol {
+    counter-reset: section;
+    padding-left: 1.5em;
+ }
+ dt::after {
+    content: ' —';
+ }
+ dd {
+    margin-left: 3em;
+    padding: 0.5em;
  }
 
 /* modules card styles */
@@ -391,11 +447,11 @@ button.btn.btn-primary:active, button.btn.btn-primary:active:focus {
 
 }
 
-.module-homepage-text, .module-homepage-icons {
+.module-homepage-text, .module-homepage-icons, .feedback-module {
     padding-top: 5em;
     padding-bottom: 5em;
 }
-.module-homepage-icons {
+.module-homepage-icons, .feedback-module {
     background: var(--bg-color);
 }
 .module-homepage-icons figcaption {

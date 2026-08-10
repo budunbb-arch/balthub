@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 from apps.core.models import Module, SiteSettings
 from apps.modules.models import HtmlModule
+import logging
 
 
 class RelativeURLModelForm(forms.ModelForm):
@@ -129,12 +130,43 @@ class HtmlModuleAdmin(admin.ModelAdmin):
     search_fields = ("name", "code", "content")
 
 
+from apps.leads.models import FeedbackModule
+
+logger = logging.getLogger(__name__)
+
+
+class FeedbackModuleInline(admin.StackedInline):
+    model = FeedbackModule
+    fieldsets = (
+        (None, {
+            "fields": (
+                "header",
+                "hint",
+                "personal_data",
+                "policy",
+                "manager_email",
+                "message_tpl",
+                "contact_types",
+            )
+        }),
+    )
+    filter_horizontal = ("contact_types",)
+    extra = 1
+
+
 @admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):
     list_display = ("name", "type", "position", "route", "html_module", "is_active", "order")
     list_filter = ("position", "is_active", "type")
     search_fields = ("name", "template", "route", "html_module__name", "html_module__code")
     ordering = ("position", "order")
+    inlines = [FeedbackModuleInline]
+
+    def get_inline_instances(self, request, obj=None):
+        inlines = super().get_inline_instances(request, obj)
+        if obj and obj.type == "feedback":
+            return inlines
+        return []
 
     fieldsets = (
         (None, {
@@ -152,19 +184,41 @@ class ModuleAdmin(admin.ModelAdmin):
     )
 
     def get_readonly_fields(self, request, obj=None):
+        readonly = []
         if obj and obj.type == "html":
-            return ("template", "route")
-        return ()
+            readonly += ["template", "route"]
+        if obj and obj.type == "feedback":
+            readonly += ["template"]
+        return readonly
 
     def get_exclude(self, request, obj=None):
+        exclude = []
         if obj and obj.type == "html":
-            return ("template", "route")
-        return ()
+            exclude += ["template", "route"]
+        if obj and obj.type == "feedback":
+            exclude += ["template"]
+        return exclude
 
     def save_model(self, request, obj, form, change):
         if obj.type == "html" and not obj.template:
             obj.template = "default/modules/html_module.html"
+        if obj.type == "feedback" and not obj.template:
+            obj.template = "default/modules/feedback.html"
         super().save_model(request, obj, form, change)
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        obj = form.instance
+        if obj.type == "feedback":
+            logger.info("[FEEDBACK ADMIN] saving related for module_id=%s", obj.pk)
+            for fm in obj.feedback_modules.all():
+                logger.info("[FEEDBACK ADMIN] existing fm=%s module=%s", fm.pk, fm.module_id)
+                if fm.module_id != obj.pk:
+                    fm.module = obj
+                    fm.save(update_fields=["module"])
+            if not obj.feedback_modules.exists():
+                created = FeedbackModule.objects.create(module=obj)
+                logger.info("[FEEDBACK ADMIN] created fm=%s module=%s", created.pk, obj.pk)
 
 
 @admin.register(SiteSettings)
@@ -187,6 +241,13 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 "default_canonical",
                 "default_robots",
             )
+        }),
+        ("Капча Turnstile", {
+            "fields": (
+                "turnstile_enabled",
+                "turnstile_site_key",
+                "turnstile_secret_key",
+            ),
         }),
     )
 
