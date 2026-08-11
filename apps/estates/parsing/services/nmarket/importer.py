@@ -2,6 +2,7 @@
 
 from lxml import etree
 from django.utils import timezone
+from slugify import slugify
 
 from apps.estates.parsing.utils import (
     extract_deadline,
@@ -13,7 +14,7 @@ from apps.estates.parsing.utils import (
 )
 from apps.estates.parsing.constants import BUILDING_STATUS_MAPPING
 from apps.estates.developers.models import Developer
-from apps.estates.projects.models import Project, ProjectImage
+from apps.estates.projects.models import Project, ProjectImage, ProjectParams
 from apps.estates.houses.models import House
 from apps.estates.flats.models import Flat
 
@@ -26,6 +27,8 @@ from apps.core.dictionaries.models import (
     HouseStructureType,
     BuildingStatus,
 )
+
+from apps.estates.tags.models import Tag, ProjectTag
 from apps.estates.parsing.management.execution.parser_cancel import ParserCancelChecker
 
 
@@ -179,6 +182,41 @@ class NMarketImporter:
         }
 
 
+    def _sync_project_tags(self, project):
+        """Синхронизировать теги город и район у проекта на основе ProjectParams."""
+        try:
+            project_params = project.params
+        except ProjectParams.DoesNotExist:
+            return
+
+        city = project_params.city
+        district = project_params.district
+
+        tag_names = []
+        if city and city.name:
+            tag_names.append(city.name.strip())
+        if district and district.name:
+            tag_names.append(district.name.strip())
+
+        if not tag_names:
+            return
+
+        # Удаляем старые теги города/района у этого проекта
+        ProjectTag.objects.filter(
+            project=project,
+            tag__name__in=tag_names,
+        ).delete()
+
+        # Создаём/находим теги и привязываем
+        for name in tag_names:
+            slug = slugify(name) or name
+            tag, _ = Tag.objects.get_or_create(
+                name=name,
+                defaults={"slug": slug},
+            )
+            ProjectTag.objects.get_or_create(project=project, tag=tag)
+
+
     def run(self):
 
         source_parser = self.parser_run.parser
@@ -197,7 +235,10 @@ class NMarketImporter:
             "houses_updated": 0,
             "flats_created": 0,
             "flats_updated": 0,
+            "flats_deactivated": 0,
         }
+
+        feed_flat_ids = set()
 
         xml_parser = etree.XMLParser(recover=True)
         tree = etree.parse(str(self.feed_path), xml_parser)
@@ -370,6 +411,7 @@ class NMarketImporter:
                     property_type=self.cache.resolve_dictionary(PropertyType, data["property_type"]),
                     property_category=self.cache.resolve_dictionary(PropertyCategory, data["category"]),
                 )
+                self._sync_project_tags(project)
 
             # ------------------------
             # HOUSE
@@ -430,6 +472,8 @@ class NMarketImporter:
                 number=apartment.strip() if apartment else None,
                 plan=flat_plan,
             )
+
+            feed_flat_ids.add(data["external_id"])
 
             if house is not None:
                 self.save_or_bulk(
@@ -514,6 +558,24 @@ class NMarketImporter:
         # --- Шаг 3: Bulk update ---
         self.bulk.flush()
 
+        # --- Шаг 3.5: Деактивация квартир, отсутствующих в фиде ---
+        logger.info("Deactivating missing flats...")
+        to_deactivate_ids = [
+            f.id
+            for f in self.cache.flats.values()
+            if f.external_id
+            and cache_key(f.external_id) not in feed_flat_ids
+            and not f.is_deleted
+            and f.is_public
+        ]
+
+        if to_deactivate_ids:
+            deactivated = Flat.objects.filter(id__in=to_deactivate_ids).update(is_public=False)
+            stats["flats_deactivated"] = deactivated
+            logger.info("Deactivated %d flats", deactivated)
+        else:
+            logger.info("No flats to deactivate")
+
         # --- Шаг 4: Bulk-синхронизация ProjectImage ---
         logger.info("Syncing project images...")
         self._sync_project_images_bulk()
@@ -533,7 +595,8 @@ class NMarketImporter:
                 f"Developers: {stats['developers_created'] + stats['developers_updated']}, "
                 f"Projects: {stats['projects_created'] + stats['projects_updated']}, "
                 f"Houses: {stats['houses_created'] + stats['houses_updated']}, "
-                f"Flats: {stats['flats_created'] + stats['flats_updated']}."
+                f"Flats: {stats['flats_created'] + stats['flats_updated']}, "
+                f"Flats deactivated: {stats['flats_deactivated']}."
             )
         }
 

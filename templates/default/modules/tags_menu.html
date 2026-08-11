@@ -1,0 +1,16 @@
+<div class="module col col-xl-3 text-start">
+    {% if data.tags_menu %}
+        <h6>{{ data.tags_menu.title }}</h6>
+    {% endif %}
+    <ul class="list-unstyled footermenu-menu">
+        {% for item in data.tags_menu_items %}
+            <li>
+                <a href="{% url 'tags:tag_detail' item.tag.slug %}">{{ item.tag.name }}</a>
+            </li>
+        {% empty %}
+            {% if data.tags_menu %}
+                <li>Нет активных тегов</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>

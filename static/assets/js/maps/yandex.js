@@ -51,7 +51,27 @@ window.BalthubMaps = (function () {
 
         });
 
-        map.addChild(new YMapDefaultSchemeLayer());
+        let schemeLayer = new YMapDefaultSchemeLayer();
+
+        try {
+
+            const styleResp = await fetch("/static/assets/js/maps/mapstylejson.json");
+
+            if (styleResp.ok) {
+
+                const style = await styleResp.json();
+
+                schemeLayer = new YMapDefaultSchemeLayer({ customization: style });
+
+            }
+
+        } catch (err) {
+
+            console.warn("[map] custom style load failed", err);
+
+        }
+
+        map.addChild(schemeLayer);
         map.addChild(new YMapDefaultFeaturesLayer());
 
         //--------------------------------------------------

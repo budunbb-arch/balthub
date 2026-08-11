@@ -3,7 +3,5 @@
 {% load static %}
 
 {% if data.html_content %}
-    <div class="html-module">
-        {{ data.html_content|safe }}
-    </div>
+    {{ data.html_content|safe }}
 {% endif %}

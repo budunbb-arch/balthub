@@ -72,7 +72,7 @@ jQuery(function ($) {
         if (hasTurnstile) {
             var cfToken = $form.find('input[name="cf-turnstile-response"]').val() || '';
             if (!cfToken) {
-                toastr.error('Пройдите проверку «Я не робот»');
+                toastr.error('Слава роботам?');
                 return;
             }
         }
@@ -99,12 +99,14 @@ jQuery(function ($) {
             },
             success: function (data) {
                 if (data.success) {
-                    toastr.success('Сообщение отправлено успешно');
                     $form[0].reset();
                     // Сброс виджета капчи, чтобы можно было отправить ещё раз.
                     if (window.turnstile) {
                         try { window.turnstile.reset(); } catch (err) {}
                     }
+                    // Прячем форму и показываем сообщение об успехе.
+                    $form.hide();
+                    $form.closest('.feedback-module').find('.success-form').show();
                 } else {
                     toastr.error(data.error || 'Ошибка отправки');
                 }

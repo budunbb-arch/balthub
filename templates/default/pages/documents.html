@@ -8,23 +8,34 @@
         <div class="col-12">
             <h1>Документы</h1>
             {% if documents %}
-                <ul class="list-group">
-                    {% for document in documents %}
-                        <li class="list-group-item">
-                            <h5>{{ document.document_name }}</h5>
-                            <div class="small text-muted">{{ document.document_date|date:"d.m.Y" }}</div>
-                            {% if document.document_file %}
-                                <p><a href="{{ document.document_file.url }}" target="_blank">Открыть файл</a></p>
-                            {% endif %}
-                            {% if document.document_content %}
-                                <div class="document-content">{{ document.document_content|safe }}</div>
-                            {% endif %}
-                            {% if document.document_comment %}
-                                <p class="mb-0">{{ document.document_comment }}</p>
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th>Дата</th>
+                                <th>Файл</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for document in documents %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'document_detail' document.id %}">{{ document.document_name }}</a>
+                                    </td>
+                                    <td>{{ document.document_date|date:"d.m.Y" }}</td>
+                                    <td>
+                                        {% if document.document_file %}
+                                            <a href="{{ document.document_file.url }}" target="_blank">Открыть файл</a>
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             {% else %}
                 <p>Документы не найдены.</p>
             {% endif %}

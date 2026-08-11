@@ -1,11 +1,12 @@
-# /opt/balthub/apps/estates/urls.py
+# apps/estates/urls.py
 
-from django.urls import path
+from django.urls import path, include
 from apps.estates.projects.views import project_list, project_detail
 from apps.estates.houses.views import house_list, house_detail, house_plans_ajax, plans, plans_ajax
 from apps.estates.flats.views import flat_detail
 from apps.estates.search.views import search_results
 from apps.estates.developers.views import developer_list, developer_detail
+from apps.estates.tags.urls import urlpatterns as tags_urlpatterns
 
 urlpatterns = [
     # AJAX
@@ -30,4 +31,7 @@ urlpatterns = [
     path("projects/<slug:project_slug>/", project_detail, name="project_detail"),
     path("projects/<slug:project_slug>/<slug:house_slug>/", house_detail, name="house_detail"),
     path("projects/<slug:project_slug>/<slug:house_slug>/<slug:flat_slug>/", flat_detail, name="flat_detail"),
+
+    # теги
+    path("tags/", include((tags_urlpatterns, "tags"))),
 ]

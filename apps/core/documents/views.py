@@ -15,6 +15,13 @@ def documents_list(request):
     })
 
 
+def document_detail(request, document_id):
+    document = get_object_or_404(Document, pk=document_id)
+    return render(request, "default/pages/document_detail.html", {
+        "document": document,
+    })
+
+
 def document_modal(request, document_id):
     document = get_object_or_404(Document, pk=document_id)
     return render(request, "default/modules/document_modal.html", {

@@ -32,6 +32,7 @@ class ParserRunInline(admin.TabularInline):
 
         "flats_created",
         "flats_updated",
+        "flats_deactivated",
 
         "developers_created",
         "developers_updated",
@@ -70,6 +71,7 @@ class ParserRunInline(admin.TabularInline):
         (
             "flats_created",
             "flats_updated",
+            "flats_deactivated",
         ),
 
         "message",
@@ -339,6 +341,7 @@ class ParserRunAdmin(admin.ModelAdmin):
         "projects_summary",
         "houses_summary",
         "flats_summary",
+        "flats_deactivated_summary",
     )
     list_display_links = ("started_at",)
     list_filter = ("status", "parser", "started_at")
@@ -360,6 +363,7 @@ class ParserRunAdmin(admin.ModelAdmin):
         "houses_updated",
         "flats_created",
         "flats_updated",
+        "flats_deactivated",
         "message",
         "feed_file_link",
         "traceback_pre",
@@ -376,7 +380,7 @@ class ParserRunAdmin(admin.ModelAdmin):
         ("developers_created", "developers_updated"),
         ("projects_created", "projects_updated"),
         ("houses_created", "houses_updated"),
-        ("flats_created", "flats_updated"),
+        ("flats_created", "flats_updated", "flats_deactivated"),
         "message",
         "feed_file_link",
         "traceback_pre",
@@ -418,6 +422,10 @@ class ParserRunAdmin(admin.ModelAdmin):
     def flats_summary(self, obj):
         return f"{obj.flats_created}/{obj.flats_updated}"
     flats_summary.short_description = "Квартиры (созд/обн)"
+
+    def flats_deactivated_summary(self, obj):
+        return f"{obj.flats_deactivated}"
+    flats_deactivated_summary.short_description = "Квартиры сняты"
 
     def feed_file_link(self, obj):
         if obj.feed_file:

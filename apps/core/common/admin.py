@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from apps.core.models import Module, SiteSettings
-from apps.modules.models import HtmlModule
+from apps.modules.models import HtmlModule, TagsMenu
 import logging
 
 
@@ -131,6 +131,7 @@ class HtmlModuleAdmin(admin.ModelAdmin):
 
 
 from apps.leads.models import FeedbackModule
+from apps.modules.models import FooterMenuItem
 
 logger = logging.getLogger(__name__)
 
@@ -154,18 +155,31 @@ class FeedbackModuleInline(admin.StackedInline):
     extra = 1
 
 
+class FooterMenuItemInline(admin.TabularInline):
+    model = FooterMenuItem
+    extra = 1
+    fields = ("title", "url", "order", "is_active")
+
+
 @admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):
     list_display = ("name", "type", "position", "route", "html_module", "is_active", "order")
     list_filter = ("position", "is_active", "type")
     search_fields = ("name", "template", "route", "html_module__name", "html_module__code")
     ordering = ("position", "order")
-    inlines = [FeedbackModuleInline]
+    inlines = [FeedbackModuleInline, FooterMenuItemInline]
 
     def get_inline_instances(self, request, obj=None):
         inlines = super().get_inline_instances(request, obj)
-        if obj and obj.type == "feedback":
-            return inlines
+        if not obj:
+            return []
+        if obj.type == "feedback":
+            return [i for i in inlines if isinstance(i, FeedbackModuleInline)]
+        if obj.template == "default/modules/footer_menu.html":
+            return [i for i in inlines if isinstance(i, FooterMenuItemInline)]
+        if obj.type == "tags_menu":
+            from apps.modules.admin import TagsMenuInline
+            return [i for i in inlines if isinstance(i, TagsMenuInline)]
         return []
 
     fieldsets = (
@@ -189,6 +203,8 @@ class ModuleAdmin(admin.ModelAdmin):
             readonly += ["template", "route"]
         if obj and obj.type == "feedback":
             readonly += ["template"]
+        if obj and obj.type == "tags_menu":
+            readonly += ["template"]
         return readonly
 
     def get_exclude(self, request, obj=None):
@@ -197,6 +213,8 @@ class ModuleAdmin(admin.ModelAdmin):
             exclude += ["template", "route"]
         if obj and obj.type == "feedback":
             exclude += ["template"]
+        if obj and obj.type == "tags_menu":
+            exclude += ["template"]
         return exclude
 
     def save_model(self, request, obj, form, change):
@@ -204,7 +222,14 @@ class ModuleAdmin(admin.ModelAdmin):
             obj.template = "default/modules/html_module.html"
         if obj.type == "feedback" and not obj.template:
             obj.template = "default/modules/feedback.html"
+        if obj.type == "footer_menu" and not obj.template:
+            obj.template = "default/modules/footer_menu.html"
+        if obj.type == "tags_menu" and not obj.template:
+            obj.template = "default/modules/tags_menu.html"
         super().save_model(request, obj, form, change)
+
+        if obj.type == "tags_menu":
+            TagsMenu.objects.get_or_create(module=obj)
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)

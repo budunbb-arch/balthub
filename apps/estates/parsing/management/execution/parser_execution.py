@@ -44,6 +44,7 @@ def parser_lock(parser_id: int):
             parser=parser,
             status=Parser.STATUS_STARTED,
             started_at=timezone.now(),
+            flats_deactivated=0,
         )
 
         try:

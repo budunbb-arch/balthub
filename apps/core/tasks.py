@@ -90,6 +90,7 @@ def run_parser_task(parser_id: int):
 
             run.flats_created = stats["flats_created"]
             run.flats_updated = stats["flats_updated"]
+            run.flats_deactivated = stats["flats_deactivated"]
 
             run.developers_created = stats["developers_created"]
             run.developers_updated = stats["developers_updated"]
@@ -102,6 +103,7 @@ def run_parser_task(parser_id: int):
                 "houses_updated",
                 "flats_created",
                 "flats_updated",
+                "flats_deactivated",
                 "developers_created",
                 "developers_updated",
                 "message",
@@ -135,49 +137,54 @@ def run_parser_task(parser_id: int):
     
     except ParserCancelled:
 
-        logger.info(
-            "Parser %s cancelled by user",
-            parser.name,
-        )
+        if "parser" in locals():
+            logger.info(
+                "Parser %s cancelled by user",
+                parser.name,
+            )
 
-        run.status = Parser.STATUS_CANCELLED
-        run.finished_at = timezone.now()
-        run.message = "Cancelled by user"
+        if "run" in locals():
+            run.status = Parser.STATUS_CANCELLED
+            run.finished_at = timezone.now()
+            run.message = "Cancelled by user"
 
-        run.cancel_requested = False
+            run.cancel_requested = False
 
-        parser.last_status = Parser.STATUS_CANCELLED
-        parser.last_message = run.message
+            run.save(
+                update_fields=[
+                    "status",
+                    "finished_at",
+                    "message",
+                    "cancel_requested",
+                ]
+            )
 
-        run.save(
-            update_fields=[
-                "status",
-                "finished_at",
-                "message",
-                "cancel_requested",
-            ]
-        )
+        if "parser" in locals():
+            parser.last_status = Parser.STATUS_CANCELLED
+            parser.last_message = "Cancelled by user"
 
         return "cancelled"
 
 
     except Exception as exc:
 
-        run.status = Parser.STATUS_FAILED
-        run.finished_at = timezone.now()
-        run.message = str(exc)
-        run.traceback = traceback.format_exc()
+        if "run" in locals():
+            run.status = Parser.STATUS_FAILED
+            run.finished_at = timezone.now()
+            run.message = str(exc)
+            run.traceback = traceback.format_exc()
 
-        run.save()
+            run.save()
 
         raise
 
     except Exception:
 
-        logger.exception(
-            "Parser %s crashed",
-            parser_id,
-        )
+        if "parser" in locals():
+            logger.exception(
+                "Parser %s crashed",
+                parser.name,
+            )
 
         raise
 

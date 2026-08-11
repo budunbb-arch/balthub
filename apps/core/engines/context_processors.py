@@ -74,6 +74,7 @@ def layout_modules(request):
                     module.template,
                 )
 
+        layout.setdefault(module.position, [])
         layout[module.position].append(
             {
                 "module": module,

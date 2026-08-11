@@ -50,6 +50,7 @@ class Command(BaseCommand):
             parser=parser,
             status=Parser.STATUS_STARTED,
             started_at=timezone.now(),
+            flats_deactivated=0,
         )
 
         result = NMarketImporter(feed_path, parser_run).run()

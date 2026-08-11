@@ -1,0 +1,29 @@
+<!-- /opt/balthub/templates/default/pages/estates/tag_list.html -->
+
+{% extends "default/base.html" %}
+
+{% load static %}
+
+{% block title %}Теги проектов{% endblock %}
+
+{% block content %}
+
+    <h1 class="mb-4">Теги проектов</h1>
+
+    <div class="row">
+        {% for tag in tags %}
+            <div class="col-md-4 mb-3">
+                <a href="{% url 'tags:tag_detail' tag.slug %}" class="text-decoration-none">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ tag.name }}</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% empty %}
+            <p>Теги отсутствуют.</p>
+        {% endfor %}
+    </div>
+
+{% endblock %}

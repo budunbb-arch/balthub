@@ -2,6 +2,7 @@ from apps.estates.developers.models import Developer
 from apps.estates.projects.models import Project
 from apps.estates.houses.models import House
 from apps.estates.flats.models import Flat
+from apps.estates.tags.models import Tag
 
 
 class DeveloperProxy(Developer):
@@ -34,3 +35,11 @@ class FlatProxy(Flat):
         app_label = "estates"
         verbose_name = Flat._meta.verbose_name
         verbose_name_plural = Flat._meta.verbose_name_plural
+
+
+class TagProxy(Tag):
+    class Meta:
+        proxy = True
+        app_label = "estates"
+        verbose_name = Tag._meta.verbose_name
+        verbose_name_plural = Tag._meta.verbose_name_plural

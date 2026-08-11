@@ -237,6 +237,7 @@ class ParserRun(models.Model):
 
     flats_created = models.PositiveIntegerField(default=0)
     flats_updated = models.PositiveIntegerField(default=0)
+    flats_deactivated = models.PositiveIntegerField(default=0)
 
     developers_created = models.PositiveIntegerField(default=0)
     developers_updated = models.PositiveIntegerField(default=0)

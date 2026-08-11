@@ -70,6 +70,14 @@ class Project(BaseModel, UrlMixin, SeoMixin):
     def get_houses_url(self):
         return self.get_url("houses_project", self.slug)
 
+    tags = models.ManyToManyField(
+        "tags.Tag",
+        through="tags.ProjectTag",
+        related_name="projects",
+        blank=True,
+        verbose_name="Теги",
+    )
+
     def __str__(self):
         return self.name
 
