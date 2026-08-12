@@ -4,6 +4,7 @@ from apps.core.dictionaries.models import (
     BuildingStatus
 )
 from apps.estates.developers.models import Developer
+from apps.core.localization import t
 
 
 def get_picker_label(picker, selected_values):
@@ -102,7 +103,7 @@ def project_list_pickers(
         {
             "name": "sort",
             "value": sort,
-            "placeholder": "Сортировка",
+            "placeholder": t("text_sort"),
             "auto_submit": True,
             "input_type": "radio",
 
@@ -110,22 +111,22 @@ def project_list_pickers(
 
                 {
                     "value": "name",
-                    "label": "Название А-Я",
+                    "label": t("text_name_az"),
                 },
 
                 {
                     "value": "-name",
-                    "label": "Название Я-А",
+                    "label": t("text_name_za"),
                 },
 
                 {
                     "value": "city",
-                    "label": "Город А-Я",
+                    "label": t("text_city_az"),
                 },
 
                 {
                     "value": "-city",
-                    "label": "Город Я-А",
+                    "label": t("text_city_za"),
                 },
             ]
         },
@@ -137,7 +138,7 @@ def project_list_pickers(
         {
             "name": "developer",
             "value": selected_developers,
-            "placeholder": "Застройщик",
+            "placeholder": t("text_developer"),
             "multiple": True,
             "auto_submit": False,
             "input_type": "checkbox",
@@ -160,7 +161,7 @@ def project_list_pickers(
         {
             "name": "city",
             "value": selected_cities,
-            "placeholder": "Город",
+            "placeholder": t("text_city"),
             "multiple": True,
             "auto_submit": False,
             "input_type": "checkbox",
@@ -183,7 +184,7 @@ def project_list_pickers(
         {
             "name": "district",
             "value": selected_districts,
-            "placeholder": "Район",
+            "placeholder": t("text_district"),
             "multiple": True,
             "disabled": not selected_cities,
             "auto_submit": False,

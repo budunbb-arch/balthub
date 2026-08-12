@@ -22,6 +22,10 @@
     <!-- Toastr -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'assets/images/006.balthub-favicon-transparent.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/images/006.balthub-favicon-transparent.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'assets/images/006.balthub-favicon-transparent.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/images/006.balthub-favicon-transparent.png' %}">
     <link rel="stylesheet" href="{% static 'assets/css/alienstyle.css' %}">
 
     {% block extra_css %}{% endblock %}
@@ -35,17 +39,18 @@
     {% include "default/layout/content_top.html" %}
 
     {% block layout %}
-        <div class="container content-wrapper mb-4 {% if is_home %}d-none{% endif %}">
+        <div class="container-fluid mb-4 {% if is_home %}d-none{% endif %}">
             <div class="row">
-                {% include "default/includes/breadcrumbs.html" %}
 
                 {% if layout.sidebar %}
-                    <aside class="col-md-3">
+                    <aside class="col-md-3 col-xl-2 offset-xl-1">
                         {% include "default/includes/render_modules.html" with modules=layout.sidebar %}
                     </aside>
-                    <main class="col-md-9">
+                    <main class="col-md-9 col-xl-8 content-wrapper">
+                        {% include "default/includes/breadcrumbs.html" %}
                 {% else %}
-                    <main class="col-12">
+                    <main class="col-12 col-xl-10 offset-xl-1 content-wrapper">
+                        {% include "default/includes/breadcrumbs.html" %}
                 {% endif %}
 
                         {% block content %}{% endblock %}

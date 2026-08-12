@@ -26,6 +26,10 @@
     --text-color: #fff;
     --hover-color: #888;
     --hover-light: #ddd;
+    --white: #fff;
+    --seagreen: seagreen;
+    --mediumseagreen: mediumseagreen;
+    --lightseagreen: lightseagreen;
     --animation-05: all .5s;
 }
 
@@ -67,7 +71,7 @@ body {
 }
 .content-wrapper {
     background: rgb(255 255 255 / 75%);
-    border-radius: 1em;
+    border-radius: 5px;
     padding: 1em;
     color: var(--bg-color);
 }
@@ -243,6 +247,10 @@ button.btn.btn-primary:active, button.btn.btn-primary:active:focus {
     font-size: 0.9rem;
 }
 
+.breadcrumbs {
+    border-bottom: 2px solid var(--white);
+}
+
 
 /* helper styles */
  .uppercase {
@@ -257,35 +265,18 @@ button.btn.btn-primary:active, button.btn.btn-primary:active:focus {
     margin-left: calc(-.5 * var(--bs-gutter-x));
  }
 
-
- .document-content ol,
- ol.document {
-    list-style: none;
-    padding-left: 0;
-    margin-left: 0;
-    counter-reset: section;
- }
- .document-content ol li,
- ol.document li {
-    counter-increment: section;
-    display: block;
-    position: relative;
-    padding-left: 2em;
- }
- ol.document li li {
-    padding-left: 2.5em;
- }
- .document-content ol li::before,
- ol.document li::before {
-    content: counters(section, ".") " ";
-    position: absolute;
-    left: 0;
- }
- .document-content ol li ol,
- ol.document li ol {
-    counter-reset: section;
-    padding-left: 1.5em;
- }
+ol.document li {
+    margin-bottom: 1em;
+}
+ol.document>li {
+    font-weight: 700;
+}
+ol.document>li>* {
+    margin-top: 1em;
+}
+ol.document li ol>li, ol.document>li dl dd, ol.document>li>p {
+    font-weight: 400;
+}
  dt::after {
     content: ' —';
  }

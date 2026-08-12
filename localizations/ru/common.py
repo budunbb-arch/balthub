@@ -2,10 +2,11 @@
 
 translations = {
 
+    "url_home": "/",
+
     "button_more": "Подробнее",
     "text_more": "Подробнее",
     "text_choose": "Выберите",
-    "sitename": "Balthub",
 
     "common.yes": "Да",
     "common.no": "Нет",

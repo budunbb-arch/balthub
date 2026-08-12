@@ -1,6 +1,4 @@
 .pickers {
-    background: #f5f5f5;
-    border-radius: 50vh;
     margin-bottom: 2em;
 }
 
@@ -8,15 +6,19 @@
     padding: 1em;
     overflow: visible;
     position: relative;
+    border-bottom: 2px solid var(--white);
+}
+.picker.has-value {
+    border-color: var(--seagreen);
 }
 
 .picker-dropdown {
 
     position: absolute;
     top: 100%;
-    left: 0;
+    left: 1em;
 
-    width: 100%;
+    width: calc(100% - 2em);
     z-index: 10;
 
     opacity: 0;
@@ -53,12 +55,13 @@ button.picker-trigger {
 }
 label.picker-option {
     display: block;
-    background: lab(100 0 0 / 0.9);
-    padding: .7em 1em;
+    background: rgb(255 255 255 / 90%);
+    padding: .5em;
     cursor: pointer;
+    font-size: small;
 }
 label.picker-option:hover {
-    color: seagreen;
+    color: var(--seagreen);
 }
 .picker-dropdown input[type="radio"], .picker-dropdown input[type="checkbox"] {
     visibility: hidden;
@@ -67,7 +70,7 @@ label.picker-option:hover {
     margin-right: .25em;
 }
 .picker-dropdown input[type="checkbox"]::after {
-    content: '\e065';
+    content: '\f00c';
     visibility: visible;
     font-family: var(--icon-font);
     font-weight: 900;
@@ -75,50 +78,42 @@ label.picker-option:hover {
     color: #ccc;
 }
 .picker-dropdown input[type="checkbox"]:checked::after {
-    color: seagreen;
+    color: var(--seagreen);
 }
 
 button.picker-apply {
     display: block;
     width: 100%;
     border: none;
-    border-radius: 50vh;
-    margin-top: 1em;
-    margin-bottom: 1em;
     padding: 1em;
     color: #fff;
-    background: seagreen;
+    background: var(--seagreen);
+}
+button.picker-apply:hover {
+    background: var(--mediumseagreen);
+}
+button.picker-apply:active {
+    background: var(--lightseagreen);
 }
 
 .picker-control {
-    bottom: -2em;
-    z-index: 1;
+    padding: 0;
 }
 
 button.picker-reset {
     opacity: 0;
-
     visibility: hidden;
-
     pointer-events: none;
-
     transition: .5s;
     border: none;
-    background: #ddd;
-    height: 30px;
+    background: none;
     padding: 0;
-    display: block;
-    aspect-ratio: 1 / 1;
-    top: calc(50% - 15px);
+    top: 1em;
     right: 1.5em;
-    border-radius: 50%;
 }
 .picker.has-value .picker-reset {
-
     opacity: 1;
-
     visibility: visible;
-
     pointer-events: auto;
 }
 
@@ -145,4 +140,46 @@ button.picker-reset {
 .picker.disabled {
     opacity: .5;
     pointer-events: none;
+}
+
+.picker[data-picker-name="sort"]::before {
+    content: '\f885';
+}
+.picker[data-picker-name="developer"]::before {
+    content: '\f807';
+}
+.picker[data-picker-name="city"]::before {
+    content: '\e587';
+}
+.picker[data-picker-name="district"]::before {
+    content: '\f557';
+}
+.picker::before {
+    left: 0;
+}
+.picker::after {
+    content: '\f107';
+    right: 1.5em;
+}
+.open.picker::after {
+    content: '\f106';
+}
+.has-value.picker::after {
+    content: none;
+}
+.picker::before, .picker::after {
+    font-family: var(--icon-font);
+    font-weight: 900;
+    position: absolute;
+    top: 1em;
+}
+
+.picker.open .picker-dropdown::after {
+    content: '';
+    display: block;
+    position: absolute;
+    border-right: 10px solid rgb(255 255 255 / 90%);
+    border-top: 10px solid transparent;
+    top: -10px;
+    right: 0;
 }
