@@ -132,8 +132,8 @@ def search_results(request):
         project_q &= Q(params__property_type_id=property_type_id)
 
     projects_qs = Project.objects.filter(project_q).distinct().select_related(
-        "params__city", "params__district", "developer"
-    )
+        "params__city", "params__district", "developer", "description"
+    ).with_flat_stats()
 
     # Дополнительно фильтруем проекты через квартиры, если заданы rooms_alias или price_band
     if rooms_alias or price_band:

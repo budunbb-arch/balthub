@@ -1,5 +1,10 @@
 import os
 from pathlib import Path
+from urllib.parse import quote as urlquote
+from dotenv import load_dotenv
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,19 +14,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-oeese^5es8x##x_=gtl)sv==see)*fna(n4mbfwyc(v0hq!*81'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    '*',
+    'balthub.rf39.ru',
+    'квартирукупить.рф',
+    'xn--b1afkwdgk7a.xn--p1ai',
 ]
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 CSRF_TRUSTED_ORIGINS = [
     "https://balthub.rf39.ru",
+    "https://квартирукупить.рф",
+    "https://xn--b1afkwdgk7a.xn--p1ai",
 ]
 
 
@@ -34,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'apps.core',
     'apps.core.common',
     'apps.estates',
@@ -163,10 +173,20 @@ MEDIA_ROOT = '/app/media'
 FEEDS_DIR = BASE_DIR / "feeds"
 
 
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "")
+REDIS_HOST = os.getenv("REDIS_HOST", "redis")
+REDIS_PORT = os.getenv("REDIS_PORT", "6379")
+REDIS_DB = os.getenv("REDIS_DB", "0")
+
+if REDIS_PASSWORD:
+    REDIS_URL = f"redis://:{urlquote(REDIS_PASSWORD, safe='')}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+else:
+    REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://:1T4jpiMv4hYZOfjv6Umvkm82o2r6jAYS@redis:6379/0",
+        "LOCATION": REDIS_URL,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "IGNORE_EXCEPTIONS": True,
@@ -176,8 +196,8 @@ CACHES = {
 
 CACHE_TTL = 60 * 10
 
-CELERY_BROKER_URL = "redis://:1T4jpiMv4hYZOfjv6Umvkm82o2r6jAYS@redis:6379/0"
-CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"

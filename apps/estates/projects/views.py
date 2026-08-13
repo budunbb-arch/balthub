@@ -34,10 +34,13 @@ def project_list(request):
 
         .active()
 
+        .with_flat_stats()
+
         .select_related(
             "developer",
             "params__city",
             "params__district",
+            "description",
         )
 
         .city(selected_cities)

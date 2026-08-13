@@ -5,7 +5,6 @@ from django.shortcuts import render, get_object_or_404
 from apps.core.pagination import paginate_queryset
 
 from apps.estates.developers.models import Developer
-from apps.core.dictionaries.models import City, PropertyCategory, District
 from apps.core.engines.picker import normalize_querydict
 from apps.estates.houses.models import House
 from apps.estates.projects.models import Project
@@ -70,9 +69,6 @@ def developer_list(request):
     # =====================================================
 
     price_limits = qs.price_limits()
-
-    print(qs.query)
-    print(price_limits)
 
     pickers = developer_list_pickers(
 
@@ -146,6 +142,14 @@ def developer_detail(request, slug):
         .exclude(params__longitude__isnull=True)
         .select_related("params", "project")
         .order_by("-id")
+        .only(
+            "external_id",
+            "params__latitude",
+            "params__longitude",
+            "params__address",
+            "project__slug",
+            "slug",
+        )
     )
 
     map_points = [
@@ -175,6 +179,8 @@ def developer_detail(request, slug):
 
         .active()
 
+        .with_flat_stats()
+
         .for_developer(developer)
 
         .property_categories(selected_categories)
@@ -187,6 +193,7 @@ def developer_detail(request, slug):
             "developer",
             "params__city",
             "params__district",
+            "description",
         )
 
         .prefetch_related(

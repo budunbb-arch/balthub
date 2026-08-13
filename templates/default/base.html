@@ -4,17 +4,26 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}{{ seo.title }}{% endblock %}</title>
+    {% block title %}
+      {% if seo.title %}{{ seo.title }}{% else %}Balthub{% endif %}
+    {% endblock %}
 
-    <meta name="description" content="{{ seo.description }}">
-    <meta name="keywords" content="{{ seo.keywords }}">
-    <meta name="robots" content="{{ seo.robots }}">
+    <meta name="description" content="{% if seo.description %}{{ seo.description }}{% endif %}">
+    <meta name="keywords" content="{% if seo.keywords %}{{ seo.keywords }}{% endif %}">
+    <meta name="robots" content="{% if seo.robots %}{{ seo.robots }}{% else %}index, follow{% endif %}">
 
-    <link rel="canonical" href="{{ seo.canonical }}">
+    <link rel="canonical" href="{% if seo.canonical %}{{ seo.canonical }}{% endif %}">
 
-    <meta property="og:title" content="{{ seo.title }}">
-    <meta property="og:description" content="{{ seo.description }}">
-    <meta property="og:url" content="{{ seo.canonical }}">
+    <meta property="og:title" content="{% if seo.og_title %}{{ seo.og_title }}{% elif seo.title %}{{ seo.title }}{% else %}Balthub{% endif %}">
+    <meta property="og:description" content="{% if seo.og_description %}{{ seo.og_description }}{% elif seo.description %}{{ seo.description }}{% endif %}">
+    <meta property="og:url" content="{% if seo.og_url %}{{ seo.og_url }}{% elif seo.canonical %}{{ seo.canonical }}{% endif %}">
+    {% if seo.og_image %}
+      <meta property="og:image" content="{{ seo.og_image }}">
+    {% endif %}
+
+    {% if seo.json_ld %}
+      <script type="application/ld+json">{{ seo.json_ld|safe }}</script>
+    {% endif %}
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">

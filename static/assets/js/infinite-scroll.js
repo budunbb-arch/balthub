@@ -106,6 +106,10 @@ class InfiniteScroll {
 
             });
 
+            if (typeof initTooltips === "function") {
+                initTooltips();
+            }
+
             // replace pagination
             const oldPagination =
                 this.wrapper.querySelector("[data-pagination]");

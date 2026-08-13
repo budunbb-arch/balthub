@@ -290,7 +290,12 @@ ol.document li ol>li, ol.document>li dl dd, ol.document>li>p {
 .card {
     border: none;
     overflow: hidden;
-    border-radius: 0;
+    border-radius: 5px;
+    color: var(--bg-color);
+
+    & .card-body {
+        color: var(--bg-color);
+    }
 }
 
 .card-img-wrapper {
@@ -305,6 +310,22 @@ ol.document li ol>li, ol.document>li dl dd, ol.document>li>p {
     object-fit: cover;        /* ВАЖНО */
     object-position: center;  /* центрируем */
     border-radius: 0;
+    transition: var(--animation-05);
+}
+.card:hover .card-img-wrapper img.card-img-top {
+    transform: scale(1.1);
+}
+
+.card-short-description.position-absolute {
+    bottom: -100%;
+    transition: var(--animation-05);
+}
+.card:hover .card-short-description.position-absolute {
+    bottom: 0;
+    padding: .5em;
+    background: rgb(0 0 0 / 60%);
+    color: var(--text-color);
+    font-size: small;
 }
 
 @media (min-width: 1400px) {
@@ -705,11 +726,6 @@ footer small {
     border-color: #333;
 }
 
-.card-body {
-    border: 1px solid #ccc;
-    border-top: none;
-    border-radius: 0 0 0.375rem 0.375rem;
-}
 span.card-city {
     position: absolute;
     top: 1em;
@@ -719,6 +735,19 @@ span.card-city {
     border-radius: 25vh;
     color: white;
     font-size: small;
+}
+
+.developer-logo {
+    right: 1em;
+    bottom: 1em;
+    max-width: 30%;
+    max-height: 30%;
+}
+img.card-logo {
+    opacity: 0.5;
+}
+img.card-logo:hover {
+    opacity: 1;
 }
 
 /* preloader */

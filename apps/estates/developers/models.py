@@ -4,7 +4,12 @@ from django.db import models
 from apps.core.common.models import BaseModel
 from apps.core.common.mixins import SeoMixin
 from .queries import DeveloperQuerySet
-from django.utils.text import slugify
+from transliterate import translit
+from slugify import slugify
+
+
+def ru_slug(text):
+    return slugify(translit(text, 'ru', reversed=True))
 
 
 class Developer(BaseModel, SeoMixin):
@@ -26,7 +31,7 @@ class Developer(BaseModel, SeoMixin):
         if self.slug:
             return
 
-        base_slug = slugify(self.name)
+        base_slug = ru_slug(self.name)
 
         slug = base_slug
         i = 1

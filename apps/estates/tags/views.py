@@ -33,11 +33,13 @@ def tag_detail(request, tag_slug):
     qs = (
         Project.objects
         .active()
+        .with_flat_stats()
         .filter(tags=tag)
         .select_related(
             "developer",
             "params__city",
             "params__district",
+            "description",
         )
         .city(selected_cities)
         .district(selected_districts)

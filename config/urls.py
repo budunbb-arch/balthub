@@ -8,11 +8,15 @@ from django.views.static import serve
 
 from apps.core.common.views import home
 from apps.core.documents.views import documents_list, document_detail, document_modal
+from apps.core.sitemap import SitemapView
+from apps.core.robots import RobotsView
 from apps.leads.views import feedback_send
 
 
 urlpatterns = [
     path("", home, name="home"),
+    path("sitemap.xml", SitemapView.as_view(), name="sitemap"),
+    path("robots.txt", RobotsView.as_view(), name="robots"),
     path("admin/", admin.site.urls),
     path("estates/", include("apps.estates.urls")),
     path("api/", include("apps.core.dictionaries.urls")),

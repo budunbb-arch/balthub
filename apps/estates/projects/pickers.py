@@ -231,7 +231,7 @@ def project_detail_pickers(
         {
             "name": "sort",
             "value": sort,
-            "placeholder": "Сортировка",
+            "placeholder": t("text_sort"),
             "auto_submit": True,
             "input_type": "radio",
 
@@ -239,32 +239,32 @@ def project_detail_pickers(
 
                 {
                     "value": "-id",
-                    "label": "Сначала новые",
+                    "label": t("text_newfirst"),
                 },
 
                 {
                     "value": "id",
-                    "label": "Сначала старые",
+                    "label": t("text_oldfirst"),
                 },
 
                 {
                     "value": "deadline_year",
-                    "label": "Срок сдачи ↑",
+                    "label": t("text_deadline_year_asc"),
                 },
 
                 {
                     "value": "-deadline_year",
-                    "label": "Срок сдачи ↓",
+                    "label": t("text_deadline_year_desc"),
                 },
 
                 {
                     "value": "floors",
-                    "label": "Этажность ↑",
+                    "label": t("text_floors_asc"),
                 },
 
                 {
                     "value": "-floors",
-                    "label": "Этажность ↓",
+                    "label": t("text_floors_desc"),
                 },
             ]
         },

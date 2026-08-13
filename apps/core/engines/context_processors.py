@@ -31,6 +31,39 @@ def layout_modules(request):
     resolver_match = getattr(request, "resolver_match", None)
     view_name = getattr(resolver_match, "view_name", None)
 
+    lang = (get_language() or "ru")[:2]
+
+    if view_name:
+        cache_key = f"layout:{view_name}:{lang}"
+    else:
+        cache_key = f"layout:global:{lang}"
+
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        modules_meta = cached
+    else:
+        modules = (
+            Module.objects
+            .filter(is_active=True)
+            .only("id", "name", "type", "template", "position", "route", "order", "html_module_id")
+            .order_by("position", "order", "id")
+        )
+        modules_meta = [
+            {
+                "id": m.id,
+                "name": m.name,
+                "type": m.type,
+                "template": m.template,
+                "position": m.position,
+                "route": m.route,
+                "order": m.order,
+                "html_module_id": m.html_module_id,
+            }
+            for m in modules
+        ]
+        cache.set(cache_key, modules_meta, 300)
+
     layout = {
         "main_menu": [],
         "account_menu": [],
@@ -41,15 +74,9 @@ def layout_modules(request):
         "content_bottom": [],
     }
 
-    modules = (
-        Module.objects
-        .filter(is_active=True)
-        .order_by("position", "order", "id")
-    )
+    for module_meta in modules_meta:
 
-    for module in modules:
-
-        if module.route and module.route != view_name:
+        if module_meta["route"] and module_meta["route"] != view_name:
             continue
 
         # ---------------------------------------
@@ -58,26 +85,35 @@ def layout_modules(request):
 
         data = {}
 
-        handler = MODULE_HANDLERS.get(module.template)
-        logger.info("[MODULE] template=%s handler=%s", module.template, bool(handler))
+        handler = MODULE_HANDLERS.get(module_meta["template"])
+        logger.info("[MODULE] template=%s handler=%s", module_meta["template"], bool(handler))
 
         if handler:
             try:
+                module = Module(id=module_meta["id"])
+                module.name = module_meta["name"]
+                module.type = module_meta["type"]
+                module.template = module_meta["template"]
+                module.position = module_meta["position"]
+                module.route = module_meta["route"]
+                module.order = module_meta["order"]
+                module.html_module_id = module_meta["html_module_id"]
+
                 data = handler(
                     request=request,
                     module=module,
                 )
-                logger.info("[MODULE] rendered template=%s data_keys=%s", module.template, list(data.keys()) if isinstance(data, dict) else type(data).__name__)
+                logger.info("[MODULE] rendered template=%s data_keys=%s", module_meta["template"], list(data.keys()) if isinstance(data, dict) else type(data).__name__)
             except Exception:
                 logger.exception(
                     "[MODULE ERROR] %s",
-                    module.template,
+                    module_meta["template"],
                 )
 
-        layout.setdefault(module.position, [])
-        layout[module.position].append(
+        layout.setdefault(module_meta["position"], [])
+        layout[module_meta["position"]].append(
             {
-                "module": module,
+                "module": module_meta,
                 "data": data,
                 }
             )
@@ -104,12 +140,24 @@ def clear_layout_cache(pattern="layout:*"):
 
 def breadcrumbs(request):
 
+    lang = (get_language() or "ru")[:2]
+    path = request.path_info
+
+    cache_key = f"breadcrumbs:{path}:{lang}"
+
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        return {"breadcrumbs": cached}
+
     try:
         data = build_breadcrumbs(request)
 
     except Exception:
         logger.exception("BREADCRUMB ERROR:")
         data = []
+
+    cache.set(cache_key, data, 300)
 
     return {
         "breadcrumbs": data
@@ -118,6 +166,16 @@ def breadcrumbs(request):
 
 def seo(request):
 
+    lang = (get_language() or "ru")[:2]
+    path = request.path_info
+
+    cache_key = f"seo:{path}:{lang}"
+
+    cached = cache.get(cache_key)
+
+    if cached is not None:
+        return {"seo": cached}
+
     try:
         data = build_seo(request)
 
@@ -125,12 +183,20 @@ def seo(request):
         logger.exception("SEO ERROR:")
         data = {}
 
+    cache.set(cache_key, data, 300)
+
     return {
         "seo": data
     }
 
 
 def map_settings(request):
+    cache_key = "map_settings"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return {"map_settings": cached}
+    settings = MapSettings.get_solo()
+    cache.set(cache_key, settings, 600)
     return {
-        "map_settings": MapSettings.get_solo(),
+        "map_settings": settings
     }

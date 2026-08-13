@@ -2,11 +2,12 @@
 
 {# use optimized images #}
 {% load image_utils %}
+{% load humanize %}
 
-<div class="card mb-3"> 
+<div class="card position-relative mb-3"> 
   {# изображение проекта #} 
   {% if project.images.all %} 
-    <div class="card-img-wrapper">
+    <div class="card-img-wrapper position-relative">
       <img
         src="{{ project.images.first.image|image_variant:480 }}"
         srcset="{{ project.images.first.image|image_srcset:'320,480,640' }}"
@@ -14,15 +15,38 @@
         loading="lazy"
         class="card-img-top"
         alt="{{ project.name }}">
+      {# девелопер #} 
+      {% if project.developer and project.developer.logo and project.developer.slug %} 
+        <div class="developer-logo position-absolute">
+          <a href="{% url 'developer_detail' project.developer.slug %}" class="card-developer">
+            <img src="{{ project.developer.logo.url }}" alt="{{ project.developer.name }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ project.developer.name }}"  class="card-logo"> 
+          </a>
+        </div>
+      {% endif %} 
+
+      {# short description #}
+      {% if project.description %}
+        <div class="card-short-description position-absolute">
+          {{ project.description.description|truncatewords:40 }}
+        </div>
+      {% endif %}
     </div>
   {% endif %} 
 
   <div class="card-body"> 
-    <h5 class="card-title">{{ project.name }}</h5> 
+    <a href="{% url 'project_detail' project.slug %}">
+      <h3 class="card-title">{{ project.name }}</h3> 
+    </a>
 
     {# девелопер #} 
-    {% if project.developer %} 
-      <p class="text-muted">{{ project.developer.name }}</p> 
+    {% if project.developer and project.developer.slug %}
+      <a href="{% url 'developer_detail' project.developer.slug %}" class="card-developer-link">
+        <h4 class="card-developer-name"><small>{{ project.developer.name }}</small></h4>
+      </a>
+    {% elif project.developer %}
+      <span class="card-developer-link">
+        <h4 class="card-developer-name"><small>{{ project.developer.name }}</small></h4>
+      </span>
     {% endif %} 
 
     {# город через ProjectParams #} 
@@ -30,6 +54,20 @@
       <span class="card-city">{{ project.params.city.name }}</span> 
     {% endif %} 
 
-    <a href="{% url 'project_detail' project.slug %}" class="btn btn-primary">{{ trans.button_more }}</a> 
+    {# статистика проекта #} 
+    {% if project.flats_count or project.min_price %}
+      <div class="project-stats">
+        {% if project.flats_count %}
+          <span class="stat-item">
+            <strong>{{ project.flats_count }}</strong> {{ trans.text_of_flats }}
+          </span>
+        {% endif %}
+        {% if project.min_price %}
+          <span class="stat-item">
+            {{ trans.text_from }} <strong>{{ project.min_price|intcomma }}</strong> {{ trans.text_rub }}
+          </span>
+        {% endif %}
+      </div>
+    {% endif %}
   </div> 
 </div>

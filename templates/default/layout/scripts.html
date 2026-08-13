@@ -20,4 +20,15 @@
 
 <script src="{% static 'assets/js/feedback.js' %}"></script>
 
+<script>
+function initTooltips() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+}
+
+initTooltips();
+</script>
+
 {% block extra_js %}{% endblock %}

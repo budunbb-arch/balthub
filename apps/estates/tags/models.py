@@ -1,9 +1,10 @@
 # apps/estates/tags/models.py
 
 from django.db import models
+from apps.core.common.mixins import SeoMixin
 
 
-class Tag(models.Model):
+class Tag(SeoMixin):
     name = models.CharField(max_length=100, unique=True, verbose_name="Тег")
     slug = models.SlugField(max_length=100, unique=True, blank=True)
 

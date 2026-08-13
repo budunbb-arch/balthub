@@ -1,4 +1,4 @@
-/* /opt/balthub/staticfiles/assets/js/infinite-scroll.js */
+/* /opt/balthub/static/assets/js/infinite-scroll.js */
 
 class InfiniteScroll {
 
@@ -105,6 +105,10 @@ class InfiniteScroll {
                 currentContainer.appendChild(node);
 
             });
+
+            if (typeof initTooltips === "function") {
+                initTooltips();
+            }
 
             // replace pagination
             const oldPagination =

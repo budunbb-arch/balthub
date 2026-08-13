@@ -1,12 +1,33 @@
+from django.db.models import Count, Min, Q, Prefetch
+
 from apps.core.common.querysets import PublicQuerySet
 
-    
+
 class ProjectQuerySet(PublicQuerySet):
 
     def active(self):
         return self.public().filter(
             developer__is_deleted=False,
             developer__is_public=True,
+        )
+
+    def with_flat_stats(self):
+        return self.annotate(
+            flats_count=Count(
+                "houses__flats",
+                filter=Q(
+                    houses__flats__is_public=True,
+                    houses__flats__is_deleted=False,
+                ),
+                distinct=True,
+            ),
+            min_price=Min(
+                "houses__flats__deals__price",
+                filter=Q(
+                    houses__flats__is_public=True,
+                    houses__flats__is_deleted=False,
+                ),
+            ),
         )
 
     def for_developer(self, developer):

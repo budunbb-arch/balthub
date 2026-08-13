@@ -23,6 +23,13 @@ translations = {
     "text_developers": "Застройщики",
     "text_projects": "Жилые комплексы",
     "text_flats": "Квартиры",
+    "text_rub": "руб.",
+    "text_newfirst": "Сначала новые",
+    "text_oldfirst": "Сначала старые",
+    "text_deadline_year_asc": "Срок сдачи ↑",
+    "text_deadline_year_desc": "Срок сдачи ↓",
+    "text_floors_asc": "Этажность ↑",
+    "text_floors_desc": "Этажность ↓",
 
 
     "specific_price": "₽ / м²",

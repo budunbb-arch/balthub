@@ -8,7 +8,7 @@ class Document(models.Model):
     document_name = models.CharField(max_length=255, verbose_name="Название документа")
     document_content = models.TextField(verbose_name="HTML содержимое")
     document_file = models.FileField(upload_to="documents/", blank=True, null=True, verbose_name="Файл документа")
-    document_date = models.DateField(auto_now=True, null="True", verbose_name="Дата документа")
+    document_date = models.DateField(auto_now=True, null=True, verbose_name="Дата документа")
     document_public = models.BooleanField(default=False, verbose_name="Публичный")
     document_status = models.CharField(
         max_length=20,

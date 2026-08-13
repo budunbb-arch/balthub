@@ -167,24 +167,12 @@ def run_parser_task(parser_id: int):
 
 
     except Exception as exc:
-
         if "run" in locals():
             run.status = Parser.STATUS_FAILED
             run.finished_at = timezone.now()
             run.message = str(exc)
             run.traceback = traceback.format_exc()
-
             run.save()
-
-        raise
-
-    except Exception:
-
-        if "parser" in locals():
-            logger.exception(
-                "Parser %s crashed",
-                parser.name,
-            )
 
         raise
 
