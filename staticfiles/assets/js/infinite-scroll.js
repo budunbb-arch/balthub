@@ -75,10 +75,18 @@ class InfiniteScroll {
 
         try {
 
+            const section = this.wrapper.dataset.section;
+
+            const headers = {
+                "X-Requested-With": "XMLHttpRequest"
+            };
+
+            if (section) {
+                headers["X-Picker-Section"] = section;
+            }
+
             const response = await fetch(nextLink.href, {
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest"
-                }
+                headers: headers
             });
 
             const html = await response.text();

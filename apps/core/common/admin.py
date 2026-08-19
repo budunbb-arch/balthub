@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from apps.core.models import Module, SiteSettings
-from apps.modules.models import HtmlModule, TagsMenu
+from apps.modules.models import HtmlModule, TagsMenu, ProjectDescriptionSettings
 import logging
 
 
@@ -161,13 +161,31 @@ class FooterMenuItemInline(admin.TabularInline):
     fields = ("title", "url", "order", "is_active")
 
 
+class ProjectDescriptionSettingsInline(admin.StackedInline):
+    model = ProjectDescriptionSettings
+    fieldsets = (
+        (None, {
+            "fields": (
+                "header",
+                "header_info",
+                "personal_data",
+                "policy",
+                "message_tpl",
+                "message_tpl_info",
+                "manager_email",
+            )
+        }),
+    )
+    extra = 1
+
+
 @admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):
     list_display = ("name", "type", "position", "route", "html_module", "is_active", "order")
     list_filter = ("position", "is_active", "type")
     search_fields = ("name", "template", "route", "html_module__name", "html_module__code")
     ordering = ("position", "order")
-    inlines = [FeedbackModuleInline, FooterMenuItemInline]
+    inlines = [FeedbackModuleInline, FooterMenuItemInline, ProjectDescriptionSettingsInline]
 
     def get_inline_instances(self, request, obj=None):
         inlines = super().get_inline_instances(request, obj)
@@ -180,6 +198,8 @@ class ModuleAdmin(admin.ModelAdmin):
         if obj.type == "tags_menu":
             from apps.modules.admin import TagsMenuInline
             return [i for i in inlines if isinstance(i, TagsMenuInline)]
+        if obj.type == "project_description":
+            return [i for i in inlines if isinstance(i, ProjectDescriptionSettingsInline)]
         return []
 
     fieldsets = (

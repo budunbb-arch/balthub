@@ -77,3 +77,45 @@ class TagsMenuItem(models.Model):
 
     def __str__(self):
         return str(self.tag)
+
+
+class ProjectDescriptionSettings(models.Model):
+    module = models.OneToOneField(
+        "core.Module",
+        on_delete=models.CASCADE,
+        related_name="project_description_settings",
+        verbose_name="Модуль",
+    )
+    header = models.CharField(max_length=255, verbose_name="Заголовок формы")
+    personal_data = models.ForeignKey(
+        "documents.Document",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="project_description_personal_data",
+        verbose_name="Обработка персональных данных",
+    )
+    policy = models.ForeignKey(
+        "documents.Document",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="project_description_policy",
+        verbose_name="Политика конфиденциальности",
+    )
+    message_tpl = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Шаблон сообщения",
+        help_text="Префикс перед комментарием пользователя",
+    )
+    manager_email = models.EmailField(blank=True, null=True, verbose_name="Email для отправки")
+    header_info = models.CharField(max_length=255, blank=True, null=True, verbose_name="Заголовок для 'Узнать подробнее'")
+    message_tpl_info = models.TextField(blank=True, null=True, verbose_name="Шаблон сообщения для 'Узнать подробнее'")
+
+    class Meta:
+        verbose_name = "Настройки описания проекта"
+        verbose_name_plural = "Настройки описания проекта"
+
+    def __str__(self):
+        return f"Настройки {self.module.name}"

@@ -4,9 +4,9 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    {% block title %}
-      {% if seo.title %}{{ seo.title }}{% else %}Balthub{% endif %}
-    {% endblock %}
+    <title>
+        {% block title %}{% endblock %} - {{ seo.site_name }} | {{ seo.site_title }}
+    </title>
 
     <meta name="description" content="{% if seo.description %}{{ seo.description }}{% endif %}">
     <meta name="keywords" content="{% if seo.keywords %}{{ seo.keywords }}{% endif %}">
@@ -14,7 +14,7 @@
 
     <link rel="canonical" href="{% if seo.canonical %}{{ seo.canonical }}{% endif %}">
 
-    <meta property="og:title" content="{% if seo.og_title %}{{ seo.og_title }}{% elif seo.title %}{{ seo.title }}{% else %}Balthub{% endif %}">
+    <meta property="og:title" content="{% if seo.og_title %}{{ seo.og_title }}{% endif %}">
     <meta property="og:description" content="{% if seo.og_description %}{{ seo.og_description }}{% elif seo.description %}{{ seo.description }}{% endif %}">
     <meta property="og:url" content="{% if seo.og_url %}{{ seo.og_url }}{% elif seo.canonical %}{{ seo.canonical }}{% endif %}">
     {% if seo.og_image %}

@@ -6,6 +6,8 @@
 
 {% load static %}
 
+{% block title %}{{ house.project.name }} - {{ trans.text_house }}{% endblock %}
+
 {% block content %}
 
 <h1>{{ seo.h1|default:house.params.address|default:trans.text_house }}</h1>

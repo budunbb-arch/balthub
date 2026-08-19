@@ -4,9 +4,10 @@
 
 {% load static %}
 
+{% block title %}{{ trans.text_all_houses }}{% endblock %}
+
 {% block content %}
 
-<div class="container">
     <h1 class="mb-4">{{ trans.text_all_houses }}</h1>
 
     <div 
@@ -27,7 +28,6 @@
         
 
     </div>
-</div>
 
 {% endblock %}
 

@@ -1,0 +1,124 @@
+{% if data.project and data.project.description %}
+    <div class="module module-project-description col-10 offset-1 col-xl-4 offset-xl-2">
+        <h2>{{ data.project.name }}</h2>
+        <div class="project-description-content">
+            {{ data.project.description.description|safe }}
+        </div>
+    </div>
+
+    <div class="col-10 offset-2 col-xl-3 offset-xl-1 text-center">
+{% else %}
+    <div class="col-10 offset-2 col-xl-3 offset-xl-7 text-center">
+{% endif %}
+        <div class="module module-project-description">
+        <div class="lead-gen-header" data-textfit data-max-size="120" data-padding="30" data-fill="0.5">{{ trans.lead_ticket }}</div>
+        <div class="lead-gen-buttons">
+            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#projectFeedbackModal" data-form-type="viewing">
+                {{ trans.for_view }}
+            </a>
+            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#projectFeedbackModal" data-form-type="info">
+                {{ trans.for_choose }}
+            </a>
+        </div>
+        </div>
+    </div>
+
+{% if data.settings %}
+<div class="modal fade" id="projectFeedbackModal" tabindex="-1" aria-labelledby="projectFeedbackModalLabel" aria-hidden="true"
+     data-header-viewing="{{ data.settings.header|default:'Оставить заявку'|escapejs }}"
+     data-header-info="{{ data.settings.header_info|default:data.settings.header|default:'Оставить заявку'|escapejs }}"
+     data-tpl-viewing="{{ data.settings.message_tpl|default:''|escapejs }}"
+     data-tpl-info="{{ data.settings.message_tpl_info|default:data.settings.message_tpl|default:''|escapejs }}">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="projectFeedbackModalLabel">{{ data.settings.header|default:'Оставить заявку' }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <form class="project-feedback-form" data-module-id="{{ data.settings.id }}">
+          {% csrf_token %}
+          <input type="hidden" name="module_id" value="{{ data.settings.id }}">
+          <input type="hidden" name="module_id" value="{{ data.settings.id }}">
+
+          <div class="form-field field-user position-relative mb-3">
+            <input type="text" name="name" class="form-control" placeholder="Имя" required>
+            <span class="form-field-icon"></span>
+          </div>
+
+          <div class="row">
+            {% if data.has_phone %}
+              <div class="col-5 mb-3">
+                <div class="form-field field-country position-relative">
+                  <select class="form-select phone-country" name="phone_country" aria-label="Страна">
+                    <option value="" data-prefix="">{{ trans.text_country }}</option>
+                    {% for country in data.phone_countries %}
+                      <option value="{{ country.phone_code }}" data-prefix="{{ country.phone_code }}"{% if country.code == "RU" %} selected{% endif %}>{{ country.name }} (+{{ country.phone_code }})</option>
+                    {% endfor %}
+                  </select>
+                  <span class="form-field-icon"></span>
+                </div>
+              </div>
+            {% endif %}
+
+            <div class="{% if data.has_phone %}col-7{% else %}col-12{% endif %} mb-3">
+              <div class="form-field field-phone position-relative">
+                <input type="tel" name="phone" class="form-control phone-input" placeholder="+7 (___) ___-__-__" autocomplete="tel">
+                <span class="form-field-icon"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-field field-email position-relative mb-3">
+            <input type="email" name="email" class="form-control" placeholder="Email">
+            <span class="form-field-icon"></span>
+          </div>
+
+          <div class="mb-3">
+            <textarea name="comment" class="form-control" placeholder="Комментарий" rows="3"></textarea>
+          </div>
+
+          <div class="mb-3 field-date" style="display:none;">
+            <label class="form-label">Желаемая дата просмотра</label>
+            <input type="date" name="date" class="form-control">
+          </div>
+
+          {% if data.settings and data.settings.personal_data %}
+            <div class="form-check text-start mb-2">
+              <input class="form-check-input" type="checkbox" id="personalData{{ data.settings.id }}" name="personal_data" required>
+              <label class="form-check-label" for="personalData{{ data.settings.id }}">
+                {{ trans.text_agree }} <a href="{% url 'document_detail' data.settings.personal_data.id %}" target="_blank">{{ trans.text_personaldata }}</a>
+              </label>
+            </div>
+          {% endif %}
+
+          {% if data.settings and data.settings.policy %}
+            <div class="form-check text-start mb-4">
+              <input class="form-check-input" type="checkbox" id="policy{{ data.settings.id }}" name="policy" required>
+              <label class="form-check-label" for="policy{{ data.settings.id }}">
+                {{ trans.text_agree }} <a href="{% url 'document_detail' data.settings.policy.id %}" target="_blank">{{ trans.text_policy }}</a>
+              </label>
+            </div>
+          {% endif %}
+
+          {% if data.turnstile_site_key %}
+            <div class="cf-turnstile text-center mb-3" data-sitekey="{{ data.turnstile_site_key }}"></div>
+          {% endif %}
+
+          <div class="row">
+            <div class="col col-xl-8 offset-xl-2">
+              <input type="hidden" name="message_tpl" value="{{ data.settings.message_tpl|default:''|escapejs }}">
+              <button type="submit" class="btn btn-primary inverted w-100">Отправить</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="success-form text-center mt-4" style="display:none;">
+          <h4>{{ trans.text_success_title }}</h4>
+          <p>{{ trans.text_success_message }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

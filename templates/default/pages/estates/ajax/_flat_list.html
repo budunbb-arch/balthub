@@ -1,14 +1,10 @@
 <!-- /opt/balthub/templates/default/pages/estates/ajax/_flat_list.html -->
 
-<div class="pickers position-relative container-fluid">
-    {% include "default/modules/picker.html" with pickers=pickers %}
-</div>
-
 <div class="row" data-items>
-    {% if page_obj %}
-        {% for flat in page_obj %}
+    {% if flats_page_obj %}
+        {% for flat in flats_page_obj %}
             <div class="col-md-3">
-                {% include "default/pages/estates/flat_card.html" with flat=flat %}
+                {% include "default/pages/estates/project_flat_card.html" with flat=flat %}
             </div>
         {% endfor %}
     {% else %}
@@ -17,11 +13,5 @@
 </div>
 
 <div class="pagination-wrapper" data-pagination>
-    {% include "default/includes/infinite_pagination.html" %}
+    {% include "default/includes/infinite_pagination.html" with page_obj=flats_page_obj paginator=flats_paginator page_range=flats_page_range %}
 </div>
-
-
-
-
-
-

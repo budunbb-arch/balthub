@@ -13,9 +13,7 @@ from apps.estates.parsing.utils import (
     to_bool,
 )
 from apps.estates.parsing.constants import BUILDING_STATUS_MAPPING
-from apps.estates.developers.models import Developer
-from apps.estates.projects.models import Project, ProjectImage, ProjectParams
-from apps.estates.houses.models import House
+from apps.estates.projects.models import ProjectImage, ProjectParams
 from apps.estates.flats.models import Flat
 
 from apps.core.dictionaries.models import (
@@ -29,14 +27,12 @@ from apps.core.dictionaries.models import (
 )
 
 from apps.estates.tags.models import Tag, ProjectTag
-from apps.estates.parsing.management.execution.parser_cancel import ParserCancelChecker
 
 
 from apps.estates.parsing.utils import cache_key
 
 from . import helpers
 from . import images
-from .images import normalize_image_url
 from apps.estates.parsing.cache import ImportCache
 from apps.estates.parsing.services.nmarket.helpers import BulkUpdater
 
@@ -351,6 +347,8 @@ class NMarketImporter:
                 external_id=data["complex_id"],
                 developer=developer,
                 name=data["building_name"],
+                meta_title=data["building_name"],
+                seo_h1=data["building_name"],
             )
 
             if developer is not None:

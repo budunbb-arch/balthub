@@ -2,10 +2,8 @@
 
 from django.db import models
 from .queries import HouseQuerySet
-from transliterate import translit
-from slugify import slugify
 
-from apps.core.common.mixins import UrlMixin, SeoMixin
+from apps.core.common.mixins import UrlMixin, SeoMixin, SlugifyMixin
 from apps.core.common.models import BaseModel
 from apps.estates.projects.models import Project
 from apps.core.dictionaries.models import (
@@ -14,7 +12,7 @@ from apps.core.dictionaries.models import (
 )
 
 
-class House(BaseModel, UrlMixin, SeoMixin):
+class House(BaseModel, UrlMixin, SeoMixin, SlugifyMixin):
     objects = HouseQuerySet.as_manager()
     
     external_id = models.CharField(max_length=100, unique=True, null=True)
@@ -22,22 +20,9 @@ class House(BaseModel, UrlMixin, SeoMixin):
     slug = models.SlugField(max_length=255, null=True, blank=True)
 
 
-    def ensure_slug(self):
-
-        if self.slug:
-            return
-
-        base_slug = slugify(self.external_id or f"{Project.name}-dom")
-
-        slug = base_slug
-        i = 1
-
-        while House.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-            slug = f"{base_slug}{i}"
-            i += 1
-
-        self.slug = slug
-
+    def build_slug_base(self):
+        from slugify import slugify
+        return slugify(self.external_id or f"{self.project.name}-dom")
 
     def save(self, *args, **kwargs):
         self.ensure_slug()

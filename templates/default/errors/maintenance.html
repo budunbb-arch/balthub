@@ -1,10 +1,10 @@
 {% extends "default/base.html" %}
 
-{% block title %}Сайт временно недоступен{% endblock %}
+{% block title %}{{ trans.text_maintenance }}{% endblock %}
 
 {% block content %}
 <div class="maintenance-page">
-    <h1>Сайт временно недоступен</h1>
-    <p>Мы уже работаем над этим. Пожалуйста, зайдите позже.</p>
+    <h1>{{ trans.text_maintenance }}</h1>
+    <p>{{ trans.maintenance_message }}</p>
 </div>
 {% endblock %}

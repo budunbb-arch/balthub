@@ -31,6 +31,9 @@ translations = {
     "text_floors_asc": "Этажность ↑",
     "text_floors_desc": "Этажность ↓",
 
+    "text_maintenance": "Сайт временно не доступен",
+    "maintenance_message": "Мы уже работаем над этим. Пожалуйста, зайдите позже.",
+
 
     "specific_price": "₽ / м²",
 

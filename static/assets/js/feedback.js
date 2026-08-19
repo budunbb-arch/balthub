@@ -33,18 +33,16 @@ jQuery(function ($) {
     }
 
     function maskPhone($input) {
-        var $form = $input.closest('.feedback-form');
+        var $form = $input.closest('.feedback-form, .project-feedback-form');
         $input.val(formatPhone($input.val(), phonePrefix($form)));
     }
 
-    // Форматируем при вводе.
-    $(document).on('input', '.feedback-form .phone-input', function () {
+    $(document).on('input', '.feedback-form .phone-input, .project-feedback-form .phone-input', function () {
         maskPhone($(this));
     });
 
-    // При смене страны проставляем префикс в поля телефона.
-    $(document).on('change', '.feedback-form .phone-country', function () {
-        var $form = $(this).closest('.feedback-form');
+    $(document).on('change', '.feedback-form .phone-country, .project-feedback-form .phone-country', function () {
+        var $form = $(this).closest('.feedback-form, .project-feedback-form');
         var prefix = phonePrefix($form);
         $form.find('.phone-input').each(function () {
             $(this).val('+' + prefix);
@@ -52,14 +50,75 @@ jQuery(function ($) {
         });
     });
 
-    // ---------- Отправка формы ----------
+    function setupProjectFeedbackForm($form) {
+        var modalEl = document.getElementById('projectFeedbackModal');
+        if (!modalEl) return;
 
-    $('.feedback-form').on('submit', function (e) {
+        var titleEl = modalEl.querySelector('#projectFeedbackModalLabel');
+        var messageTplEl = $form.find('input[name="message_tpl"]')[0];
+        var dateField = modalEl.querySelector('.field-date');
+        var turnstileContainer = modalEl.querySelector('.cf-turnstile');
+        var turnstileWidgetId = null;
+
+        var headerViewing = modalEl.getAttribute('data-header-viewing') || '';
+        var headerInfo = modalEl.getAttribute('data-header-info') || '';
+        var tplViewing = modalEl.getAttribute('data-tpl-viewing') || '';
+        var tplInfo = modalEl.getAttribute('data-tpl-info') || '';
+
+        function renderTurnstile() {
+            if (!turnstileContainer || !window.turnstile) return;
+            try {
+                turnstileWidgetId = window.turnstile.render(turnstileContainer, {
+                    sitekey: turnstileContainer.getAttribute('data-sitekey') || ''
+                });
+            } catch (e) {
+                console.warn('Turnstile render error', e);
+            }
+        }
+
+        function resetTurnstile() {
+            if (turnstileWidgetId && window.turnstile) {
+                try { window.turnstile.reset(turnstileWidgetId); } catch (e) {}
+            }
+        }
+
+        modalEl.addEventListener('show.bs.modal', function(event) {
+            var button = event.relatedTarget;
+            var formType = button ? button.getAttribute('data-form-type') : 'info';
+
+            if (formType === 'viewing') {
+                if (titleEl) titleEl.textContent = headerViewing;
+                if (messageTplEl) messageTplEl.value = tplViewing;
+                if (dateField) dateField.style.display = 'block';
+            } else {
+                if (titleEl) titleEl.textContent = headerInfo;
+                if (messageTplEl) messageTplEl.value = tplInfo;
+                if (dateField) dateField.style.display = 'none';
+            }
+
+            setTimeout(renderTurnstile, 50);
+        });
+
+        modalEl.addEventListener('hide.bs.modal', function() {
+            resetTurnstile();
+        });
+    }
+
+    $('.project-feedback-form').each(function () {
+        setupProjectFeedbackForm($(this));
+    });
+
+    $('.project-feedback-form').on('submit', function (e) {
         e.preventDefault();
         var $form = $(this);
+
+        if ($form.data('submitting')) {
+            return;
+        }
+        $form.data('submitting', true);
+
         var moduleId = $form.data('module-id');
 
-        // Нормализуем телефон в E.164 перед отправкой.
         $form.find('.phone-input').each(function () {
             var prefix = phonePrefix($form);
             if ($(this).val() && prefix) {
@@ -67,53 +126,50 @@ jQuery(function ($) {
             }
         });
 
-        // Если включена капча Turnstile — проверяем, что токен получен.
         var hasTurnstile = $form.find('.cf-turnstile').length > 0;
         if (hasTurnstile) {
             var cfToken = $form.find('input[name="cf-turnstile-response"]').val() || '';
             if (!cfToken) {
                 toastr.error('Слава роботам?');
+                $form.data('submitting', false);
                 return;
             }
         }
 
-        // Собираем поля формы в объект и отправляем в формате JSON
-        // (view /feedback/send/ читает тело запроса через json.loads).
-        var payload = {};
-        $form.serializeArray().forEach(function (item) {
-            // Не даём пустому значению затереть уже заполненное поле
-            // (например, два типа дают name="phone").
-            if (item.value !== '' || !(item.name in payload)) {
-                payload[item.name] = item.value;
-            }
-        });
-        payload.module_id = moduleId;
+        var formData = new FormData($form[0]);
 
-        $.ajax({
-            url: '/feedback/send/',
-            type: 'POST',
-            contentType: 'application/json; charset=utf-8',
-            data: JSON.stringify(payload),
+        fetch('/project-feedback/send/', {
+            method: 'POST',
             headers: {
-                'X-CSRFToken': $form.find('input[name="csrfmiddlewaretoken"]').val()
+                'X-CSRFToken': $form.find('input[name="csrfmiddlewaretoken"]').val(),
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
             },
-            success: function (data) {
-                if (data.success) {
-                    $form[0].reset();
-                    // Сброс виджета капчи, чтобы можно было отправить ещё раз.
-                    if (window.turnstile) {
-                        try { window.turnstile.reset(); } catch (err) {}
-                    }
-                    // Прячем форму и показываем сообщение об успехе.
-                    $form.hide();
-                    $form.closest('.feedback-module').find('.success-form').show();
-                } else {
-                    toastr.error(data.error || 'Ошибка отправки');
+            body: formData,
+        })
+        .then(function (response) {
+            return response.json().then(function (data) {
+                return {status: response.status, data: data};
+            });
+        })
+        .then(function (result) {
+            if (result.status === 200 && result.data.success) {
+                $form[0].reset();
+                if (window.turnstile) {
+                    try { window.turnstile.reset(); } catch (err) {}
                 }
-            },
-            error: function () {
-                toastr.error('Ошибка отправки');
-            },
+                $form.hide();
+                $form.closest('.modal').find('.success-form').show();
+                toastr.success('Заявка отправлена!');
+            } else {
+                toastr.error(result.data.error || 'Ошибка отправки');
+            }
+        })
+        .catch(function () {
+            toastr.error('Ошибка отправки');
+        })
+        .always(function () {
+            $form.data('submitting', false);
         });
     });
 

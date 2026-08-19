@@ -82,6 +82,7 @@ class Lead(models.Model):
     message = models.TextField(blank=True, null=True, verbose_name="Сообщение")
     work_at = models.DateTimeField(blank=True, null=True, verbose_name="Дата обработки")
     work_by = models.CharField(max_length=255, blank=True, null=True, verbose_name="Обработал")
+    requested_date = models.DateField(blank=True, null=True, verbose_name="Желаемая дата")
 
     class Meta:
         verbose_name = "Заявка"

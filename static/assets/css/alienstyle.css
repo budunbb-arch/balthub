@@ -52,6 +52,7 @@ body {
     font-family: var(--cgr);
     line-height: 1.7;
 }
+
 .header-bg {
     position: fixed;
     inset: 0;
@@ -60,7 +61,7 @@ body {
     z-index: -1;
     top: 0;
     left: 0;
-    width: 100%;
+    right: 0;
     height: auto;
     aspect-ratio: 16 / 10;
 }
@@ -203,6 +204,9 @@ select:disabled + label.position-absolute {
 .field-phone span.form-field-icon::after {
     content: '\f095';
 }
+.field-email span.form-field-icon::after {
+    content: '\40';
+}
 .form-field input.form-control + span.form-field-icon::after, .search-filter::after, .form-field select.form-select + span.form-field-icon::after {
     font-family: var(--icon-font);
     font-weight: 900;
@@ -228,7 +232,7 @@ select:disabled + label.position-absolute {
     color: var(--bg-color);
 }
 
-button.btn.btn-primary {
+a.btn.btn-primary, button.btn.btn-primary {
     display: block;
     width: 100%;
     height: 60px;
@@ -238,13 +242,29 @@ button.btn.btn-primary {
     color: rgb(50 50 50 / 70%);
     border: none;
 }
-button.btn.btn-primary:hover, button.btn.btn-primary:active, .btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
+a.btn.btn-primary:hover, a.btn.btn-primary:focus, a.btn.btn-primary:active, button.btn.btn-primary:hover, button.btn.btn-primary:active, .btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
     background:rgb(255 255 255 / 70%);
     color: var(--bg-color);
 }
-button.btn.btn-primary:active, button.btn.btn-primary:active:focus {
+a.btn.btn-primary:active:focus, button.btn.btn-primary:active, button.btn.btn-primary:active:focus {
     box-shadow: inset 0px 5px 5px rgb(200 200 200 / 70%);
     font-size: 0.9rem;
+}
+a.btn.btn-primary {
+    display: inline-block;
+    width: auto;
+    height: auto;
+    padding: 1em 1.5em;
+    margin: .5em;
+}
+button.btn.btn-primary.inverted, a.btn.btn-primary.inverted {
+    background: rgb(50 50 50 / 70%);
+    color: rgb(255 255 255 / 70%);
+}
+button.btn.btn-primary.inverted:hover, button.btn.btn-primary.inverted:focus, button.btn.btn-primary.inverted:active, button.btn.btn-primary.inverted:active:focus, a.btn.btn-primary.inverted:hover, a.btn.btn-primary.inverted:focus, a.btn.btn-primary.inverted:active, a.btn.btn-primary.inverted:active:focus {
+    background:var(--bg-color);
+    color: rgb(255 255 255 / 70%);
+    box-shadow: none;
 }
 
 .breadcrumbs {
@@ -723,10 +743,10 @@ footer small {
 }
 
 .slideshow-thumb.is-active {
-    border-color: #333;
+    border-color: var(--bg-color);
 }
 
-span.card-city {
+span.card-city, span.card-flag {
     position: absolute;
     top: 1em;
     left: 1em;
@@ -735,6 +755,10 @@ span.card-city {
     border-radius: 25vh;
     color: white;
     font-size: small;
+}
+span.card-flag.right {
+    left: auto;
+    right: 1em;
 }
 
 .developer-logo {
@@ -919,6 +943,10 @@ span.flatplan-card-description-squareline-block-hint {
     overflow-y: auto;
     opacity: 1;
 
+}
+
+.modal {
+    color: var(--hover-color);
 }
 
 /* Сообщение об успешной отправке формы обратной связи */

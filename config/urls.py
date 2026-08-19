@@ -11,6 +11,7 @@ from apps.core.documents.views import documents_list, document_detail, document_
 from apps.core.sitemap import SitemapView
 from apps.core.robots import RobotsView
 from apps.leads.views import feedback_send
+from apps.leads.views_project_feedback import project_feedback_send
 
 
 urlpatterns = [
@@ -24,6 +25,7 @@ urlpatterns = [
     path("documents/<int:document_id>/", document_detail, name="document_detail"),
     path("documents/modal/<int:document_id>/", document_modal, name="document_modal"),
     path("feedback/send/", feedback_send, name="feedback_send"),
+    path("project-feedback/send/", project_feedback_send, name="project_feedback_send"),
 ]
 
 #urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

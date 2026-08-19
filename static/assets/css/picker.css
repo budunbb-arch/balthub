@@ -49,7 +49,6 @@ button.picker-trigger {
     width: 100%;
     text-align: left;
     border: none;
-    border-right: 1px solid #ddd;
     background: none;
     padding: 0 1em;
 }
@@ -85,7 +84,7 @@ button.picker-apply {
     display: block;
     width: 100%;
     border: none;
-    padding: 1em;
+    padding: .5em 1em;
     color: #fff;
     background: var(--seagreen);
 }
@@ -153,6 +152,15 @@ button.picker-reset {
 }
 .picker[data-picker-name="district"]::before {
     content: '\f557';
+}
+.picker[data-picker-name="deadline_year"]::before {
+    content: '\f073';
+}
+.picker[data-picker-name="building_status"]::before {
+    content: '\f828';
+}
+.picker[data-picker-name="phase"]::before {
+    content: '\f0c9';
 }
 .picker::before {
     left: 0;

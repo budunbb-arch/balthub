@@ -1,5 +1,7 @@
 {% extends "default/base.html" %}
 
+{% block title %}{{ trans.head_404 }}{% endblock %}
+
 {% block content %}
 
 <section class="error-page py-5">
@@ -22,10 +24,6 @@
 
             <a href="/" class="btn btn-dark">
                 {{ trans.text_go_home }}
-            </a>
-
-            <a href="/estates/projects/" class="btn btn-outline-dark">
-                {{ trans.text_projects }}
             </a>
 
         </div>

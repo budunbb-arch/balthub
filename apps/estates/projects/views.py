@@ -5,6 +5,8 @@ from django.core.cache import cache
 from django.conf import settings
 
 from apps.estates.houses.models import House
+from apps.estates.flats.models import Flat
+from apps.estates.flats.pickers import flat_list_pickers
 from apps.estates.projects.models import Project
 from apps.core.cache_keys import project_detail_key
 from apps.core.pagination import paginate_queryset
@@ -96,13 +98,12 @@ def project_list(request):
 
 
 def project_detail(request, project_slug):
-
     project = get_object_or_404(
-
         Project.objects.active().only("id"),
-
         slug=project_slug
     )
+
+    request.project = project
 
     cache_key = project_detail_key(project.id)
 
@@ -146,6 +147,7 @@ def project_detail(request, project_slug):
     selected_deadlines = state.get("deadline_year", [])
     selected_statuses = state.get("building_status", [])
     selected_phases = state.get("phase", [])
+    selected_houses = state.get("house", [])
 
     sort = state.get("sort", ["-id"])[0]
 
@@ -190,6 +192,23 @@ def project_detail(request, project_slug):
         12
     )
 
+    flats_qs = (
+        Flat.objects.active()
+        .filter(house__project=project)
+        .select_related("house", "house__project")
+        .prefetch_related("params", "deals")
+        .order_by("number")
+    )
+
+    if selected_houses:
+        flats_qs = flats_qs.filter(house_id__in=selected_houses)
+
+    flats_page_obj, flats_paginator, flats_page_range = paginate_queryset(
+        request,
+        flats_qs,
+        12
+    )
+
     # =====================================================
     # PICKERS
     # =====================================================
@@ -206,6 +225,11 @@ def project_detail(request, project_slug):
         phase_queryset=project.houses.active().available_phases(),
     )
 
+    flats_pickers = flat_list_pickers(
+        selected_houses=selected_houses,
+        project=project,
+    )
+
     context = {
         "project": project,
 
@@ -213,7 +237,12 @@ def project_detail(request, project_slug):
         "paginator": paginator,
         "page_range": page_range,
 
+        "flats_page_obj": flats_page_obj,
+        "flats_paginator": flats_paginator,
+        "flats_page_range": flats_page_range,
+
         "pickers": pickers,
+        "flats_pickers": flats_pickers,
     }
 
     houses = (
@@ -245,6 +274,14 @@ def project_detail(request, project_slug):
     # =====================================================
 
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+
+        section = request.headers.get("X-Picker-Section")
+        if section == "flats" or "house" in request.GET:
+            return render(
+                request,
+                "default/pages/estates/ajax/_flat_list.html",
+                context
+            )
 
         return render(
             request,

@@ -5,19 +5,25 @@
 <div class="card mb-3">
     {% if house.image %}
         <div class="card-img-wrapper">
-            <img
-                src="{{ house.image|image_variant:480 }}"
-                srcset="{{ house.image|image_srcset:'320,480,640' }}"
-                sizes="(max-width: 768px) 100vw, 25vw"
-                loading="lazy"
-                class="card-img-top"
-                alt="">
+            <a href="{% url 'house_detail' house.project.slug house.slug %}" class="">
+                <img
+                    src="{{ house.image|image_variant:480 }}"
+                    srcset="{{ house.image|image_srcset:'320,480,640' }}"
+                    sizes="(max-width: 768px) 100vw, 25vw"
+                    loading="lazy"
+                    class="card-img-top"
+                    alt="">
+            </a>
         </div>
     {% endif %}
 
     <div class="card-body">
+        {# город через ProjectParams #} 
+    {% if project.params and project.params.city %} 
+      <span class="card-city">{{ project.params.city.name }}</span> 
+    {% endif %}
         <h5 class="card-title">
-            {{ house.params.address|default:trans.no_address }}
+            {{ house.params.address|default:trans.no_address }} {{ house.params.corpus }}
         </h5>
 
         <p class="card-text">
@@ -26,12 +32,17 @@
 
         {% if house.params.deadline %}
             <p class="text-muted">
-                {{ trans.deadline }} {{ house.params.deadline }} {{ house.params.deadline_year }}
+                {{ trans.deadline }} {{ house.params.deadline }} {{ house.params.deadline_year }} ({{ house.params.phase }})<br>
             </p>
+            {% if house.params.building_status %}
+                <span class="card-flag right position-absolute">{{ house.params.building_status }}</span>
+            {% endif %}
         {% endif %}
 
-        <a href="{% url 'house_detail' house.project.slug house.slug %}" class="btn btn-sm btn-primary">
-            {{ trans.button_more }}
-        </a>
+        <div class="text-center">
+            <a href="{% url 'house_detail' house.project.slug house.slug %}" class="btn btn-primary inverted">
+                {{ trans.button_more }}
+            </a>
+        </div>
     </div>
 </div>

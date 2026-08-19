@@ -25,9 +25,16 @@ translations = {
     "text_developer": "Застройщик",
     "text_location": "Локация",
     "text_description": "Описание",
+    "text_coordinates": "Местоположение комплекса",
+    "text_exterrior": "Экстерьер комплекса",
+    "choose_flat": "Выбрать квартиру в",
 
     "projects": "Проекты",
     "contacts": "Контакты",
     "departments": "Отделы",
     "prices": "Цены:",
+
+    "lead_ticket": "Оставьте заявку",
+    "for_view": "На просмотр",
+    "for_choose": "На подбор",
 }

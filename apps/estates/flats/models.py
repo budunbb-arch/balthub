@@ -2,9 +2,9 @@
 
 from django.db import models
 from django.urls import reverse
-from django.utils.text import slugify
+
+from apps.core.common.mixins import UrlMixin, SeoMixin, SlugifyMixin
 from apps.core.common.models import BaseModel
-from apps.core.common.mixins import UrlMixin, SeoMixin
 from apps.estates.houses.models import House
 from apps.core.dictionaries.models import (
     FinishType,
@@ -16,7 +16,7 @@ from apps.core.dictionaries.models import (
 from .queries import FlatQuerySet
 
 
-class Flat(BaseModel, UrlMixin, SeoMixin):
+class Flat(BaseModel, UrlMixin, SeoMixin, SlugifyMixin):
 
     objects = FlatQuerySet.as_manager()
 
@@ -26,22 +26,9 @@ class Flat(BaseModel, UrlMixin, SeoMixin):
     slug = models.SlugField(max_length=50, null=True, blank=True)
 
 
-    def ensure_slug(self):
-
-        if self.slug:
-            return
-
-        base_slug = slugify(f"kv{self.number}" or f"kvartira")
-
-        slug = base_slug
-        i = 1
-
-        while Flat.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-            slug = f"{base_slug}{i}"
-            i += 1
-
-        self.slug = slug
-
+    def build_slug_base(self):
+        from slugify import slugify
+        return slugify(f"kv{self.number}" or f"kvartira")
 
     def save(self, *args, **kwargs):
         self.ensure_slug()

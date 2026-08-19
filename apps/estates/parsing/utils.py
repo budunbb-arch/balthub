@@ -64,13 +64,11 @@ def normalize_text_block(text: str) -> str:
     if not text:
         return text
 
-    # убрать переносы строк и табы
-    text = re.sub(r"[\r\n\t]+", " ", text)
+    text = text.replace("\r", "\n")
 
-    # убрать множественные пробелы
-    text = re.sub(r"\s+", " ", text)
+    parts = [part.strip() for part in re.split(r"\n+", text) if part.strip()]
 
-    return text.strip()
+    return "".join(f"<p>{part}</p>" for part in parts)
 
 
 def to_bool(value):

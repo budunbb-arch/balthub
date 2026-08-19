@@ -1,45 +1,39 @@
 {% extends "default/base.html" %}
 
-{% block title %}Документы{% endblock %}
+{% block title %}{{ trans.text_documents }}{% endblock %}
 
 {% block content %}
-<div class="container content-wrapper">
-    <div class="row">
-        <div class="col-12">
-            <h1>Документы</h1>
-            {% if documents %}
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Название</th>
-                                <th>Дата</th>
-                                <th>Файл</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for document in documents %}
-                                <tr>
-                                    <td>
-                                        <a href="{% url 'document_detail' document.id %}">{{ document.document_name }}</a>
-                                    </td>
-                                    <td>{{ document.document_date|date:"d.m.Y" }}</td>
-                                    <td>
-                                        {% if document.document_file %}
-                                            <a href="{{ document.document_file.url }}" target="_blank">Открыть файл</a>
-                                        {% else %}
-                                            —
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <p>Документы не найдены.</p>
-            {% endif %}
+    <h1>{{ trans.text_documents }}</h1>
+    {% if documents %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>{{ trans.text_column_name }}</th>
+                        <th>{{ trans.text_column_date }}</th>
+                        <th>{{ trans.text_column_file }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for document in documents %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'document_detail' document.id %}">{{ document.document_name }}</a>
+                            </td>
+                            <td>{{ document.document_date|date:"d.m.Y" }}</td>
+                            <td>
+                                {% if document.document_file %}
+                                    <a href="{{ document.document_file.url }}" target="_blank">{{ trans.text_open }}</a>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    </div>
-</div>
+    {% else %}
+        <p>{{ trans.no_documents }}</p>
+    {% endif %}
 {% endblock %}

@@ -23,6 +23,8 @@ ALLOWED_HOSTS = [
     'balthub.rf39.ru',
     'квартирукупить.рф',
     'xn--b1afkwdgk7a.xn--p1ai',
+    '212.192.0.71',
+    '*.cloudflare.com',
 ]
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -70,6 +72,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.core.middleware.view_name.ViewNameMiddleware',
     'apps.core.middleware.site_status.SiteStatusMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

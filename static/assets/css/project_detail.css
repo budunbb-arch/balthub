@@ -1,0 +1,60 @@
+.header-bg {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), var(--project-first-image);
+    background-size: cover;
+    position: absolute;
+}
+.module.module-project-description {
+    background: rgb(0 0 0 / 40%);
+    padding: 2em 3em;
+    border-radius: 5px;
+    margin-bottom: 1em;
+}
+.module.module-project-description .project-description-content {
+    aspect-ratio: 3 / 2;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 30%) transparent;
+    padding-right: 1em;
+}
+.module.module-project-description .project-description-content::-webkit-scrollbar-button {
+    display: none;
+}
+.lead-gen-header {
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 1em;
+}
+
+.project-map {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), var(--project-second-image);
+}
+.project-slides, .project-houses h2, .project-flats h2 {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), var(--project-last-image);
+}
+.project-map h2, .project-slides h2, .project-houses h2, .project-flats h2 {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin: 0;
+    font-weight: 700;
+    color: var(--text-color);
+    text-transform: uppercase;
+}
+.project-houses h2, .project-flats h2 {
+    background-position: center;
+}
+.project-flats h4 {
+    padding-bottom: .5em;
+    border-bottom: 2px solid var(--bg-color);
+    color: var(--bg-color);
+}
+.slideshow-track {
+    border-radius: 0;
+    border-bottom: 2px solid var(--text-color);
+    border-top: 2px solid var(--text-color);
+}
+.slideshow-main {
+    margin-bottom: 0;
+}
+.slideshow-thumbs {
+    padding: 0.5rem;
+}

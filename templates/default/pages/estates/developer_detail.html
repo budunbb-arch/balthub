@@ -4,6 +4,8 @@
 
 {% load static %}
 
+{% block title %}{{ developer.name }}{% endblock %}
+
 {% block content %}
 
 <h1>{{ seo.h1|default:developer.name }}</h1>

@@ -1,4 +1,4 @@
-from django.db.models import Count, Min, Q, Prefetch
+from django.db.models import Count, Min, Q
 
 from apps.core.common.querysets import PublicQuerySet
 

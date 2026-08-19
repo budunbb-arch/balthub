@@ -3,6 +3,10 @@
 {% extends "default/base.html" %}
 
 {% load static %}
+{% load image_utils %}
+
+{% block title %}{{ project.name }}{% endblock %}
+
 {% block content %}
 
 <div class="mt-4">
@@ -30,20 +34,36 @@
         </div>
     {% endif %}
 
+
+
+
+{% if map_points_json %}
+
+<div class="project-map">
+
+<h2 class="text-center">{{ trans.text_coordinates }}</h2>
+
+{% if map_points %}
+
+    <div id="collection-map"></div>
+
+    {{ map_points|json_script:"collection-map-data" }}
+
+{% endif %}
+</div>
+
+{% endif %}
+
+<div class="project-slides">
+    <h2 class="text-center">{{ trans.text_exterrior }}</h2>
     <!-- Слайдшоу -->
     {% include "default/modules/project_slideshow.html" with project=project %}
+    </div>
 
-    <!-- Описание -->
-    {% if project.description %}
-        <div class="mb-4">
-            <h5>{{ trans.text_description }}</h5>
-            <p>{{ project.description.description }}</p>
-        </div>
-    {% endif %}
-
+<div class="project-houses">
     <!-- Дома - tpl: ajax/_house_list.html -->
     <div id="houses-list">
-        <h5>{{ trans.text_houses }}</h5>
+        <h2 class="text-center">{{ trans.text_houses }}</h2>
 
         <div 
             data-ajax-list
@@ -61,29 +81,81 @@
             </div>    
         </div>
     </div>
+</div>
+<div class="project-flats">
+    <!-- Квартиры -->
+    <div id="flats-list" class="mt-5">
+        <h2 class="text-center mb-2">{{ trans.choose_flat }} {{ project.name }}</h2>
 
+        <div 
+            data-ajax-list
+            data-container="#flats-block"
+            data-push-state="true"
+            data-section="flats"
+        >
+            <div class="ajax-loader-overlay hidden">
+                <div class="spinner"></div>
+            </div>
+
+            <div class="flats-list row">
+                <div class="flats-list-pickers col-12 col-xl-3">
+                    {% include "default/modules/picker_flats.html" with pickers=flats_pickers %}
+                </div>
+                <div class="flats-list-content col-12 col-xl-9">
+                    <div id="flats-block">
+                        <div class="row" data-items>
+                            {% if flats_page_obj %}
+                                {% for flat in flats_page_obj %}
+                                    <div class="col-md-3">
+                                        {% include "default/pages/estates/project_flat_card.html" with flat=flat %}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>{{ trans.no_flats }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="pagination-wrapper" data-pagination>
+                        {% include "default/includes/infinite_pagination.html" with page_obj=flats_page_obj paginator=flats_paginator page_range=flats_page_range %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-
-{% if map_points_json %}
-
-<h2>Дома на карте</h2>
-
-{% if map_points %}
-
-    <div id="collection-map"></div>
-
-    {{ map_points|json_script:"collection-map-data" }}
-
-{% endif %}
-
-{% endif %}
+</div>
 
 {% endblock %}
 
 {% block extra_css%}
     <link rel="stylesheet" href="{% static 'assets/css/picker.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/css/maps.css' %}"
+    <link rel="stylesheet" href="{% static 'assets/css/maps.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/project_detail.css' %}">
+    
+    {% if project.images.all %}
+        <style>
+            :root {
+                --project-first-image: url('{{ project.images.first.image|image_variant:1200 }}');
+                {% with second_image=project.images.all|slice:"1:2" %}
+                    {% if second_image %}
+                        --project-second-image: url('{{ second_image.0.image|image_variant:1200 }}');
+                    {% endif %}
+                {% endwith %}
+                {% with third_image=project.images.all|slice:"2:3" %}
+                    {% if third_image %}
+                        --project-third-image: url('{{ third_image.0.image|image_variant:1200 }}');
+                    {% endif %}
+                {% endwith %}
+                {% with last_image=project.images.all|slice:"-1:" %}
+                    {% if last_image %}
+                        --project-last-image: url('{{ last_image.0.image|image_variant:1200 }}');
+                    {% endif %}
+                {% endwith %}
+            }
+        </style>
+    {% endif %}
 {% endblock %}
 
 {% block extra_js %}

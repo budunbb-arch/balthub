@@ -1,4 +1,4 @@
-/* /opt/balthub/static/assets/js/picker_stable.js */
+/* /opt/balthub/staticfiles/assets/js/picker_stable.js */
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -78,12 +78,12 @@ class PickerSystem {
 
                     e.stopPropagation();
 
-                    const picker = btn.closest(".picker");
+                    const picker = btn.closest("[data-picker-name]");
 
                     const isOpen = picker.classList.contains("open");
 
                     // закрываем все
-                    document.querySelectorAll(".picker.open")
+                    document.querySelectorAll("[data-picker-name].open")
                         .forEach(p => {
                             p.classList.remove("open");
                         });
@@ -102,7 +102,7 @@ class PickerSystem {
 
             input.addEventListener("change", (e) => {
 
-                const picker = e.target.closest(".picker");
+                const picker = e.target.closest("[data-picker-name]");
                 const name = picker.dataset.pickerName;
                 const type = e.target.type;
                 const value = e.target.value;
@@ -113,7 +113,7 @@ class PickerSystem {
 
                 if (type === "radio") {
 
-                    this.state[name] = [value];   // всегда массив из 1
+                    this.state[name] = [value];
                     this.syncURL(); 
 
                     picker.querySelectorAll('input[type="radio"]').forEach(r => {
@@ -141,6 +141,11 @@ class PickerSystem {
                     } else {
                         this.state[name] =
                             this.state[name].filter(v => v !== value);
+                    }
+
+                    const picker = e.target.closest("[data-picker-name]");
+                    if (picker && !picker.querySelector(".picker-apply")) {
+                        this.syncURL();
                     }
                 }
             });
@@ -171,7 +176,7 @@ class PickerSystem {
                     // AUTO SUBMIT
                     // =========================================
 
-                    const picker = e.target.closest(".picker");
+                    const picker = e.target.closest("[data-picker-name]");
 
                     if (picker.dataset.autoSubmit === "true") {
 
@@ -192,7 +197,7 @@ class PickerSystem {
 
                 btn.addEventListener("click", () => {
                     this.syncURL();
-                    btn.closest(".picker").classList.remove("open");
+                    btn.closest("[data-picker-name]").classList.remove("open");
                 });
 
             });
@@ -204,7 +209,7 @@ class PickerSystem {
 
                     e.stopPropagation();
 
-                    const picker = btn.closest(".picker");
+                    const picker = btn.closest("[data-picker-name]");
                     const name = picker.dataset.pickerName;
 
                     // =====================================================
@@ -268,7 +273,7 @@ class PickerSystem {
         const keys = new Set(Object.keys(this.state));
 
         // добавляем виртуальный ключ для range
-        this.root.querySelectorAll(".picker").forEach(picker => {
+        this.root.querySelectorAll("[data-picker-name]").forEach(picker => {
 
             const inputs = picker.querySelectorAll("[data-picker-range]");
 
@@ -384,10 +389,16 @@ class PickerSystem {
 
     reload(url, mode = "replace") {
 
+        const ajaxWrapper = this.root.closest("[data-ajax-list]");
+        const headers = {
+            "X-Requested-With": "XMLHttpRequest"
+        };
+        if (ajaxWrapper?.dataset.section) {
+            headers["X-Picker-Section"] = ajaxWrapper.dataset.section;
+        }
+
         fetch(url, {
-            headers: {
-                "X-Requested-With": "XMLHttpRequest"
-            }
+            headers: headers
         })
         .then(r => r.text())
         .then(html => {
@@ -428,12 +439,21 @@ class PickerSystem {
             // re-init infinite scroll
             if (typeof InfiniteScroll !== "undefined") {
 
-                if (window.infiniteScrollInstance) {
-                    window.infiniteScrollInstance.disabled = true;
+                if (window.infiniteScrollInstances) {
+                    window.infiniteScrollInstances.forEach((instance, wrapper) => {
+                        if (wrapper === ajaxWrapper || !document.body.contains(wrapper)) {
+                            instance.disabled = true;
+                        }
+                    });
                 }
 
-                window.infiniteScrollInstance =
-                    new InfiniteScroll(ajaxWrapper);
+                const newInstance = new InfiniteScroll(ajaxWrapper);
+
+                if (!window.infiniteScrollInstances) {
+                    window.infiniteScrollInstances = new Map();
+                }
+
+                window.infiniteScrollInstances.set(ajaxWrapper, newInstance);
             }
         });
     }
@@ -441,7 +461,7 @@ class PickerSystem {
 
 document.addEventListener("click", (e) => {
 
-    document.querySelectorAll(".picker.open").forEach(picker => {
+    document.querySelectorAll("[data-picker-name].open").forEach(picker => {
 
         if (!picker.contains(e.target)) {
             picker.classList.remove("open");
@@ -470,20 +490,28 @@ function initPickers() {
     // INIT INFINITE SCROLL
     // =========================================
 
-    const wrapper = document.querySelector("[data-ajax-list]");
+    document.querySelectorAll("[data-ajax-list]").forEach(wrapper => {
 
-    if (
-        wrapper
-        && !wrapper.classList.contains("plans-wrapper")
-    ) {
+        if (
+            wrapper
+            && !wrapper.classList.contains("plans-wrapper")
+        ) {
 
-        if (!window.infiniteScrollInstance) {
+            if (!window.infiniteScrollInstances) {
+                window.infiniteScrollInstances = new Map();
+            }
 
-            window.infiniteScrollInstance =
-                new InfiniteScroll(wrapper);
+            if (!window.infiniteScrollInstances.has(wrapper)) {
 
+                window.infiniteScrollInstances.set(
+                    wrapper,
+                    new InfiniteScroll(wrapper)
+                );
+
+            }
         }
-    }
+
+    });
 
 }
 
@@ -497,9 +525,13 @@ document.addEventListener("click", (e) => {
     const url = new URL(link.href);
     const page = url.searchParams.get("page");
 
-    // disable infinite scroll
-    if (window.infiniteScrollInstance) {
-        window.infiniteScrollInstance.disabled = true;
+    const wrapper = link.closest("[data-ajax-list]");
+
+    if (wrapper && window.infiniteScrollInstances) {
+        const instance = window.infiniteScrollInstances.get(wrapper);
+        if (instance) {
+            instance.disabled = true;
+        }
     }
 
     const loadedPage = document.querySelector(
@@ -522,8 +554,11 @@ document.addEventListener("click", (e) => {
         });
 
         setTimeout(() => {
-            if (window.infiniteScrollInstance) {
-                window.infiniteScrollInstance.disabled = false;
+            if (wrapper && window.infiniteScrollInstances) {
+                const instance = window.infiniteScrollInstances.get(wrapper);
+                if (instance) {
+                    instance.disabled = false;
+                }
             }
         }, 300);
 
@@ -540,4 +575,4 @@ document.addEventListener("click", (e) => {
     }
 });
 
-window.infiniteScrollInstance = null;
+window.infiniteScrollInstances = new Map();

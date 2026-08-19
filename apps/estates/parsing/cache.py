@@ -360,6 +360,8 @@ class ImportCache:
         external_id,
         developer,
         name,
+        meta_title,
+        seo_h1,
     ):
 
         return self._resolve(
@@ -369,6 +371,8 @@ class ImportCache:
                 external_id=external_id,
                 developer=developer,
                 name=name,
+                meta_title=meta_title,
+                seo_h1=seo_h1,
                 is_public=True,
                 published_at=timezone.now(),
             ),

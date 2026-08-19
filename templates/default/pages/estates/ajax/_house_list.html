@@ -7,7 +7,7 @@
 <div class="row" data-items>
     {% if page_obj %}
         {% for house in page_obj %}
-            <div class="col-md-3">
+            <div class="col-12 col-xl-3">
                 {% include "default/pages/estates/house_card.html" with house=house %}
             </div>
         {% endfor %}

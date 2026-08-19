@@ -4,11 +4,11 @@
 
 {% load static %}
 
-{% block title %}Теги проектов{% endblock %}
+{% block title %}{{ trans.text_tags }}{% endblock %}
 
 {% block content %}
 
-    <h1 class="mb-4">Теги проектов</h1>
+    <h1 class="mb-4">{{ trans.text_tags }}</h1>
 
     <div class="row">
         {% for tag in tags %}
@@ -22,7 +22,7 @@
                 </a>
             </div>
         {% empty %}
-            <p>Теги отсутствуют.</p>
+            <p>{{ trans.no_tags }}</p>
         {% endfor %}
     </div>
 

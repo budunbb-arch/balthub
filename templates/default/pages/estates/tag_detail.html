@@ -4,11 +4,11 @@
 
 {% load static %}
 
-{% block title %}Тег: {{ tag.name }}{% endblock %}
+{% block title %}{{ tag.name }}{% endblock %}
 
 {% block content %}
 
-    <h1 class="mb-4">Проекты по тегу: {{ tag.name }}</h1>
+    <h1 class="mb-4">{{ tag.name }}</h1>
 
     <div 
         data-ajax-list

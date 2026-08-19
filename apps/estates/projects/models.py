@@ -1,21 +1,16 @@
 # apps/estates/projects/models.py
 
 from django.db import models
-from transliterate import translit
 from slugify import slugify
 
-from apps.core.common.mixins import UrlMixin, SeoMixin
+from apps.core.common.mixins import UrlMixin, SeoMixin, SlugifyMixin
 from apps.core.common.models import BaseModel
 from apps.estates.developers.models import Developer
 from apps.core.dictionaries.models import City, District, PropertyCategory, PropertyType
 from .queries import ProjectQuerySet
 
 
-def ru_slug(text):
-    return slugify(translit(text, 'ru', reversed=True))
-
-
-class Project(BaseModel, UrlMixin, SeoMixin):
+class Project(BaseModel, UrlMixin, SeoMixin, SlugifyMixin):
 
     objects = ProjectQuerySet.as_manager()
 
@@ -26,31 +21,12 @@ class Project(BaseModel, UrlMixin, SeoMixin):
     slug = models.SlugField(max_length=255, unique=True, blank=True)
 
 
-    def ensure_slug(self):
-        if self.slug:
-            return
-
+    def build_slug_base(self):
+        base_slug = slugify(self.name)
         RESERVED_SLUGS = {"projects", "houses", "flats"}
-
-        base_slug = ru_slug(self.name)
-
         if base_slug in RESERVED_SLUGS:
             base_slug = f"project-{base_slug}"
-
-        slug = base_slug
-        i = 1
-
-        while (
-            Project.objects
-            .filter(slug=slug)
-            .exclude(pk=self.pk)
-            .exists()
-        ):
-            slug = f"{base_slug}-{i}"
-            i += 1
-
-        self.slug = slug
-
+        return base_slug
 
     def save(self, *args, **kwargs):
         self.ensure_slug()

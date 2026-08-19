@@ -1,18 +1,14 @@
 # /opt/balthub/apps/estates/developers/models.py
 
 from django.db import models
-from apps.core.common.models import BaseModel
-from apps.core.common.mixins import SeoMixin
-from .queries import DeveloperQuerySet
-from transliterate import translit
 from slugify import slugify
 
+from apps.core.common.models import BaseModel
+from apps.core.common.mixins import SeoMixin, SlugifyMixin
+from .queries import DeveloperQuerySet
 
-def ru_slug(text):
-    return slugify(translit(text, 'ru', reversed=True))
 
-
-class Developer(BaseModel, SeoMixin):
+class Developer(BaseModel, SeoMixin, SlugifyMixin):
 
     objects = DeveloperQuerySet.as_manager()
 
@@ -26,22 +22,8 @@ class Developer(BaseModel, SeoMixin):
         verbose_name_plural = "Застройщики"
         ordering = ["name"]
 
-    def ensure_slug(self):
-
-        if self.slug:
-            return
-
-        base_slug = ru_slug(self.name)
-
-        slug = base_slug
-        i = 1
-
-        while Developer.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-            slug = f"{base_slug}-{i}"
-            i += 1
-
-        self.slug = slug
-
+    def build_slug_base(self):
+        return slugify(self.name)
 
     def save(self, *args, **kwargs):
         self.ensure_slug()

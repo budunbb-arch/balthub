@@ -1,0 +1,29 @@
+{% load static %}
+
+<div class="flats-pickers" data-picker-root data-picker>
+    {% for picker in pickers %}
+        <div class="flat-picker mb-5" data-picker-name="{{ picker.name }}">
+            <h4>{{ picker.placeholder }}</h4>
+
+            <div class="flat-picker-options mt-2">
+                {% for option in picker.options %}
+                    <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            value="{{ option.value }}"
+                            data-picker-value
+                            id="flat-picker-{{ picker.name }}-{{ option.value }}"
+                        >
+                        <label
+                            class="form-check-label"
+                            for="flat-picker-{{ picker.name }}-{{ option.value }}"
+                        >
+                            {{ option.label }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>

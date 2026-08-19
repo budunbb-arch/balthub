@@ -1,4 +1,4 @@
-# apps/leads/views.py
+# apps/leads/views_project_feedback.py
 
 import json
 
@@ -8,11 +8,15 @@ from django.utils import timezone
 from django.conf import settings
 from django.template.loader import render_to_string
 
-from .models import FeedbackModule, Lead
+from .models import Lead
 from .turnstile import is_turnstile_enabled, verify_turnstile_token
+from apps.modules.models import ProjectDescriptionSettings
 
 
-def _build_lead_from_payload(data, settings_obj=None):
+@require_POST
+def project_feedback_send(request):
+    data = request.POST.dict()
+
     module_id = data.get("module_id")
     name = (data.get("name") or "").strip()
     phone = (data.get("phone") or "").strip()
@@ -31,7 +35,7 @@ def _build_lead_from_payload(data, settings_obj=None):
             return JsonResponse(
                 {"success": False, "error": "Подтвердите, что вы не робот."}, status=400
             )
-        if not verify_turnstile_token(token, data.get("remote_ip") or ""):
+        if not verify_turnstile_token(token, request.META.get("REMOTE_ADDR")):
             return JsonResponse(
                 {
                     "success": False,
@@ -43,11 +47,10 @@ def _build_lead_from_payload(data, settings_obj=None):
     if not module_id:
         return JsonResponse({"success": False, "error": "Не указан модуль."}, status=400)
 
-    if settings_obj is None:
-        try:
-            settings_obj = FeedbackModule.objects.get(pk=module_id)
-        except FeedbackModule.DoesNotExist:
-            return JsonResponse({"success": False, "error": "Модуль не найден."}, status=400)
+    try:
+        settings_obj = ProjectDescriptionSettings.objects.get(pk=module_id)
+    except ProjectDescriptionSettings.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Модуль не найден."}, status=400)
 
     if not name:
         return JsonResponse({"success": False, "error": "Укажите имя."}, status=400)
@@ -86,13 +89,3 @@ def _build_lead_from_payload(data, settings_obj=None):
     )
 
     return JsonResponse({"success": True})
-
-
-@require_POST
-def feedback_send(request):
-    try:
-        data = json.loads(request.body.decode("utf-8") or "{}")
-    except json.JSONDecodeError:
-        return HttpResponseBadRequest("Invalid JSON")
-
-    return _build_lead_from_payload(data)

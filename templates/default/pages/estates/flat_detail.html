@@ -2,6 +2,8 @@
 
 {% load static %}
 
+{% block title %}{{ trans.text_flat }} {{ flat.number|default:"" }}{% endblock %}
+
 {% block content %}
 
 <h1>

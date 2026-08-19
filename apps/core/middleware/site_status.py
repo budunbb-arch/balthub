@@ -2,6 +2,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.urls import resolve, Resolver404
 from apps.core.models import SiteSettings
+from apps.core.engines.builders import get_default_seo
 
 
 ALLOWED_SITE_DISABLED_PATHS = [
@@ -32,6 +33,8 @@ class SiteStatusMiddleware:
         user = getattr(request, "user", None)
 
         if site_settings and site_settings.is_disabled and not (user and getattr(user, "is_staff", False)):
-            return render(request, "default/errors/maintenance.html", status=503)
+            seo = get_default_seo(request)
+            seo["title"] = f"{seo.get('site_title', '')} | {seo.get('site_name', '')}"
+            return render(request, "default/errors/maintenance.html", status=503, context={"seo": seo})
 
         return self.get_response(request)

@@ -1,3 +1,3 @@
 translations = {
-    {{ "main_page": "Главная страница" }},
+    "homepage": "Главная страница",
 }
