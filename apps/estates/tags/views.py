@@ -52,8 +52,8 @@ def tag_detail(request, tag_slug):
     tasks = AutoTagTask.objects.filter(tag=tag)
     object_types = set(tasks.values_list("object_type", flat=True))
 
-    is_flat_tag = AutoTagTask.OBJECT_TYPE_FLAT in object_types
-    is_project_tag = AutoTagTask.OBJECT_TYPE_PROJECT in object_types
+    is_flat_tag = AutoTagTask.OBJECT_TYPE_FLAT in object_types or tag.flat_tags.exists()
+    is_project_tag = AutoTagTask.OBJECT_TYPE_PROJECT in object_types or tag.project_tags.exists()
 
     projects_base_qs = (
         Project.objects

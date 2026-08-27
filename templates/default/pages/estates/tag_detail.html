@@ -10,12 +10,12 @@
 
     <h1 class="mb-4">{{ tag.name }}</h1>
 
-    <ul class="nav nav-tabs mb-4" id="tagDetailTabs" role="tablist">
+    <ul class="nav nav-tabs h-list d-block font-size-fix mb-4" id="tagDetailTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="projects-tab" data-bs-toggle="tab" data-bs-target="#projects-pane" type="button" role="tab" aria-controls="projects-pane" aria-selected="true">Проекты</button>
+            <button class="nav-link active position-relative px-5" id="projects-tab" data-bs-toggle="tab" data-bs-target="#projects-pane" type="button" role="tab" aria-controls="projects-pane" aria-selected="true">{{ trans.text_projects }}</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="flats-tab" data-bs-toggle="tab" data-bs-target="#flats-pane" type="button" role="tab" aria-controls="flats-pane" aria-selected="false">Квартиры</button>
+            <button class="nav-link position-relative px-5" id="flats-tab" data-bs-toggle="tab" data-bs-target="#flats-pane" type="button" role="tab" aria-controls="flats-pane" aria-selected="false">{{ trans.text_flats }}</button>
         </li>
     </ul>
 

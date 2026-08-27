@@ -2,7 +2,7 @@ translations = {
     "of_houses": "Домов:",
     "details_of_flats": "Квартир:",
     "text_flat": "Квартира",
-    "text_project": "Проект",
+    "text_project": "ЖК",
     "text_house": "Дом",
     "text_houses": "Дома",
     "text_city": "Город",
@@ -36,7 +36,8 @@ translations = {
     "text_finish_type": "Отделка",
     "choose_flat": "Выбрать квартиру в",
 
-    "projects": "Проекты",
+    "text_projects": "Жилые комплексы",
+    "text_flats": "Квартиры",
     "contacts": "Контакты",
     "departments": "Отделы",
     "prices": "Цены:",

@@ -14,9 +14,6 @@
                 {% if flat.house.params.deadline and flat.house.params.deadline_year %}
                     <li>{{ flat.house.params.deadline }} {{ flat.house.params.deadline_year }}</li>
                 {% endif %}
-                {% if flat.params.finish_type_id %}
-                    <li>{{ flat.params.finish_type }}</li>
-                {% endif %}
                 {% for tag in flat.flat_tags.all %}
                     <li class="flat-tag">{{ tag.tag.name }}</li>
                 {% endfor %}

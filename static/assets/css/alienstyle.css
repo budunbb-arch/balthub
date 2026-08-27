@@ -144,7 +144,7 @@ h6 {
 }
 
 a {
-    color: seagreen;
+    color: var(--seagreen);
     text-decoration: none;
 }
 a:hover, a:focus, a:active {
@@ -805,6 +805,8 @@ span.card-flag.right {
     bottom: 1em;
     max-width: 30%;
     max-height: 30%;
+    background: rgb(255 255 255 / 40%);
+    border-radius: 5px;
 }
 img.card-logo {
     opacity: 0.5;
@@ -996,4 +998,58 @@ span.flatplan-card-description-squareline-block-hint {
 .feedback-module .success-form h4 {
     color: #198754;
     margin-bottom: .75rem;
+}
+
+.text-small .form-check-input {
+    margin-top: .25em;
+}
+ul.nav.nav-tabs {
+    border-bottom: 5px solid var(--seagreen);
+}
+ul.nav.nav-tabs .nav-link {
+    border: none;
+}
+.nav-item button.nav-link {
+    color: var(--seagreen);
+    background: rgb(255 255 255 / 40%);
+    padding-top: .75rem;
+    padding-bottom: 1rem;
+    border-radius: 0;
+}
+.nav-item button.nav-link:hover, .nav-item button.nav-link:focus {
+    color: var(--bg-color);
+    background: rgb(255 255 255 / 30%);
+}
+.nav-item button.nav-link.active, .nav-item button.nav-link.active:hover {
+    color: var(--text-color);
+    background: var(--seagreen);
+    margin: 0;
+    padding-top: 1rem;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+ul.nav.nav-tabs li.nav-item:last-child button.nav-link {
+    border-top-right-radius: 5px;
+}
+ul.nav.nav-tabs li.nav-item:first-child button.nav-link {
+    border-top-left-radius: 5px;
+}
+ul.nav.nav-tabs li.nav-item button::after {
+    content: '';
+    display: block;
+    position: absolute;
+    border-left: 1px solid var(--seagreen);
+    right: -1px;
+    top: 25%;
+    height: 50%;
+}
+ul.nav.nav-tabs li.nav-item:last-child button::after, ul.nav.nav-tabs li.nav-item button.active::after {
+    content: none;
+}
+
+.font-size-fix {
+    font-size: 0;   
+    * {
+        font-size: initial;
+    }
 }
