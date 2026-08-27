@@ -8,10 +8,65 @@ from django.db import models
 from django.forms.models import construct_instance
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.utils import timezone
+from django.utils.html import format_html, mark_safe, escape
 from apps.core.models import Module, SiteSettings
-from apps.modules.models import HtmlModule, TagsMenu, ProjectDescriptionSettings
+from apps.modules.models import HtmlModule, TagsMenu, ProjectDescriptionSettings, TagCollection
 import logging
+
+
+class PhoneWidget(forms.Widget):
+    class Media:
+        css = {
+            'all': ('admin/css/phone_widget.css',)
+        }
+        js = ('admin/js/phone_widget.js',)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        import json
+        if value is None:
+            value = []
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except (json.JSONDecodeError, TypeError):
+                value = []
+        widget_id = attrs.get('id') or name
+        items_html = ''
+        for idx, item in enumerate(value):
+            label = item.get('label', '') if isinstance(item, dict) else ''
+            phone = item.get('value', '') if isinstance(item, dict) else str(item)
+            items_html += (
+                '<div class="phone-item" data-index="%d">'
+                '<input type="text" class="phone-label" value="%s" placeholder="Подпись" data-field="label">'
+                '<input type="text" class="phone-value" value="%s" placeholder="Телефон" data-field="value">'
+                '<button type="button" class="phone-remove">×</button>'
+                '</div>'
+            ) % (idx, format_html(label), format_html(phone))
+        return format_html(
+            '<div class="phone-widget" id="{}">'
+            '<div class="phone-list">{}</div>'
+            '<button type="button" class="phone-add">Добавить телефон</button>'
+            '<input type="hidden" name="{}" id="{}_hidden" value="{}">'
+            '</div>',
+            widget_id,
+            mark_safe(items_html),
+            name,
+            widget_id,
+            escape(json.dumps(value, ensure_ascii=False)),
+        )
+
+
+class SiteSettingsForm(forms.ModelForm):
+    phones = forms.JSONField(
+        widget=PhoneWidget(),
+        required=False,
+        label="Телефоны",
+        help_text="JSON-список: [{'label': 'Основной', 'value': '+7...'}]",
+    )
+
+    class Meta:
+        model = SiteSettings
+        fields = '__all__'
 
 
 class RelativeURLModelForm(forms.ModelForm):
@@ -198,6 +253,9 @@ class ModuleAdmin(admin.ModelAdmin):
         if obj.type == "tags_menu":
             from apps.modules.admin import TagsMenuInline
             return [i for i in inlines if isinstance(i, TagsMenuInline)]
+        if obj.type == "tag_collection":
+            from apps.modules.admin import TagCollectionItemInline
+            return [i for i in inlines if isinstance(i, TagCollectionItemInline)]
         if obj.type == "project_description":
             return [i for i in inlines if isinstance(i, ProjectDescriptionSettingsInline)]
         return []
@@ -223,7 +281,7 @@ class ModuleAdmin(admin.ModelAdmin):
             readonly += ["template", "route"]
         if obj and obj.type == "feedback":
             readonly += ["template"]
-        if obj and obj.type == "tags_menu":
+        if obj and obj.type in ("tags_menu", "tag_collection"):
             readonly += ["template"]
         return readonly
 
@@ -233,7 +291,7 @@ class ModuleAdmin(admin.ModelAdmin):
             exclude += ["template", "route"]
         if obj and obj.type == "feedback":
             exclude += ["template"]
-        if obj and obj.type == "tags_menu":
+        if obj and obj.type in ("tags_menu", "tag_collection"):
             exclude += ["template"]
         return exclude
 
@@ -246,10 +304,15 @@ class ModuleAdmin(admin.ModelAdmin):
             obj.template = "default/modules/footer_menu.html"
         if obj.type == "tags_menu" and not obj.template:
             obj.template = "default/modules/tags_menu.html"
+        if obj.type == "tag_collection" and not obj.template:
+            obj.template = "default/modules/tag_collection.html"
         super().save_model(request, obj, form, change)
 
         if obj.type == "tags_menu":
             TagsMenu.objects.get_or_create(module=obj)
+
+        if obj.type == "tag_collection":
+            TagCollection.objects.get_or_create(module=obj)
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
@@ -268,12 +331,14 @@ class ModuleAdmin(admin.ModelAdmin):
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
+    form = SiteSettingsForm
     list_display = (
         "site_name",
         "is_disabled",
         "default_title",
         "default_canonical",
         "default_robots",
+        "phone_display",
     )
     fieldsets = (
         (None, {
@@ -285,6 +350,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 "default_keywords",
                 "default_canonical",
                 "default_robots",
+                "phones",
             )
         }),
         ("Капча Turnstile", {
@@ -295,6 +361,15 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             ),
         }),
     )
+
+    def phone_display(self, obj):
+        if not obj.phones:
+            return '-'
+        return ', '.join(
+            f"{p.get('label', '')}: {p.get('value', '')}"
+            for p in obj.phones
+        )
+    phone_display.short_description = "Телефоны"
 
     def has_add_permission(self, request):
         return not SiteSettings.objects.exists()

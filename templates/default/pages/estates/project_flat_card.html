@@ -1,35 +1,40 @@
+{% load humanize %}
+{% load price_utils %}
+
 <div class="card p-3 mb-3">
-
-    <div class="d-flex justify-content-between">
-        <div>
-            <strong>{{ flat.house.project.name }}</strong>
+    <div class="row">
+        <div class="flat-plan col-12 col-xl-2">
+            <img src="{{ flat.plan }}" class="flat-plan-img img-contain">
         </div>
-
-        {% if flat.number %}
-           <a href="{{ flat.get_absolute_url }}"><span class="text-muted">№{{ flat.number }}</span></a>
-        {% endif %}
+        <div class="flat-description col-12 col-xl-7">
+            <h5 class="mb-4"><a href="{{ flat.get_absolute_url }}">{{ flat.params.rooms_alias }}, {{ flat.params.square }} {{ trans.text_m2 }}</a>
+                <small class="text-muted"><br>{{ flat.house.project.name }}, {% if flat.house.params.corpus %}{{ flat.house.params.corpus }}, {% endif %} {{ flat.params.floor }} <span class="lowercase">{{ trans.text_floor }}</span>{% if flat.number %}, №{{ flat.number }}{% endif %}</small>
+            </h5>
+            <ul class="list-unstyled h-list flat-tags">
+                {% if flat.house.params.deadline and flat.house.params.deadline_year %}
+                    <li>{{ flat.house.params.deadline }} {{ flat.house.params.deadline_year }}</li>
+                {% endif %}
+                {% if flat.params.finish_type_id %}
+                    <li>{{ flat.params.finish_type }}</li>
+                {% endif %}
+                {% for tag in flat.flat_tags.all %}
+                    <li class="flat-tag">{{ tag.tag.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="flat-price text-end col-12 col-xl-3">
+            {% with deal=flat.deals.first %}
+                {% if deal and deal.price %}
+                    <span class="flat-price-sum">
+                        {{ deal.price|format_price }} {{ deal.currency.postfix }}
+                    </span>
+                    {% if flat.price_per_m2 %}
+                        <div class="flat-price-per-m2">
+                            {{ flat.price_per_m2|format_price }} {{ deal.currency.postfix }}/{{ trans.text_m2 }}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+        </div>
     </div>
-
-    <div class="mt-2">
-        <div>{{ trans.text_house }} {{ flat.house }}</div>
-
-        {% if flat.params.rooms %}
-            <div>{{ trans.of_rooms }} {{ flat.params.rooms }}</div>
-        {% endif %}
-
-        {% if flat.params.square %}
-            <div>{{ trans.text_square }} {{ flat.params.square }} {{ trans.text_m2 }}</div>
-        {% endif %}
-
-        {% with deal=flat.deals.first %}
-            {% if deal and deal.price %}
-                <div class="mt-2">
-                    <strong>
-                        {{ deal.price }} {{ deal.currency }}
-                    </strong>
-                </div>
-            {% endif %}
-        {% endwith %}
-    </div>
-
 </div>

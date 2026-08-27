@@ -1,4 +1,4 @@
-/* /opt/balthub/staticfiles/assets/js/picker_stable.js */
+/* /opt/balthub/static/assets/js/picker_stable.js */
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -141,6 +141,20 @@ class PickerSystem {
                     } else {
                         this.state[name] =
                             this.state[name].filter(v => v !== value);
+                    }
+
+                    if (name === "city") {
+                        this.state["district"] = [];
+                        this.state["project"] = [];
+                        this.state["house"] = [];
+                    }
+
+                    if (name === "district") {
+                        this.state["house"] = [];
+                    }
+
+                    if (name === "project") {
+                        this.state["house"] = [];
                     }
 
                     const picker = e.target.closest("[data-picker-name]");

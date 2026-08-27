@@ -27,6 +27,13 @@ translations = {
     "text_description": "Описание",
     "text_coordinates": "Местоположение комплекса",
     "text_exterrior": "Экстерьер комплекса",
+    "text_numrooms": "Количество комнат",
+    "text_ceiling_height": "Высота потолков",
+    "text_living_square": "Жилая площадь",
+    "text_kitchen_square": "Площадь кухни",
+    "text_balcony_type": "Балкон",
+    "text_bathroom_unit_type": "Санузел",
+    "text_finish_type": "Отделка",
     "choose_flat": "Выбрать квартиру в",
 
     "projects": "Проекты",

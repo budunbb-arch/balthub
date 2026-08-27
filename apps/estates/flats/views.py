@@ -14,6 +14,7 @@ def flat_detail(request, project_slug, house_slug, flat_slug):
         ).prefetch_related(
             "deals__currency",
             "deals__deal_type",
+            "flat_tags__tag",
         ),
         slug=flat_slug,
         house__slug=house_slug,

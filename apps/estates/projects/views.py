@@ -3,6 +3,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.cache import cache
 from django.conf import settings
+from django.db.models import Min, F, FloatField, ExpressionWrapper
+from django.db.models.functions import Round
 
 from apps.estates.houses.models import House
 from apps.estates.flats.models import Flat
@@ -148,6 +150,20 @@ def project_detail(request, project_slug):
     selected_statuses = state.get("building_status", [])
     selected_phases = state.get("phase", [])
     selected_houses = state.get("house", [])
+    selected_rooms_alias = state.get("rooms_alias", [])
+    selected_floor_from = state.get("floor_from", [None])[0]
+    selected_floor_to = state.get("floor_to", [None])[0]
+    selected_ceiling_height_from = state.get("ceiling_height_from", [None])[0]
+    selected_ceiling_height_to = state.get("ceiling_height_to", [None])[0]
+    selected_square_from = state.get("square_from", [None])[0]
+    selected_square_to = state.get("square_to", [None])[0]
+    selected_living_square_from = state.get("living_square_from", [None])[0]
+    selected_living_square_to = state.get("living_square_to", [None])[0]
+    selected_kitchen_square_from = state.get("kitchen_square_from", [None])[0]
+    selected_kitchen_square_to = state.get("kitchen_square_to", [None])[0]
+    selected_balcony_type = state.get("balcony_type", [])
+    selected_bathroom_unit_type = state.get("bathroom_unit_type", [])
+    selected_finish_type = state.get("finish_type", [])
 
     sort = state.get("sort", ["-id"])[0]
 
@@ -196,12 +212,50 @@ def project_detail(request, project_slug):
         Flat.objects.active()
         .filter(house__project=project)
         .select_related("house", "house__project")
-        .prefetch_related("params", "deals")
+        .prefetch_related("params", "deals", "flat_tags__tag")
         .order_by("number")
+        .annotate(
+            min_price=Min("deals__price"),
+        )
+        .annotate(
+            price_per_m2=Round(
+                ExpressionWrapper(
+                    F("min_price") / F("params__square"),
+                    output_field=FloatField(),
+                ),
+                0
+            )
+        )
     )
 
     if selected_houses:
         flats_qs = flats_qs.filter(house_id__in=selected_houses)
+
+    if selected_rooms_alias:
+        flats_qs = flats_qs.filter(params__rooms_alias__in=selected_rooms_alias)
+
+    if selected_balcony_type:
+        flats_qs = flats_qs.filter(params__balcony_type__in=selected_balcony_type)
+
+    if selected_bathroom_unit_type:
+        flats_qs = flats_qs.filter(params__bathroom_unit_type__in=selected_bathroom_unit_type)
+
+    if selected_finish_type:
+        flats_qs = flats_qs.filter(params__finish_type__in=selected_finish_type)
+
+    flats_qs = (
+        flats_qs
+        .floor_from(selected_floor_from)
+        .floor_to(selected_floor_to)
+        .ceiling_height_from(selected_ceiling_height_from)
+        .ceiling_height_to(selected_ceiling_height_to)
+        .square_from(selected_square_from)
+        .square_to(selected_square_to)
+        .living_square_from(selected_living_square_from)
+        .living_square_to(selected_living_square_to)
+        .kitchen_square_from(selected_kitchen_square_from)
+        .kitchen_square_to(selected_kitchen_square_to)
+    )
 
     flats_page_obj, flats_paginator, flats_page_range = paginate_queryset(
         request,
@@ -227,7 +281,22 @@ def project_detail(request, project_slug):
 
     flats_pickers = flat_list_pickers(
         selected_houses=selected_houses,
+        selected_rooms_alias=selected_rooms_alias,
+        selected_floor_from=selected_floor_from,
+        selected_floor_to=selected_floor_to,
+        selected_ceiling_height_from=selected_ceiling_height_from,
+        selected_ceiling_height_to=selected_ceiling_height_to,
+        selected_square_from=selected_square_from,
+        selected_square_to=selected_square_to,
+        selected_living_square_from=selected_living_square_from,
+        selected_living_square_to=selected_living_square_to,
+        selected_kitchen_square_from=selected_kitchen_square_from,
+        selected_kitchen_square_to=selected_kitchen_square_to,
+        selected_balcony_type=selected_balcony_type,
+        selected_bathroom_unit_type=selected_bathroom_unit_type,
+        selected_finish_type=selected_finish_type,
         project=project,
+        flat_qs=flats_qs,
     )
 
     context = {
@@ -276,7 +345,19 @@ def project_detail(request, project_slug):
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
 
         section = request.headers.get("X-Picker-Section")
-        if section == "flats" or "house" in request.GET:
+        if (
+            section == "flats"
+            or "house" in request.GET
+            or "rooms_alias" in request.GET
+            or "floor_from" in request.GET
+            or "ceiling_height_from" in request.GET
+            or "square_from" in request.GET
+            or "living_square_from" in request.GET
+            or "kitchen_square_from" in request.GET
+            or "balcony_type" in request.GET
+            or "bathroom_unit_type" in request.GET
+            or "finish_type" in request.GET
+        ):
             return render(
                 request,
                 "default/pages/estates/ajax/_flat_list.html",

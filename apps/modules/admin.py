@@ -1,7 +1,7 @@
 # /opt/balthub/apps/modules/admin.py
 
 from django.contrib import admin
-from .models import FooterMenuItem, TagsMenu, TagsMenuItem
+from .models import FooterMenuItem, TagsMenu, TagsMenuItem, TagCollection, TagCollectionItem
 
 
 @admin.register(FooterMenuItem)
@@ -37,5 +37,19 @@ class TagsMenuAdmin(admin.ModelAdmin):
     list_display = ("title",)
     search_fields = ("title",)
     inlines = [TagsMenuItemInline]
+
+
+class TagCollectionItemInline(admin.TabularInline):
+    model = TagCollectionItem
+    extra = 1
+    fields = ("tag", "order", "is_active")
+
+
+@admin.register(TagCollection)
+class TagCollectionAdmin(admin.ModelAdmin):
+    list_display = ("title", "quantity", "random", "module")
+    list_filter = ("random", "module")
+    search_fields = ("title",)
+    inlines = [TagCollectionItemInline]
 
 

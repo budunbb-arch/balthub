@@ -37,9 +37,15 @@ jQuery(function ($) {
         $input.val(formatPhone($input.val(), phonePrefix($form)));
     }
 
-    $(document).on('input', '.feedback-form .phone-input, .project-feedback-form .phone-input', function () {
-        maskPhone($(this));
-    });
+$(document).on('input', '.feedback-form .phone-input, .project-feedback-form .phone-input', function () {
+    maskPhone($(this));
+});
+
+$(document).on('input', '.order-call-form .phone-input', function () {
+    var $input = $(this);
+    var formatted = formatPhone($input.val(), '7');
+    $input.val(formatted);
+});
 
     $(document).on('change', '.feedback-form .phone-country, .project-feedback-form .phone-country', function () {
         var $form = $(this).closest('.feedback-form, .project-feedback-form');
@@ -191,6 +197,115 @@ jQuery(function ($) {
             } else {
                 modalEl.style.display = 'block';
             }
+        });
+    });
+
+    // ---------- Order call modal ----------
+
+    function setupOrderCallForm($form) {
+        var modalEl = document.getElementById('orderCallModal');
+        if (!modalEl) return;
+
+        var turnstileContainer = modalEl.querySelector('.cf-turnstile');
+        var turnstileWidgetId = null;
+
+        function renderTurnstile() {
+            if (!turnstileContainer || !window.turnstile) return;
+            try {
+                turnstileWidgetId = window.turnstile.render(turnstileContainer, {
+                    sitekey: turnstileContainer.getAttribute('data-sitekey') || ''
+                });
+            } catch (e) {
+                console.warn('Turnstile render error', e);
+            }
+        }
+
+        function resetTurnstile() {
+            if (turnstileWidgetId && window.turnstile) {
+                try { window.turnstile.reset(); } catch (e) {}
+            }
+        }
+
+        modalEl.addEventListener('show.bs.modal', function() {
+            setTimeout(renderTurnstile, 50);
+        });
+
+        modalEl.addEventListener('hide.bs.modal', function() {
+            resetTurnstile();
+        });
+    }
+
+    $('.order-call-form').each(function () {
+        setupOrderCallForm($(this));
+    });
+
+    $('.order-call-form').on('submit', function (e) {
+        e.preventDefault();
+        var $form = $(this);
+
+        if ($form.data('submitting')) {
+            return;
+        }
+        $form.data('submitting', true);
+
+        $form.find('.phone-input').each(function () {
+            var raw = ($(this).val() || '').replace(/\D/g, '');
+            if (!raw) return;
+            if (raw.length === 11 && (raw[0] === '7' || raw[0] === '8')) {
+                raw = '7' + raw.slice(1);
+            } else if (raw.length === 10) {
+                raw = '7' + raw;
+            } else if (raw.length < 10) {
+                raw = '7' + raw;
+            }
+            raw = raw.slice(0, 11);
+            $(this).val('+' + raw);
+        });
+
+        var hasTurnstile = $form.find('.cf-turnstile').length > 0;
+        if (hasTurnstile) {
+            var cfToken = $form.find('input[name="cf-turnstile-response"]').val() || '';
+            if (!cfToken) {
+                toastr.error('Слава роботам?');
+                $form.data('submitting', false);
+                return;
+            }
+        }
+
+        var formData = new FormData($form[0]);
+
+        fetch('/order-call/send/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': $form.find('input[name="csrfmiddlewaretoken"]').val(),
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            },
+            body: formData,
+        })
+        .then(function (response) {
+            return response.json().then(function (data) {
+                return {status: response.status, data: data};
+            });
+        })
+        .then(function (result) {
+            if (result.status === 200 && result.data.success) {
+                $form[0].reset();
+                if (window.turnstile) {
+                    try { window.turnstile.reset(); } catch (err) {}
+                }
+                $form.hide();
+                $form.closest('.modal').find('.success-form').show();
+                toastr.success('Заявка отправлена!');
+            } else {
+                toastr.error(result.data.error || 'Ошибка отправки');
+            }
+        })
+        .catch(function (err) {
+            toastr.error('Ошибка отправки');
+        })
+        .always(function () {
+            $form.data('submitting', false);
         });
     });
 });

@@ -30,6 +30,10 @@ translations = {
     "text_deadline_year_desc": "Срок сдачи ↓",
     "text_floors_asc": "Этажность ↑",
     "text_floors_desc": "Этажность ↓",
+    "text_blog": "Блог",
+    "text_send": "Отправить",
+
+    "order_call": "Заказать звонок",
 
     "text_maintenance": "Сайт временно не доступен",
     "maintenance_message": "Мы уже работаем над этим. Пожалуйста, зайдите позже.",

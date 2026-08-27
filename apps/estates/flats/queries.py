@@ -133,3 +133,114 @@ class FlatQuerySet(PublicQuerySet):
             .distinct()
             .order_by("params__rooms")
         )
+
+    def floor_limits(self):
+
+        return self.aggregate(
+            min_floor=Min("params__floor"),
+            max_floor=Max("params__floor"),
+        )
+
+    def ceiling_height_limits(self):
+
+        return (
+            self
+            .exclude(params__ceiling_height=0)
+            .aggregate(
+                min_ceiling_height=Min("params__ceiling_height"),
+                max_ceiling_height=Max("params__ceiling_height"),
+            )
+        )
+
+    def square_limits(self):
+
+        return self.aggregate(
+            min_square=Min("params__square"),
+            max_square=Max("params__square"),
+        )
+
+    def living_square_limits(self):
+
+        return self.aggregate(
+            min_living_square=Min("params__living_square"),
+            max_living_square=Max("params__living_square"),
+        )
+
+    def kitchen_square_limits(self):
+
+        return self.aggregate(
+            min_kitchen_square=Min("params__kitchen_square"),
+            max_kitchen_square=Max("params__kitchen_square"),
+        )
+
+    def floor_from(self, value):
+
+        if not value:
+            return self
+
+        return self.filter(
+            params__floor__gte=value
+        )
+
+    def floor_to(self, value):
+
+        if not value:
+            return self
+
+        return self.filter(
+            params__floor__lte=value
+        )
+
+    def ceiling_height_from(self, value):
+
+        if not value:
+            return self
+
+        return self.filter(
+            params__ceiling_height__gte=value
+        ).exclude(params__ceiling_height=0)
+
+    def ceiling_height_to(self, value):
+
+        if not value:
+            return self
+
+        return self.filter(
+            params__ceiling_height__lte=value
+        ).exclude(params__ceiling_height=0)
+
+    def living_square_from(self, value):
+
+        if not value:
+            return self
+
+        return self.filter(
+            params__living_square__gte=value
+        )
+
+    def living_square_to(self, value):
+
+        if not value:
+            return self
+
+        return self.filter(
+            params__living_square__lte=value
+        )
+
+    def kitchen_square_from(self, value):
+
+        if not value:
+            return self
+
+        return self.filter(
+            params__kitchen_square__gte=value
+        )
+
+    def kitchen_square_to(self, value):
+
+        if not value:
+            return self
+
+        return self.filter(
+            params__kitchen_square__lte=value
+        )

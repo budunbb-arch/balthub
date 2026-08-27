@@ -1,0 +1,27 @@
+{% if data.tag_collection %}
+<div class="module module-tag-collection py-3">
+    <div class="container">
+        <div class="row align-items-center">
+            {% if data.tag_collection.title %}
+                <div class="title col-12 col-xl-3">
+                    <span class="d-block" data-textfit data-fill="0.9">{{ data.tag_collection.title }}:</span>
+                </div>
+            {% endif %}
+        
+            <div class="tags col-12 {% if data.tag_collection.title %}col-xl-9{% endif %}">
+                <ul class="list-unstyled h-list text-end">
+                    {% for tag in data.tag_collection_tags %}
+                        <li class="px-1">
+                            <a href="{% url 'tags:tag_detail' tag.slug %}" class="btn btn-primary">{{ tag.name }}</a>
+                        </li>
+                    {% empty %}
+                        {% if data.tag_collection %}
+                            <li>Нет активных тегов</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

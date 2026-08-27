@@ -5,6 +5,7 @@ from django.utils.translation import get_language
 
 from apps.core.common.models import Module
 from apps.core.localization import load_locale
+from apps.core.models import SiteSettings
 from apps.maps.models import MapSettings
 
 from apps.modules.registry import MODULE_HANDLERS
@@ -200,3 +201,59 @@ def map_settings(request):
     return {
         "map_settings": settings
     }
+
+
+def site_settings(request):
+    import json
+    cache_key = "site_settings"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return {"site_settings": cached}
+    settings = SiteSettings.get_solo()
+    if settings and isinstance(settings.phones, str):
+        try:
+            settings.phones = json.loads(settings.phones)
+        except (json.JSONDecodeError, TypeError):
+            settings.phones = []
+    if settings and not settings.phones:
+        settings.phones = []
+    cache.set(cache_key, settings, 300)
+    return {
+        "site_settings": settings
+    }
+
+
+def order_call_modal(request):
+    from apps.core.documents.models import Document
+    from apps.core.models import SiteSettings
+
+    cache_key = "order_call_modal"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    personal_data_doc = Document.objects.filter(
+        document_name__icontains="персональн",
+        document_public=True,
+        document_status="released",
+    ).first()
+    policy_doc = Document.objects.filter(
+        document_name__icontains="политик",
+        document_public=True,
+        document_status="released",
+    ).first()
+
+    ss = SiteSettings.get_solo()
+    turnstile_site_key = ""
+    if ss and ss.turnstile_enabled and ss.turnstile_site_key:
+        from apps.leads.turnstile import is_turnstile_enabled
+        if is_turnstile_enabled():
+            turnstile_site_key = ss.turnstile_site_key
+
+    result = {
+        "order_call_personal_data_doc": personal_data_doc,
+        "order_call_policy_doc": policy_doc,
+        "order_call_turnstile_site_key": turnstile_site_key,
+    }
+    cache.set(cache_key, result, 300)
+    return result

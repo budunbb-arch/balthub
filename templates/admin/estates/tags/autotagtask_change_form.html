@@ -1,0 +1,120 @@
+{% extends "admin/change_form.html" %}
+{% load i18n static %}
+
+{% block after_field_sets %}
+<div class="form-row">
+    <div class="module">
+        <h2>Признаки</h2>
+        <div id="trigger-container">
+            {% for trigger in triggers_data|default_if_none:"" %}
+            <div class="trigger-row">
+                <select name="trigger_param">
+                    <option value="">Выберите параметр</option>
+                    {% if object_type == "flat" %}
+                        {% for value, label in flat_params %}
+                        <option value="{{ value }}"{% if trigger.param == value %} selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    {% elif object_type == "project" %}
+                        {% for value, label in project_params %}
+                        <option value="{{ value }}"{% if trigger.param == value %} selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+                <input type="text" name="trigger_value" value="{{ trigger.value }}" placeholder="Значение">
+                <button type="button" class="deleterow">Удалить</button>
+            </div>
+            {% endfor %}
+        </div>
+        <button type="button" id="add-trigger">Добавить признак</button>
+        <input type="hidden" name="triggers_json" id="triggers-json" value="{{ triggers_json|default:'' }}">
+    </div>
+</div>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('trigger-container');
+    const addBtn = document.getElementById('add-trigger');
+    const objectTypeSelect = document.querySelector('select[name="object_type"]');
+    const triggersJson = document.getElementById('triggers-json');
+    
+    const FLAT_PARAMS = {{ flat_params_json|safe }};
+    const PROJECT_PARAMS = {{ project_params_json|safe }};
+    
+    function getParams() {
+        const type = objectTypeSelect ? objectTypeSelect.value : '';
+        if (type === 'flat') return FLAT_PARAMS;
+        if (type === 'project') return PROJECT_PARAMS;
+        return [];
+    }
+    
+    function updateParamOptions(select) {
+        const params = getParams();
+        select.innerHTML = '<option value="">Выберите параметр</option>' +
+            params.map(p => `<option value="${p[0]}">${p[1]}</option>`).join('');
+    }
+    
+    function createTriggerRow(param = '', value = '') {
+        const row = document.createElement('div');
+        row.className = 'trigger-row';
+        const params = getParams();
+        row.innerHTML = `
+            <select name="trigger_param">
+                <option value="">Выберите параметр</option>
+                ${params.map(p => `<option value="${p[0]}"${p[0] === param ? ' selected' : ''}>${p[1]}</option>`).join('')}
+            </select>
+            <input type="text" name="trigger_value" value="${value}" placeholder="Значение">
+            <button type="button" class="deleterow">Удалить</button>
+        `;
+        row.querySelector('.deleterow').addEventListener('click', function() {
+            row.remove();
+            updateTriggersJson();
+        });
+        row.querySelectorAll('select, input').forEach(el => {
+            el.addEventListener('change', updateTriggersJson);
+            el.addEventListener('input', updateTriggersJson);
+        });
+        return row;
+    }
+    
+    function updateTriggersJson() {
+        const rows = container.querySelectorAll('.trigger-row');
+        const triggers = [];
+        rows.forEach(row => {
+            const param = row.querySelector('select[name="trigger_param"]').value;
+            const value = row.querySelector('input[name="trigger_value"]').value;
+            if (param) {
+                triggers.push({ param, value });
+            }
+        });
+        triggersJson.value = JSON.stringify(triggers);
+    }
+    
+    if (addBtn) {
+        addBtn.addEventListener('click', function() {
+            const row = createTriggerRow();
+            container.appendChild(row);
+        });
+    }
+    
+    if (objectTypeSelect) {
+        objectTypeSelect.addEventListener('change', function() {
+            container.querySelectorAll('.trigger-row').forEach(row => {
+                const select = row.querySelector('select[name="trigger_param"]');
+                updateParamOptions(select);
+            });
+            updateTriggersJson();
+        });
+    }
+    
+    container.addEventListener('click', function(e) {
+        if (e.target.classList.contains('deleterow')) {
+            e.target.closest('.trigger-row').remove();
+            updateTriggersJson();
+        }
+    });
+});
+</script>
+{% endblock %}

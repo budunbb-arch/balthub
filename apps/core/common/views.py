@@ -2,7 +2,6 @@
 
 from django.shortcuts import render
 from django.core.cache import cache
-from apps.estates.projects.models import Project
 from apps.core.engines.builders import get_default_seo
 
 

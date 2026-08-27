@@ -1,12 +1,12 @@
 {# templates/default/modules/main_menu.html #}
 
-<ul class="navbar-nav flex-row gap-3">
+<ul class="navbar-nav flex-row align-items-center gap-3">
 
+    <!--
     <li class="nav-item">
         <a class="nav-link" href="{% url 'home' %}">{{ trans.home }}</a>
     </li>
 
-    <!--
     <li class="nav-item">
         <a class="nav-link" href="{% url 'developer_list' %}">{{ trans.developer_list }}</a>
     </li>
@@ -17,11 +17,7 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link" href="#">{{ trans.mortgage }}</a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="#">{{ trans.kaliningrad }}</a>
+        <a class="nav-link" href="/estates/tags/kalininigrad/">{{ trans.kaliningrad }}</a>
     </li>
 
     <li class="nav-item">
@@ -33,7 +29,30 @@
     </li>
 
     <li class="nav-item">
+        <a class="nav-link" href="#">{{ trans.mortgage }}</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="#">{{ trans.text_blog }}</a>
+    </li>
+
+    <li class="nav-item">
         <a class="nav-link" href="#">{{ trans.contacts }}</a>
+    </li>
+
+    <li class="nav-item phone-item">
+        <!--
+        <a class="nav-link" href="#">+7 921 102 6623</a>
+        -->
+        {% if site_settings and site_settings.phones %}
+            {% with primary=site_settings.phones|first %}
+                <a class="nav-link" href="tel:{{ primary.value }}">{{ primary.value }}</a>
+            {% endwith %}
+        {% endif %}
+    </li>
+
+    <li class="nav-item call-item">
+        <a class="btn menu-btn" href="#" data-bs-toggle="modal" data-bs-target="#orderCallModal">{{ trans.order_call }}</a>
     </li>
 
     <!--
@@ -47,3 +66,5 @@
     -->
 
 </ul>
+
+{% include "default/modules/order_call_modal.html" %}

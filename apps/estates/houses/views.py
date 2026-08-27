@@ -147,7 +147,8 @@ def house_detail(request, project_slug, house_slug):
 
         .prefetch_related(
             "deals__currency",
-            "deals__deal_type"
+            "deals__deal_type",
+            "flat_tags__tag",
         )
 
         .min_price()

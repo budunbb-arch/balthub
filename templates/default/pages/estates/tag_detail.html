@@ -10,31 +10,122 @@
 
     <h1 class="mb-4">{{ tag.name }}</h1>
 
-    <div 
-        data-ajax-list
-        data-container="#project-list-container"
-        data-form=".house-filter-form"
-        data-scroll="top"
-        data-push-state="true"
-    >
+    <ul class="nav nav-tabs mb-4" id="tagDetailTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="projects-tab" data-bs-toggle="tab" data-bs-target="#projects-pane" type="button" role="tab" aria-controls="projects-pane" aria-selected="true">Проекты</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="flats-tab" data-bs-toggle="tab" data-bs-target="#flats-pane" type="button" role="tab" aria-controls="flats-pane" aria-selected="false">Квартиры</button>
+        </li>
+    </ul>
 
-        <div class="ajax-loader-overlay hidden">
-            <div class="spinner"></div>
+    <div class="tab-content" id="tagDetailTabContent">
+        <div class="tab-pane fade show active" id="projects-pane" role="tabpanel" aria-labelledby="projects-tab" tabindex="0">
+            <div 
+                data-ajax-list
+                data-container="#project-list-container"
+                data-form=".house-filter-form"
+                data-scroll="top"
+                data-push-state="true"
+            >
+                <div class="ajax-loader-overlay hidden">
+                    <div class="spinner"></div>
+                </div>
+                <div id="project-list-container">
+                    {% include "default/pages/estates/ajax/_project_list.html" %}
+                </div>
+            </div>
         </div>
-
-        <div id="project-list-container">
-            {% include "default/pages/estates/ajax/_project_list.html" %}
+        <div class="tab-pane fade" id="flats-pane" role="tabpanel" aria-labelledby="flats-tab" tabindex="0">
+            <div 
+                data-ajax-list
+                data-container="#flat-list-container"
+                data-scroll="top"
+                data-push-state="true"
+                data-section="flats"
+                class="row"
+            >
+                <div class="ajax-loader-overlay hidden">
+                    <div class="spinner"></div>
+                </div>
+                <div id="flat-list-container">
+                    <div class="flats-list row">
+                        <div class="flats-list-pickers col-12 col-xl-3">
+                            {% include "default/modules/picker_flats.html" with pickers=flats_pickers %}
+                        </div>
+                        <div class="flats-list-content col-12 col-xl-9">
+                            <div class="ajax-loader-overlay hidden">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
     </div>
 
 {% endblock %}
 
 {% block extra_css%}
     <link rel="stylesheet" href="{% static 'assets/css/picker.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/project_detail.css' %}">
 {% endblock %}
 
 {% block extra_js %}
     <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
     <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var flatsTab = document.getElementById('flats-tab');
+        var flatsPane = document.getElementById('flats-pane');
+        var flatsContainer = document.getElementById('flat-list-container');
+        var flatsLoaded = false;
+
+        function loadFlats() {
+            if (!flatsContainer || flatsLoaded) return;
+            var url = '?tab=flats';
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(function(response) {
+                return response.text();
+            })
+            .then(function(html) {
+                flatsContainer.innerHTML = html;
+                flatsLoaded = true;
+                reinitInfiniteScroll(flatsContainer);
+            });
+        }
+
+        function reinitInfiniteScroll(container) {
+            if (typeof InfiniteScroll !== 'undefined' && window.infiniteScrollInstances) {
+                var ajaxWrapper = container.closest('[data-ajax-list]');
+                if (ajaxWrapper && window.infiniteScrollInstances.has(ajaxWrapper)) {
+                    window.infiniteScrollInstances.get(ajaxWrapper).disabled = true;
+                    window.infiniteScrollInstances.delete(ajaxWrapper);
+                }
+                window.infiniteScrollInstances.forEach(function(instance, wrapper) {
+                    if (!document.body.contains(wrapper)) {
+                        instance.disabled = true;
+                    }
+                });
+            }
+            if (typeof initPickers === 'function') {
+                initPickers();
+            }
+        }
+
+        if (flatsTab) {
+            flatsTab.addEventListener('shown.bs.tab', function() {
+                loadFlats();
+            });
+        }
+
+        if (flatsPane && flatsPane.classList.contains('show')) {
+            loadFlats();
+        }
+    });
+    </script>
 {% endblock %}

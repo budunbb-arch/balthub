@@ -101,6 +101,8 @@ TEMPLATES[0]['OPTIONS']['context_processors'] += [
     'apps.core.engines.context_processors.seo',
     'apps.core.engines.context_processors.localization',
     'apps.core.engines.context_processors.map_settings',
+    'apps.core.engines.context_processors.site_settings',
+    'apps.core.engines.context_processors.order_call_modal',
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'

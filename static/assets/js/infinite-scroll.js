@@ -144,6 +144,10 @@ class InfiniteScroll {
                 }
             }
 
+            // cleanup leftover wrappers from AJAX response
+            const leftoverRows = doc.querySelectorAll("[data-items]");
+            leftoverRows.forEach(el => el.remove());
+
         } catch (e) {
 
             console.error("Infinite scroll error:", e);

@@ -85,7 +85,7 @@
 <div class="project-flats">
     <!-- Квартиры -->
     <div id="flats-list" class="mt-5">
-        <h2 class="text-center mb-2">{{ trans.choose_flat }} {{ project.name }}</h2>
+        <h2 class="text-center mb-4">{{ trans.choose_flat }} {{ project.name }}</h2>
 
         <div 
             data-ajax-list
@@ -103,15 +103,15 @@
                 </div>
                 <div class="flats-list-content col-12 col-xl-9">
                     <div id="flats-block">
-                        <div class="row" data-items>
+                        <div class="" data-items>
                             {% if flats_page_obj %}
                                 {% for flat in flats_page_obj %}
-                                    <div class="col-md-3">
-                                        {% include "default/pages/estates/project_flat_card.html" with flat=flat %}
-                                    </div>
+                                    {% include "default/pages/estates/project_flat_card.html" with flat=flat %}
                                 {% endfor %}
                             {% else %}
-                                <p>{{ trans.no_flats }}</p>
+                                <div class="col-12 flats-empty">
+                                    <p>{{ trans.no_flats }}</p>
+                                </div>
                             {% endif %}
                         </div>
                     </div>

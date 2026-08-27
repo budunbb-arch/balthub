@@ -139,6 +139,7 @@ MODULE_TYPES = [
     ("feedback", "Обратная связь"),
     ("footer_menu", "Меню футера"),
     ("tags_menu", "Меню тегов"),
+    ("tag_collection", "Подборка тегов"),
     ("project_description", "Описание проекта"),
 ]
 

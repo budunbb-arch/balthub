@@ -1,0 +1,15 @@
+{% load i18n %}
+
+<div class="phone-widget" id="{{ widget.attrs.id }}">
+    <div class="phone-list">
+        {% for item in value %}
+            <div class="phone-item" data-index="{{ forloop.counter0 }}">
+                <input type="text" class="phone-label" value="{{ item.label|default_if_none:'' }}" placeholder="{% trans 'Подпись' %}" data-field="label">
+                <input type="text" class="phone-value" value="{{ item.value|default_if_none:'' }}" placeholder="{% trans 'Телефон' %}" data-field="value">
+                <button type="button" class="phone-remove">×</button>
+            </div>
+        {% endfor %}
+    </div>
+    <button type="button" class="phone-add">{% trans 'Добавить телефон' %}</button>
+    <input type="hidden" name="{{ widget.name }}" id="{{ widget.attrs.id }}_hidden" value="{{ value|safe }}">
+</div>

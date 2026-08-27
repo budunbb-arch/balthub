@@ -17,6 +17,7 @@ from apps.estates.parsing.management.execution.parser_execution import (
 )
 from apps.estates.parsing.management.execution.advisory_lock import ParserBusyError
 from apps.estates.parsing.management.execution.parser_cancel import ParserCancelled
+from apps.estates.tags.runner import run_autotags
 
 
 import traceback
@@ -190,6 +191,9 @@ def run_parser_task(parser_id: int):
                     "last_file",
                 ]
             )
+
+        if "run" in locals() and run.status == Parser.STATUS_SUCCESS:
+            run_autotags()
 
     return "success"
 

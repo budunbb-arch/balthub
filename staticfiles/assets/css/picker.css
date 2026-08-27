@@ -132,6 +132,12 @@ button.picker-reset {
     gap: .5rem;
 }
 
+.picker-house-thumb {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
 .picker-range-input {
     width: 30%;
 }

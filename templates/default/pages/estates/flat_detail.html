@@ -33,6 +33,15 @@
     <p>{{ trans.text_flat_layout }} <img src="{{ flat.plan }}"></p>
 {% endif %}
 
+{% if flat.flat_tags.all %}
+    <h4>Теги</h4>
+    <ul class="list-unstyled h-list flat-tags">
+        {% for tag in flat.flat_tags.all %}
+            <li>{{ tag.tag.name }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 <hr>
 
 <h4>{{ trans.text_offers }}</h4>

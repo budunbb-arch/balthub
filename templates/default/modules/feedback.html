@@ -56,7 +56,7 @@
                         </div>
 
                         {% if data.feedback.personal_data %}
-                            <div class="form-check text-start mb-2">
+                            <div class="form-check text-start text-small mb-2">
                                 <input class="form-check-input" type="checkbox" id="personalData{{ data.feedback.id }}" name="personal_data" required>
                                 <label class="form-check-label" for="personalData{{ data.feedback.id }}">
                                     {{ trans.text_agree }} <a href="{% url 'document_modal' data.feedback.personal_data.id %}" class="document-modal" data-title="{{ data.feedback.personal_data.document_name }}">{{ trans.text_personaldata }}</a>
@@ -65,7 +65,7 @@
                         {% endif %}
 
                         {% if data.feedback.policy %}
-                            <div class="form-check text-start mb-4">
+                            <div class="form-check text-start text-small mb-4">
                                 <input class="form-check-input" type="checkbox" id="policy{{ data.feedback.id }}" name="policy" required>
                                 <label class="form-check-label" for="policy{{ data.feedback.id }}">
                                     {{ trans.text_agree }} <a href="{% url 'document_modal' data.feedback.policy.id %}" class="document-modal" data-title="{{ data.feedback.policy.document_name }}">{{ trans.text_policy }}</a>
@@ -74,7 +74,7 @@
                         {% endif %}
 
                         {% if data.turnstile_site_key %}
-                            <div class="cf-turnstile mb-3" data-sitekey="{{ data.turnstile_site_key }}"></div>
+                            <div class="cf-turnstile text-center mb-3" data-sitekey="{{ data.turnstile_site_key }}"></div>
                         {% endif %}
 
                         <div class="row">

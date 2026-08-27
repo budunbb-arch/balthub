@@ -58,3 +58,60 @@
 .slideshow-thumbs {
     padding: 0.5rem;
 }
+div[data-picker-name="house"] .w-img.form-check {
+    padding: 0;
+}
+div[data-picker-name="house"] .w-img input[type="checkbox"] {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    float: none;
+    margin: 0;
+    opacity: 0.5;
+}
+.flats-empty {
+    text-align: center;
+    padding: 3em 1em;
+    color: var(--text-color);
+    opacity: .8;
+}
+
+.form-check-input {
+    margin-top: 0;
+}
+.picker-range-fields {
+    gap: 0;
+}
+input.picker-range-input {
+    width: 100%;
+    border-radius: 50vh;
+    border: none;
+    padding: .2em .5em;
+    text-align: center;
+}
+span.picker-range-label {
+    color: var(--bg-color);
+    font-family: var(--cgr);
+    font-weight: 400;
+}
+ul.flat-tags li {
+    background: var(--hover-light);
+    padding: 0 1em;
+    border-radius: 50vh;
+    margin-bottom: .3em;
+}
+.flat-price-sum {
+    font-size: larger;
+    font-weight: 700;
+    color: var(--bg-color);
+}
+.flat-price-per-m2 {
+    font-size: small;
+    opacity: .8;
+    margin-top: .2em;
+}
+img.img-contain {
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    width: 100%;
+}

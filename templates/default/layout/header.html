@@ -8,11 +8,9 @@
         <div class="row">
             <nav class="navbar navbar-expand-lg navbar-light mb-4">
                 <div class="col col-xl-2 offset-xl-1" id="logo">
-                    {% if not is_home %}
-                        <a href="{{ trans.url_home }}">
-                            <img src="{% static 'assets/images/002.balthub-logo-white.png' %}" alt="{{ trans.sitename }}" class="img-fluid">  
-                        </a>
-                    {% endif %}
+                    <a href="{{ trans.url_home }}">
+                        <img src="{% static 'assets/images/002.balthub-logo-white.png' %}" alt="{{ trans.sitename }}" class="img-fluid">  
+                    </a>
                 </div>
                 <div class="col col-xl-7 offset-xl-1" id="main-menu">
                     <!-- TOGGLER -->

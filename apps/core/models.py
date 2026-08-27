@@ -63,6 +63,12 @@ class SiteSettings(models.Model):
         verbose_name="Секретный ключ (Secret Key)",
         help_text="Секретный ключ серверной проверки. Хранится только в БД.",
     )
+    phones = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="Телефоны",
+        help_text="JSON-список: [{'label': 'Основной', 'value': '+7...'}]",
+    )
 
     class Meta:
         db_table = "core_sitesettings"

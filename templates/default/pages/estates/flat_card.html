@@ -32,4 +32,12 @@
         {% endwith %}
     </div>
 
+    {% if flat.flat_tags.all %}
+        <ul class="list-unstyled h-list flat-tags mt-2">
+            {% for tag in flat.flat_tags.all %}
+                <li>{{ tag.tag.name }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
 </div>

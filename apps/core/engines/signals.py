@@ -4,6 +4,7 @@ from django.core.cache import cache
 
 from apps.core.common.models import Module
 from apps.core.models import SiteSettings
+from apps.core.documents.models import Document
 from apps.maps.models import MapSettings
 from apps.estates.projects.models import Project
 from apps.estates.houses.models import House
@@ -36,6 +37,14 @@ def _clear_seo_cache():
 
 def _clear_map_settings_cache():
     cache.delete("map_settings")
+
+
+def _clear_site_settings_cache():
+    cache.delete("site_settings")
+
+
+def _clear_order_call_modal_cache():
+    cache.delete("order_call_modal")
 
 
 @receiver(post_save, sender=Module)
@@ -74,6 +83,14 @@ def invalidate_breadcrumbs_on_content_change(sender, **kwargs):
 @receiver(post_save, sender=SiteSettings)
 def invalidate_seo_on_site_settings_change(sender, instance, **kwargs):
     _clear_seo_cache()
+    _clear_site_settings_cache()
+    _clear_order_call_modal_cache()
+
+
+@receiver(post_save, sender=Document)
+@receiver(post_delete, sender=Document)
+def invalidate_order_call_modal_on_document_change(sender, **kwargs):
+    _clear_order_call_modal_cache()
 
 
 @receiver(post_save, sender=MapSettings)

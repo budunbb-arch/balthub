@@ -119,3 +119,49 @@ class ProjectDescriptionSettings(models.Model):
 
     def __str__(self):
         return f"Настройки {self.module.name}"
+
+
+class TagCollection(models.Model):
+    module = models.OneToOneField(
+        "core.Module",
+        on_delete=models.CASCADE,
+        related_name="tag_collection",
+        verbose_name="Модуль",
+    )
+    title = models.CharField(max_length=255, verbose_name="Заголовок")
+    quantity = models.PositiveIntegerField(default=10, verbose_name="Количество на странице")
+    random = models.BooleanField(default=False, verbose_name="Случайный порядок")
+
+    class Meta:
+        verbose_name = "Подборка тегов"
+        verbose_name_plural = "Подборки тегов"
+        ordering = ["id"]
+
+    def __str__(self):
+        return self.title
+
+
+class TagCollectionItem(models.Model):
+    collection = models.ForeignKey(
+        TagCollection,
+        on_delete=models.CASCADE,
+        related_name="items",
+        verbose_name="Подборка",
+    )
+    tag = models.ForeignKey(
+        "tags.Tag",
+        on_delete=models.CASCADE,
+        related_name="+",
+        verbose_name="Тег",
+    )
+    order = models.PositiveIntegerField(default=0, verbose_name="Порядок")
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+
+    class Meta:
+        verbose_name = "Тег подборки"
+        verbose_name_plural = "Теги подборки"
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return str(self.tag)
+

@@ -1,17 +1,24 @@
 <!-- /opt/balthub/templates/default/pages/estates/ajax/_flat_list.html -->
 
-<div class="row" data-items>
-    {% if flats_page_obj %}
-        {% for flat in flats_page_obj %}
-            <div class="col-md-3">
-                {% include "default/pages/estates/project_flat_card.html" with flat=flat %}
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>{{ trans.no_flats }}</p>
-    {% endif %}
-</div>
+<div class="flats-list row">
+    <div class="flats-list-pickers col-12 col-xl-3">
+        {% include "default/modules/picker_flats.html" with pickers=flats_pickers %}
+    </div>
+    <div class="flats-list-content col-12 col-xl-9">
+        <div class="" data-items>
+            {% if flats_page_obj %}
+                {% for flat in flats_page_obj %}
+                    {% include "default/pages/estates/project_flat_card.html" with flat=flat %}
+                {% endfor %}
+            {% else %}
+                <div class="col-12 flats-empty">
+                    <p>{{ trans.no_flats }}</p>
+                </div>
+            {% endif %}
+        </div>
 
-<div class="pagination-wrapper" data-pagination>
-    {% include "default/includes/infinite_pagination.html" with page_obj=flats_page_obj paginator=flats_paginator page_range=flats_page_range %}
+        <div class="pagination-wrapper" data-pagination>
+            {% include "default/includes/infinite_pagination.html" with page_obj=flats_page_obj paginator=flats_paginator page_range=flats_page_range %}
+        </div>
+    </div>
 </div>

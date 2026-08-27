@@ -22,6 +22,7 @@
     --icon-font: 'Font Awesome 7 Free';
     --cgr: 'CenturyGothic';
     --nicoletta: 'NicolettaScript';
+    --main-color: #0ff;
     --bg-color: #333;
     --text-color: #fff;
     --hover-color: #888;
@@ -38,10 +39,10 @@
 :-moz-placeholder           { transition: all 1s; } /*Firefox 18-*/
 :-ms-input-placeholder      { transition: all 1s; }
 
-:focus::-webkit-input-placeholder { transform: translateX(120%); }
-:focus::-moz-placeholder          { transform: translateX(120%); }
-:focus:-moz-placeholder           { transform: translateX(120%); }
-:focus:-ms-input-placeholder      { transform: translateX(120%); }
+:focus::-webkit-input-placeholder { transform: translateX(150%); }
+:focus::-moz-placeholder          { transform: translateX(150%); }
+:focus:-moz-placeholder           { transform: translateX(150%); }
+:focus:-ms-input-placeholder      { transform: translateX(150%); }
 
 html {
     overflow-anchor: none;
@@ -107,6 +108,10 @@ header a.nav-link:hover::after {
     background: var(--hover-color);
     transform: translateX(0);
 }
+li.nav-item.phone-item a.nav-link {
+    font-weight: 700;
+    font-size: medium;
+}
 h1 {
     text-transform: uppercase;
 }
@@ -150,7 +155,7 @@ a:hover, a:focus, a:active {
 .form-field input.form-control, .search-filter select.form-select, .form-field select.form-select, textarea.form-control {
     height: 60px;
     padding-left: 60px;
-    border-radius: 50vh;
+    border-radius: 5px;
     background: rgb(255 255 255 / 70%);
 }
 .search-filter select.form-select {
@@ -169,7 +174,7 @@ select {
     padding-right: 30px;      /* Важно: освобождаем место справа под вашу новую иконку */
 }
 textarea.form-control {
-    border-radius: 1em;
+    border-radius: 5px;
     padding: 1em;
     overflow: hidden;
 }
@@ -236,7 +241,7 @@ a.btn.btn-primary, button.btn.btn-primary {
     display: block;
     width: 100%;
     height: 60px;
-    border-radius: 50vh;
+    border-radius: 5px;
     text-transform: uppercase;
     background: rgb(255 255 255 / 70%);
     color: rgb(50 50 50 / 70%);
@@ -257,6 +262,13 @@ a.btn.btn-primary {
     padding: 1em 1.5em;
     margin: .5em;
 }
+a.btn.menu-btn {
+    background: var(--text-color);
+}
+a.btn.menu-btn:hover, a.btn.menu-btn:active, a.btn.menu-btn:focus, a.btn.menu-btn:active:focus {
+    background: var(--hover-color);
+    color: var(--text-color);
+}
 button.btn.btn-primary.inverted, a.btn.btn-primary.inverted {
     background: rgb(50 50 50 / 70%);
     color: rgb(255 255 255 / 70%);
@@ -276,6 +288,9 @@ button.btn.btn-primary.inverted:hover, button.btn.btn-primary.inverted:focus, bu
  .uppercase {
     text-transform: uppercase;
  }
+ .lowercase {
+    text-transform: lowercase;
+ }
  .unpadded {
     padding: 0;
     margin: 0;
@@ -284,7 +299,31 @@ button.btn.btn-primary.inverted:hover, button.btn.btn-primary.inverted:focus, bu
     margin-right: calc(-.5 * var(--bs-gutter-x));
     margin-left: calc(-.5 * var(--bs-gutter-x));
  }
+ .colored-main {
+    color: var(--main-color);
+ }
+ .site-header .module.html-module {
+    padding-left: 0;
+}
+.site-stats .number+.number {
+    border-left: 1px solid var(--text-color);
+}
+.site-stats span, .module-tag-collection .title {
+    font-weight: 700;
+}
+span.num {
+    font-size: xx-large;
+}
+.text-small {
+    font-size: smaller;
+}
+ul.list-unstyled {
+    margin: 0;
+}
 
+.h-list li {
+    display: inline-block;
+}
 ol.document li {
     margin-bottom: 1em;
 }
@@ -378,7 +417,7 @@ ol.document li ol>li, ol.document>li dl dd, ol.document>li>p {
         aspect-ratio: 2 / 1;
     }
     .project-block:nth-child(3) .card-img-wrapper {
-        aspect-ratio: auto;
+        aspect-ratio: 1;
         height: 100%;
     }
     .project-block:nth-child(3) .card-img-wrapper img {

@@ -12,7 +12,7 @@ from apps.estates.parsing.utils import (
     normalize_text_block,
     to_bool,
 )
-from apps.estates.parsing.constants import BUILDING_STATUS_MAPPING
+from apps.estates.parsing.constants import BUILDING_STATUS_MAPPING, BALCONY_MAPPING
 from apps.estates.projects.models import ProjectImage, ProjectParams
 from apps.estates.flats.models import Flat
 
@@ -508,7 +508,7 @@ class NMarketImporter:
                     square=helpers.to_float(data["area_value"]),
                     floor=helpers.to_int(data["floor"]),
                     finish_type=self.cache.resolve_dictionary(FinishType, data["renovation"]),
-                    balcony_type=self.cache.resolve_dictionary(BalconyType, data["balcony"]),
+                    balcony_type=self.cache.resolve_dictionary(BalconyType, data["balcony"], mapping=BALCONY_MAPPING),
                     bathroom_unit_type=self.cache.resolve_dictionary(BathroomUnitType, data["bathroom_unit"]),
                     living_square=helpers.to_float(data["living_space_value"]),
                     kitchen_square=helpers.to_float(data["kitchen_space_value"]),

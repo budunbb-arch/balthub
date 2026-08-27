@@ -10,7 +10,7 @@ from apps.core.common.views import home
 from apps.core.documents.views import documents_list, document_detail, document_modal
 from apps.core.sitemap import SitemapView
 from apps.core.robots import RobotsView
-from apps.leads.views import feedback_send
+from apps.leads.views import feedback_send, order_call_send
 from apps.leads.views_project_feedback import project_feedback_send
 
 
@@ -26,6 +26,7 @@ urlpatterns = [
     path("documents/modal/<int:document_id>/", document_modal, name="document_modal"),
     path("feedback/send/", feedback_send, name="feedback_send"),
     path("project-feedback/send/", project_feedback_send, name="project_feedback_send"),
+    path("order-call/send/", order_call_send, name="order_call_send"),
 ]
 
 #urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

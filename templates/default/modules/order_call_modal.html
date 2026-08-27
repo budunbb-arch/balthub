@@ -1,0 +1,61 @@
+{% load static %}
+
+<div class="modal fade" id="orderCallModal" tabindex="-1" aria-labelledby="orderCallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderCallModalLabel">{{ trans.order_call }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form class="order-call-form" data-module-id="order-call">
+                    {% csrf_token %}
+                    <!--
+                    <div class="form-field field-user position-relative mb-3">
+                        <input type="text" name="name" class="form-control" placeholder="Имя">
+                        <span class="form-field-icon"></span>
+                    </div>
+                    -->
+
+                    <div class="form-field field-phone position-relative mb-3">
+                        <input type="tel" name="phone" class="form-control phone-input" placeholder="+7 (___) ___-__-__" autocomplete="tel" required>
+                        <span class="form-field-icon"></span>
+                    </div>
+
+                    {% if order_call_personal_data_doc %}
+                    <div class="form-check text-start text-small mb-2">
+                        <input class="form-check-input" type="checkbox" id="orderCallPersonalData" name="personal_data" required>
+                        <label class="form-check-label" for="orderCallPersonalData">
+                            {{ trans.text_agree }} <a href="{% url 'document_modal' order_call_personal_data_doc.id %}" class="document-modal" data-title="{{ order_call_personal_data_doc.document_name }}">{{ trans.text_personaldata }}</a>
+                        </label>
+                    </div>
+                    {% endif %}
+
+                    {% if order_call_policy_doc %}
+                    <div class="form-check text-start text-small mb-4">
+                        <input class="form-check-input" type="checkbox" id="orderCallPolicy" name="policy" required>
+                        <label class="form-check-label" for="orderCallPolicy">
+                            {{ trans.text_agree }} <a href="{% url 'document_modal' order_call_policy_doc.id %}" class="document-modal" data-title="{{ order_call_policy_doc.document_name }}">{{ trans.text_policy }}</a>
+                        </label>
+                    </div>
+                    {% endif %}
+
+                    {% if order_call_turnstile_site_key %}
+                    <div class="cf-turnstile text-center mb-3" data-sitekey="{{ order_call_turnstile_site_key }}"></div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col col-xl-8 offset-xl-2">
+                            <button type="submit" class="btn btn-primary inverted w-100">{{ trans.text_send }}</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="success-form" style="display:none;">
+                    <h4 class="mt-4">{{ trans.text_success_title }}</h4>
+                    <p>{{ trans.text_success_message }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -143,6 +143,20 @@ class PickerSystem {
                             this.state[name].filter(v => v !== value);
                     }
 
+                    if (name === "city") {
+                        this.state["district"] = [];
+                        this.state["project"] = [];
+                        this.state["house"] = [];
+                    }
+
+                    if (name === "district") {
+                        this.state["house"] = [];
+                    }
+
+                    if (name === "project") {
+                        this.state["house"] = [];
+                    }
+
                     const picker = e.target.closest("[data-picker-name]");
                     if (picker && !picker.querySelector(".picker-apply")) {
                         this.syncURL();

@@ -1,12 +1,24 @@
 {# /opt/balthub/templates/default/modules/sitename.html #}
 
-<div class="col-12 col-sm-10 col-md-6 col-lg-4 offset-lg-1 module html-module">
-    <h1 data-textfit data-padding="30" class="mb-2">
-        <small data-textfit data-padding="30" data-fill="0.8">{{ trans.sitenamehint }}</small>
+<div class="col-12 col-sm-10 col-md-6 col-lg-4 offset-lg-1 col-xl-6 offset-xl-1 module html-module">
+    <h1 data-textfit class="mb-2">
         <!--{{ data.site_name }}-->
-        <span class="d-block" data-textfit data-min-size="48" data-max-size="120" data-padding="30" data-fill="0.9">{{ trans.new_builds }}</span>
-        <span class="d-block" data-textfit data-min-size="48" data-max-size="120" data-padding="30" data-fill="0.9">{{ trans.kaliningrada }}</span>
-        <span class="d-block text-end" data-textfit data-padding="30" data-fill="0.5">{{ trans.and_seaside }}</span>
+        <span class="d-block" data-textfit data-fill="0.5">{{ trans.new_builds }}</span>
+        <span class="d-block" data-textfit data-fill="0.8">{{ trans.kaliningrada }} {{ trans.and_seaside }}</span>
     </h1>
-    <span class="sitename-slogan nicoletta" data-textfit data-min-size="48" data-max-size="120" data-padding="60" data-fill="0.9">{{ trans.slogan }}</span>
+    <span class="sitename-slogan" data-textfit data-fill="0.9">{{ trans.slogan }}, <span class="colored-main">{{ trans.no_fee }}</span> {{ trans.for_buyer }}</span>
+    <div class="site-stats row mt-4">
+        <div class="number col-4">
+            <span class="num d-block">{{ trans.projects_quantity }}</span>
+            <span class="num-description d-block">{{ trans.text_ofprojects }}</span>
+        </div>
+        <div class="number col-4">
+            <span class="num d-block">{{ trans.flats_quantity }}</span>
+            <span class="num-description d-block">{{ trans.text_offlats }}</span>
+        </div>
+        <div class="number col-4">
+            <span class="num d-block">{{ trans.zero }} {{ trans.actual_currency }}</span>
+            <span class="num-description d-block">{{ trans.text_fee }}</span>
+        </div>
+    </div>
 </div>
