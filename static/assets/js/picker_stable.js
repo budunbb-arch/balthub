@@ -403,7 +403,7 @@ class PickerSystem {
 
     reload(url, mode = "replace") {
 
-        const ajaxWrapper = this.root.closest("[data-ajax-list]");
+        const ajaxWrapper = this.root.closest("[data-ajax-list]") || this.root.closest(".flats-list")?.querySelector("[data-ajax-list]");
         const headers = {
             "X-Requested-With": "XMLHttpRequest"
         };
@@ -418,7 +418,7 @@ class PickerSystem {
         .then(html => {
 
             // текущий ajax wrapper
-            const ajaxWrapper = this.root.closest("[data-ajax-list]");
+            const ajaxWrapper = this.root.closest("[data-ajax-list]") || this.root.closest(".flats-list")?.querySelector("[data-ajax-list]");
 
             if (!ajaxWrapper) return;
 

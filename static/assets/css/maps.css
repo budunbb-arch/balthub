@@ -1,9 +1,13 @@
 /* /opt/balthub/static/assets/css/maps.css */
 
-#house-map, #collection-map, #developer-map {
+#house-map, #collection-map, #collection-map-project, #collection-map-developer, #collection-map-6, #developer-map, [id^="collection-map-"] {
     width:100%;
     height: 500px;
-    overflow:hidden;
+    overflow: hidden;
+}
+footer #collection-map, footer #collection-map-6, footer [id^="collection-map-"] {
+    height: 350px;
+    border-radius: 1em;
 }
 
 .house-marker{
@@ -16,10 +20,13 @@
 }
 
 .maps-overlay {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+    top: 0;   
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 100%;
+    z-index: 99;
+    border-radius: 1em;
 }
 .maps-overlay:hover {
     background: rgb(255 255 255 / 50%);

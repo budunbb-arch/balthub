@@ -1,16 +1,18 @@
-<div class="module col-6 col-xl-3 text-start mb-5">
-    {% if data.tags_menu %}
-        <h6>{{ data.tags_menu.title }}</h6>
-    {% endif %}
-    <ul class="list-unstyled footermenu-menu">
-        {% for item in data.tags_menu_items %}
-            <li>
-                <a href="{% url 'tags:tag_detail' item.tag.slug %}">{{ item.tag.name }}</a>
-            </li>
-        {% empty %}
-            {% if data.tags_menu %}
-                <li>Нет активных тегов</li>
-            {% endif %}
-        {% endfor %}
-    </ul>
+<div class="module col-6 col-xl-2 text-start mb-5">
+    <div class="tagsmenu-content ps-2">
+        {% if data.tags_menu %}
+            <h6>{{ data.tags_menu.title }}</h6>
+        {% endif %}
+        <ul class="list-unstyled tagsmenu-menu">
+            {% for item in data.tags_menu_items %}
+                <li>
+                    <a href="{% url 'tags:tag_detail' item.tag.slug %}">{{ item.tag.name }}</a>
+                </li>
+            {% empty %}
+                {% if data.tags_menu %}
+                    <li>Нет активных тегов</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
 </div>

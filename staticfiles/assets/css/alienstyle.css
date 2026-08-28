@@ -24,6 +24,7 @@
     --nicoletta: 'NicolettaScript';
     --main-color: #0ff;
     --bg-color: #333;
+    --dark-blue-transparent: rgb(22 54 74 / 50%);
     --text-color: #fff;
     --hover-color: #888;
     --hover-light: #ddd;
@@ -548,26 +549,33 @@ footer {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgb(0 0 0 / 50%);
+    background: var(--dark-blue-transparent);
     z-index: -1;
 }
-footer .module {
-    border-left: 2px solid var(--text-color);
+footer h1 {
+    margin-left: -3px;
 }
 .footer-modules {
     padding-top: 3em;
     padding-bottom: 2em;
 }
-.footermenu-menu a, a.footer-document-link {
+.tagsmenu-content {
+    border-left: 1px solid var(--text-color);
+}
+.footermenu-menu li, .tagsmenu-menu li {
+    font-weight: 700;
+    font-size: smaller;
+}
+.footermenu-menu a, .tagsmenu-menu a, a.footer-document-link {
     color: var(--text-color);
     transition: var(--animation-05);
 }
-.footermenu-menu a:hover, .footermenu-menu a:focus, .footermenu-menu a:active, a.footer-document-link:hover, a.footer-document-link:focus, a.footer-document-link:active {
+.footermenu-menu a:hover, .footermenu-menu a:focus, .footermenu-menu a:active, .tagsmenu-menu a:hover, .tagsmenu-menu a:focus, .tagsmenu-menu a:active, a.footer-document-link:hover, a.footer-document-link:focus, a.footer-document-link:active {
     color: var(--hover-color);
 }
-.footermenu-menu a:hover, .footermenu-menu a:focus, .footermenu-menu a:active {
-    padding-left: 1em;
-}
+ .tagsmenu-menu a {
+    font-weight: 400;
+ }
 a.footer-document-link {
     display: inline-block;
     padding: 0 2em;
@@ -577,6 +585,10 @@ a.footer-document-link {
 footer small {
     border-top: 1px solid var(--text-color);
     padding: 1em 10em;
+}
+footer h1 small {
+    border: none;
+    padding: 0;
 }
 
 /* Slideshow styles */
@@ -805,7 +817,7 @@ span.card-flag.right {
     bottom: 1em;
     max-width: 30%;
     max-height: 30%;
-    background: rgb(255 255 255 / 40%);
+    background: rgb(255 255 255 / 80%);
     border-radius: 5px;
 }
 img.card-logo {

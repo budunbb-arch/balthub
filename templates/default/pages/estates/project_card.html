@@ -19,12 +19,12 @@
       {% if project.developer and project.developer.logo and project.developer.slug %} 
         <div class="developer-logo position-absolute px-1 py-1">
           <a href="{% url 'developer_detail' project.developer.slug %}" class="card-developer">
-            <img src="{{ project.developer.logo.url }}" alt="{{ project.developer.name }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ project.developer.name }}"  class="card-logo"> 
+            <img src="{{ project.developer.logo.url }}" alt="{{ project.developer.name }}" class="card-logo"> 
           </a>
         </div>
       {% elif project.developer and project.developer.logo %}
         <div class="developer-logo position-absolute px-1 py-1">
-          <img src="{{ project.developer.logo.url }}" alt="{{ project.developer.name }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ project.developer.name }}"  class="card-logo"> 
+          <img src="{{ project.developer.logo.url }}" alt="{{ project.developer.name }}" class="card-logo"> 
         </div>
       {% else %}
       {% endif %} 
@@ -46,11 +46,11 @@
     {# девелопер #} 
     {% if project.developer and project.developer.slug and not project.developer.logo %}
       <a href="{% url 'developer_detail' project.developer.slug %}" class="card-developer-link">
-        <h4 class="card-developer-name"><small>{{ project.developer.name }}</small></h4>
+        <small>{{ project.developer.name }}</small>
       </a>
-    {% elif project.developer and not project.developer.logo %}
+    {% elif project.developer and not project.developer.logo and not project.developer.slug %}
       <span class="card-developer-link">
-        <h4 class="card-developer-name"><small>{{ project.developer.name }}</small></h4>
+        <small>{{ project.developer.name }}</small>
       </span>
     {% endif %} 
 

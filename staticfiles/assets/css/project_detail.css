@@ -1,7 +1,6 @@
 .header-bg {
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), var(--project-first-image);
     background-size: cover;
-    position: absolute;
 }
 .module.module-project-description {
     background: rgb(0 0 0 / 40%);

@@ -65,8 +65,10 @@
 {% if map_settings.enabled and map_settings.provider == "yandex" and map_points %}
 <section class="developer-map mb-5">
     <h2>Объекты на карте</h2>
-    <div id="collection-map"></div>
-    {{ map_points|json_script:"collection-map-data" }}
+    {% with map_id="collection-map-developer" data_id="collection-map-data-developer" %}
+    <div id="{{ map_id }}"></div>
+    {{ map_points|json_script:data_id }}
+    {% endwith %}
 </section>
 {% endif %}
 

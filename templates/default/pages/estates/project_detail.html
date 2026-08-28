@@ -11,28 +11,37 @@
 
 <div class="mt-4">
 
-    <!-- Заголовок -->
-    <h1 class="mb-3">{{ seo.h1|default:project.name }}</h1>
+    <div class="row">
+        <div class="col-12 col-xl-8">
+            <h1 class="mb-3">
+                {{ seo.h1|default:project.name }}
+                {% if project.params %}
+                    <small>
+                        {% if project.params.city %}
+                            {{ project.params.city.name }},
+                        {% endif %}
 
-    <!-- Застройщик -->
-    {% if project.developer %}
-        <div class="text-muted mb-3">
-            {{ trans.text_developer }}: {{ project.developer.name }}
+                        {% if project.params.district %} 
+                            {{ project.params.district.name }}
+                        {% endif %}
+                    </small>
+                {% endif %}
+            </h1>
         </div>
-    {% endif %}
-
-    {% if project.params %}
-        <div class="text-muted mb-3">
-            {{ trans.text_location }}: 
-            {% if project.params.city %}
-                {{ project.params.city.name }},
-            {% endif %}
-
-            {% if project.params.district %} 
-                {{ project.params.district.name }}
+        <div class="col-12 col-xl-2 offset-xl-2 text-end">
+            {% if project.developer and project.developer.slug %}
+                <a href="{% url 'developer_detail' project.developer.slug %}">
+                    {% if project.developer.logo %}
+                        <img src="{{ project.developer.logo.url }}" alt="{{ project.developer.name }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ project.developer.name }}" class="img-fluid">
+                    {% else %}
+                        {{ project.developer.name }}
+                    {% endif %}
+                </a>
+            {% else %}
+                {{ project.developer.name }}
             {% endif %}
         </div>
-    {% endif %}
+    </div>
 
 
 
@@ -45,9 +54,10 @@
 
 {% if map_points %}
 
-    <div id="collection-map"></div>
-
-    {{ map_points|json_script:"collection-map-data" }}
+    {% with map_id="collection-map-project" data_id="collection-map-data-project" %}
+    <div id="{{ map_id }}" data-zoom="12"></div>
+    {{ map_points|json_script:data_id }}
+    {% endwith %}
 
 {% endif %}
 </div>

@@ -84,7 +84,7 @@
           </div>
 
           {% if data.settings and data.settings.personal_data %}
-            <div class="form-check text-start mb-2">
+            <div class="form-check text-start text-small mb-2">
               <input class="form-check-input" type="checkbox" id="personalData{{ data.settings.id }}" name="personal_data" required>
               <label class="form-check-label" for="personalData{{ data.settings.id }}">
                 {{ trans.text_agree }} <a href="{% url 'document_detail' data.settings.personal_data.id %}" target="_blank">{{ trans.text_personaldata }}</a>
@@ -93,7 +93,7 @@
           {% endif %}
 
           {% if data.settings and data.settings.policy %}
-            <div class="form-check text-start mb-4">
+            <div class="form-check text-start text-small mb-4">
               <input class="form-check-input" type="checkbox" id="policy{{ data.settings.id }}" name="policy" required>
               <label class="form-check-label" for="policy{{ data.settings.id }}">
                 {{ trans.text_agree }} <a href="{% url 'document_detail' data.settings.policy.id %}" target="_blank">{{ trans.text_policy }}</a>
