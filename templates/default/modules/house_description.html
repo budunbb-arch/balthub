@@ -1,0 +1,83 @@
+{% load localization l10n %}
+
+{% if data.house %}
+<div class="module-house-description col-12 col-xl-10 offset-xl-1 py-4 mt-3">
+    <h2 class="mb-4">
+        {{ data.house.project.name }}
+        <small>
+            <br>
+            {% if data.house.project.params.city %}
+                {{ data.house.project.params.city.name }},
+            {% endif %}
+
+            {% if data.house.project.params.district %} 
+                {{ data.house.project.params.district.name }},
+            {% endif %}
+
+            {{ data.house.params.address }}
+        </small>
+    </h2>
+
+    <div class="house-params row">
+        {% if data.house.params.corpus %}
+            <div class="col-4 col-xl-2 text-center mb-3">
+                <div class="house-param">
+                    {{ data.house.params.corpus }}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if data.house.params.phase %}
+            <div class="col-4 col-xl-2 text-center mb-3">
+                <div class="house-param">
+                    {{ data.house.params.phase }}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if data.house.params.deadline and data.house.params.deadline_year %}
+            <div class="col-4 col-xl-2 text-center mb-3">
+                <div class="house-param">
+                    <strong>{{ trans.text_deadline }}</strong><br>
+                    {{ data.house.params.deadline }} {{ data.house.params.deadline_year }}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if data.house.params.floors %}
+            <div class="col-4 col-xl-2 text-center mb-3">
+                <div class="house-param">
+                    <strong>{{ trans.text_floors }}</strong><br>
+                    {{ data.house.params.floors }} {{ trans.text_floors_quantity }}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if data.house.params.parking or data.house.params.lift %}
+            <div class="col-4 col-xl-2 text-center mb-3">
+                <div class="house-param">
+                    {% if data.house.params.parking %}
+                        <strong>{{ trans.text_parking }}:</strong>
+                        {{ data.house.params.parking|yesno_i18n }}
+                    {% endif %}
+                    {% if data.house.params.parking and data.house.params.lift %}
+                        <br>
+                    {% endif %}
+                    {% if data.house.params.lift %}
+                        <strong>{{ trans.text_lift }}:</strong>
+                        {{ data.house.params.lift|yesno_i18n }}
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if data.house.params.building_status %}
+        <p><strong>{{ trans.text_building_status }}: {{ data.house.params.building_status }}</strong></p>
+    {% endif %}
+
+    {% if data.house.params.house_structure_type %}
+        <p><strong>{{ trans.text_house_structure_type }}: {{ data.house.params.house_structure_type }}</strong></p>
+    {% endif %}
+</div>
+{% endif %}

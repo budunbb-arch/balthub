@@ -81,10 +81,12 @@ body {
 #mainNavbar {
     padding: 2em;
 }
+nav.navbar {
+    background: var(--dark-blue-transparent);
+}
 header a.nav-link {
     position: relative;
-    text-transform: uppercase;
-    font-size: smaller;
+    font-size: small;
     color: var(--text-color);
     transition: var(--animation-05);
     overflow: hidden;
@@ -122,6 +124,14 @@ h1 small {
     font-family: var(--cgr);
     font-size: medium;
     margin-bottom: 1em;
+}
+h2 {
+    font-size: 32px;
+    font-weight: 700;
+}
+h2 small {
+    font-size: 16px;
+    font-weight: 400;
 }
 h3 {
     text-transform: uppercase;
@@ -350,7 +360,7 @@ ol.document li ol>li, ol.document>li dl dd, ol.document>li>p {
 .card {
     border: none;
     overflow: hidden;
-    border-radius: 5px;
+    border-radius: 0;
     color: var(--bg-color);
 
     & .card-body {
@@ -372,7 +382,10 @@ ol.document li ol>li, ol.document>li dl dd, ol.document>li>p {
     border-radius: 0;
     transition: var(--animation-05);
 }
-.card:hover .card-img-wrapper img.card-img-top {
+.card img {
+    transition: var(--animation-05);
+}
+.card:hover .card-img-wrapper img.card-img-top, .card:hover img {
     transform: scale(1.1);
 }
 
@@ -578,9 +591,8 @@ footer h1 {
  }
 a.footer-document-link {
     display: inline-block;
-    padding: 0 2em;
-    font-size: small;
-    font-weight: 700;
+    padding-left: 2em;
+    font-size: x-small;
 }
 footer small {
     border-top: 1px solid var(--text-color);
@@ -589,6 +601,10 @@ footer small {
 footer h1 small {
     border: none;
     padding: 0;
+}
+
+img.footer-logo {
+    max-width: 250px;
 }
 
 /* Slideshow styles */
@@ -610,7 +626,6 @@ footer h1 small {
     width: 100%;
     min-height: 636px;
     border-radius: 6px;
-    overflow: hidden;
 }
 
 .slideshow-main-image,
@@ -637,8 +652,8 @@ footer h1 small {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
+    background: none;
+    color: rgb(0 0 0 / 50%);
     border: none;
     width: 40px;
     height: 40px;
@@ -646,13 +661,13 @@ footer h1 small {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: xxx-large;
     z-index: 10;
     transition: background 0.2s;
 }
 
 .slideshow-btn:hover {
-    background: rgba(0, 0, 0, 0.8);
+    color: rgb(0 0 0 / 80%);
 }
 
 .slideshow-btn-prev {
@@ -667,7 +682,7 @@ footer h1 small {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgb(0 0 0 / 50%);
     color: #fff;
     padding: 0.25rem 0.75rem;
     border-radius: 3px;
@@ -1064,4 +1079,133 @@ ul.nav.nav-tabs li.nav-item:last-child button::after, ul.nav.nav-tabs li.nav-ite
     * {
         font-size: initial;
     }
+}
+
+.badge.bg-primary, .badge.bg-secondary {
+    background-color: var(--dark-blue-transparent) !important;
+    padding: 1em 2em;
+}
+
+.house-param, .flat-param {
+    background: var(--dark-blue-transparent);
+    padding: 1em;
+    border-radius: 10px;
+}
+.house-photo-caption {
+    top: 1em;
+    left: 1em;
+    color: var(--text-color);
+    background: var(--dark-blue-transparent);
+    padding: 1em 2em;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: large;
+}
+.house-media>div {
+    aspect-ratio: 2 / 1;
+    overflow: hidden;
+}
+.house-media>div img {
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.img-presentation {
+    cursor: pointer;
+    transition: var(--animation-05);
+}
+.img-presentation:hover {
+    transform: scale(1.1);
+}
+.img-presentation-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: var(--dark-blue-transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.img-presentation-overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+.img-presentation-image {
+    max-width: 92%;
+    max-height: 92%;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 4px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+}
+.img-presentation-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 5;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    border: none;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    font-size: 26px;
+    line-height: 1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.img-presentation-close:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+.small, ul.card-params li {
+    font-size: small;
+}
+.large {
+    font-size: large;
+}
+.bold {
+    font-weight: 700;
+}
+ul.card-params li {
+    position: relative;
+    padding: 0 1em;
+}
+ul.card-params li:first-child {
+    padding-left: 0;
+}
+ul.card-params li::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--seagreen);
+    border-radius: 50%;
+}
+ul.card-params li:last-child::after {
+    content: none;
+}
+.flat-plan {
+    overflow: hidden;
+}
+.flat-params-list {
+    line-height: 2;
+}
+.flat-params-list li i {
+    line-height: 40px;
+    width: 40px;
+    text-align: center;
+    background: var(--seagreen);
+    margin-right: .35em;
+    margin-bottom: .25em;
+    color: var(--text-color);
 }

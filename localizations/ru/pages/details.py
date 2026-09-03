@@ -34,6 +34,13 @@ translations = {
     "text_balcony_type": "Балкон",
     "text_bathroom_unit_type": "Санузел",
     "text_finish_type": "Отделка",
+    "text_haggle": "Торг",
+    "text_mortgage": "Ипотека",
+    "text_address": "Адрес",
+    "text_flat_details": "Характеристики",
+    "other_flats": "Другие квартиры в ",
+    "yes": "Да",
+    "no": "Нет",
     "choose_flat": "Выбрать квартиру в",
 
     "text_projects": "Жилые комплексы",

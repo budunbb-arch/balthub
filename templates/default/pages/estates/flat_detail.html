@@ -1,75 +1,170 @@
 {% extends "default/base.html" %}
 
 {% load static %}
+{% load price_utils %}
+{% load image_utils %}
 
-{% block title %}{{ trans.text_flat }} {{ flat.number|default:"" }}{% endblock %}
+{% block title %}{{ trans.text_flat }} {{ flat.number|default:"" }} &mdash; {{ flat.house.params.address }} {{ flat.house.params.corpus }} | {{ flat.house.project.name }}{% endblock %}
 
 {% block content %}
 
-<h1>
+<h1 class="mb-4">
     {% if seo.h1 %}
         {{ seo.h1 }}
     {% else %}
+        {{ flat.house.params.address }}
+        {% if flat.house.params.corpus %}
+            {{ flat.house.params.corpus }}, 
+        {% endif %}
         {{ trans.text_flat }} {{ flat.number|default:"" }}
     {% endif %}
 </h1>
 
-<p>
-    {{ trans.text_project }} {{ flat.house.project.name }}
-</p>
+<div class="flat-description row">
+    <div class="col-12 col-xl-4">
+        {% if flat.plan %}
+            <img src="{{ flat.plan }}" alt="{{ trans.text_flat }} {{ flat.number|default:"" }} {{ trans.text_plan }}" class="img-fluid">
+        {% endif %}
+    </div>
+    <div class="col-12 col-xl-8">
+        <h4 class="mb-3">{{ trans.text_flat_details }}:</h4>
 
-<p>
-    {{ trans.text_house }} {{ flat.house }}
-</p>
-
-<hr>
-
-<h4>{{ trans.text_specials }}</h4>
-
-{% if flat.params %}
-    <p>{{ trans.of_rooms }} {{ flat.params.rooms }}</p>
-    <p>{{ trans.text_square }} {{ flat.params.square }} {{ trans.text_m2 }}</p>
-    <p>{{ trans.text_floor }} {{ flat.params.floor }}</p>
-    <p>{{ trans.text_flat_layout }} <img src="{{ flat.plan }}"></p>
-{% endif %}
-
+        <ul class="list-unstyled flat-params-list mb-5">
+            {% if flat.params.rooms_alias %}
+                <li><i class="fa-solid fa-building-user"></i> {{ trans.of_rooms }} {{ flat.params.rooms_alias }}</li>
+            {% endif %}
+            {% if flat.params.floor %}
+                <li><i class="fa-solid fa-layer-group"></i> {{ trans.text_floor }}: {{ flat.params.floor }}/{{ flat.house.params.floors }}</li>
+            {% endif %}
+            {% if flat.params.square %}
+                <li><i class="fa-solid fa-ruler-combined"></i> {{ trans.text_square }} {{ flat.params.square }} {{ trans.text_m2 }}</li>
+            {% endif %}
+            {% if flat.params.living_square %}
+                <li><i class="fa-solid fa-ruler-combined"></i> {{ trans.text_living_square }}: {{ flat.params.living_square }} {{ trans.text_m2 }}</li>
+            {% endif %}
+            {% if flat.params.kitchen_square %}
+                <li><i class="fa-solid fa-ruler-combined"></i> {{ trans.text_kitchen_square }}: {{ flat.params.kitchen_square }} {{ trans.text_m2 }}</li>
+            {% endif %}
+            {% if flat.params.ceiling_height %}
+                <li><i class="fa-solid fa-ruler-vertical"></i> {{ trans.text_ceiling_height }}: {{ flat.params.ceiling_height }} {{ trans.text_m }}</li>
+            {% endif %}
+            {% if flat.params.balcony %}
+                <li><i class="fa-solid fa-house"></i> {{ trans.text_balcony }}: {{ flat.params.balcony }}</li>
+            {% endif %}
+            {% if flat.params.bathroom_unit %}
+                <li><i class="fa-solid fa-bath"></i> {{ trans.text_bathroom_unit_type }}: {{ flat.params.bathroom_unit }}</li>
+            {% endif %}
+            {% if flat.params.finish_type %}
+                <li><i class="fa-solid fa-paint-roller"></i> {{ trans.text_finish_type }}: {{ flat.params.finish_type }}</li>
+            {% endif %}
+            {% if flat.house.params.deadline and flat.house.params.deadline_year %}
+                <li class="mb-5"><i class="fa-solid fa-calendar-days"></i> {{ trans.text_deadline }}: {{ flat.house.params.deadline }} {{ flat.house.params.deadline_year }}</li>
+            {% endif %}
+            {% for deal in flat.deals.all %}
+                <li>
+                    <i class="fa-solid fa-money-bill-wave"></i> 
+                    <span class="large bold">
+                        {% if deal.currency.prefix %}
+                            {{ deal.currency.prefix }}
+                        {% endif %}
+                        {{ deal.price|format_price }} 
+                        {% if deal.currency.postfix %}
+                            {{ deal.currency.postfix }}
+                        {% endif %}
+                    </span> 
+                    <span class="small text-muted ps-2">
+                        ({% if deal.currency.prefix %}
+                            {{ deal.currency.prefix }}/{{ trans.text_m2 }}
+                        {% endif %}
+                        {{ flat.price_per_m2|format_price }} 
+                        {% if deal.currency.postfix %}
+                            {{ deal.currency.postfix }}/{{ trans.text_m2 }}
+                        {% endif %})
+                    </span>
+                </li>
+            {% empty %}
+                <li>
+                    <i class="fa-solid fa-xmark"></i>
+                    {{ trans.no_offers }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+        
 {% if flat.flat_tags.all %}
-    <h4>Теги</h4>
-    <ul class="list-unstyled h-list flat-tags">
+    <ul class="list-unstyled h-list flat-tags d-none">
         {% for tag in flat.flat_tags.all %}
-            <li>{{ tag.tag.name }}</li>
+            <li class="small pe-2">#{{ tag.tag.name }}</li>
         {% endfor %}
     </ul>
 {% endif %}
 
-<hr>
+<div class="project-flats">
+    <!-- Квартиры -->
+    <div id="flats-list" class="mt-5">
+        <h2 class="text-center mb-4">{{ trans.other_flats }} {{ flat.house.project.name }}</h2>
 
-<h4>{{ trans.text_offers }}</h4>
+        <div 
+            data-ajax-list
+            data-container="#flats-block"
+            data-push-state="true"
+            data-section="flats"
+        >
+            <div class="ajax-loader-overlay hidden">
+                <div class="spinner"></div>
+            </div>
 
-{% for deal in flat.deals.all %}
-    <div>
-        {{ deal.deal_type }}:
-        <strong>{{ deal.price }} {{ deal.currency }}</strong>
+            <div class="flats-list row">
+                <div class="flats-list-pickers col-12 col-xl-3">
+                    {% include "default/modules/picker_flats.html" with pickers=flats_pickers %}
+                </div>
+                <div class="flats-list-content col-12 col-xl-9">
+                    <div id="flats-block">
+                        <div class="row" data-items>
+                            {% if flats_page_obj %}
+                                {% for flat in flats_page_obj %}
+                                    {% include "default/pages/estates/project_flat_card.html" with flat=flat %}
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12 flats-empty text-center">
+                                    <p>{{ trans.no_flats }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="pagination-wrapper" data-pagination>
+                        {% include "default/includes/infinite_pagination.html" with page_obj=flats_page_obj paginator=flats_paginator page_range=flats_page_range %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-{% empty %}
-    <p>{{ trans.no_offers }}</p>
-{% endfor %}
+</div>
 
-{% if map_settings.enabled and map_points %}
-<section class="house-map">
-    <h2>Расположение</h2>
-    <div id="house-map"></div>
-    {{ map_points|json_script:"house-map-data" }}
-</section>
-{% endif %}
+
+
+
 
 {% endblock %}
 
 {% block extra_css%}
     <link rel="stylesheet" href="{% static 'assets/css/maps.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/flat_detail.css' %}">
+
+    {% if flat.house.project.images.all %}
+        <style>
+            :root {
+                --flat-project-first-image: url('{{ flat.house.project.images.first.image|image_variant:1200 }}');
+            }
+        </style>
+    {% endif %}
 {% endblock %}
 
 {% block extra_js %}
+
+    <script src="{% static 'assets/js/picker_stable.js' %}"></script>
     {% if map_settings.enabled and map_settings.provider == "yandex" %}
         <script src="https://api-maps.yandex.ru/v3/?apikey={{ map_settings.api_key }}&lang={{ map_settings.language }}"></script>
         <script src="{% static 'assets/js/maps/yandex.js' %}"></script>

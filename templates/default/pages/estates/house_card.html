@@ -19,16 +19,14 @@
 
     <div class="card-body">
         {# город через ProjectParams #} 
-    {% if project.params and project.params.city %} 
-      <span class="card-city">{{ project.params.city.name }}</span> 
-    {% endif %}
-        <h5 class="card-title">
-            {{ house.params.address|default:trans.no_address }} {{ house.params.corpus }}
-        </h5>
-
-        <p class="card-text">
-            {{ house.project.name }}
-        </p>
+        {% if project.params and project.params.city %} 
+        <span class="card-city">{{ project.params.city.name }}</span> 
+        {% endif %}
+        <a href="{% url 'house_detail' house.project.slug house.slug %}" class="">
+            <h3 class="card-title">
+                {{ house.params.address|default:trans.no_address }} {{ house.params.corpus }}
+            </h3>
+        </a>
 
         {% if house.params.deadline %}
             <p class="text-muted">
@@ -38,11 +36,5 @@
                 <span class="card-flag right position-absolute">{{ house.params.building_status }}</span>
             {% endif %}
         {% endif %}
-
-        <div class="text-center">
-            <a href="{% url 'house_detail' house.project.slug house.slug %}" class="btn btn-primary inverted">
-                {{ trans.button_more }}
-            </a>
-        </div>
     </div>
 </div>

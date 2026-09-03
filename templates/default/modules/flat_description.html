@@ -1,0 +1,63 @@
+{% load localization l10n %}
+
+{% if data.flat %}
+    <div class="module-flat-description col-12 col-xl-10 offset-xl-1 py-4 mt-3">
+        <h2 class="mb-4">
+            {{ trans.text_flat }} {% if data.flat.number %}№{{ data.flat.number }}{% endif %}
+            <small>
+                <br>
+                {{ data.flat.house.project.params.city.name }},
+                {% if data.flat.house.project.params.district.name %}
+                    {{ data.flat.house.project.params.district.name }},
+                {% endif %}
+                {{ data.flat.house.params.address }}
+                {% if data.flat.house.params.corpus %}
+                    {{ data.flat.house.params.corpus }}
+                {% endif %} &mdash;
+                {{ data.flat.house.project.name }}
+            </small>
+        </h2>
+
+        <div class="flat-params row">
+            {% if data.flat.params.rooms_alias %}
+                <div class="col-4 col-xl-2 text-center mb-3">
+                    <div class="flat-param">
+                        {{ data.flat.params.rooms_alias }}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if data.flat.params.square %}
+                <div class="col-4 col-xl-2 text-center mb-3">
+                    <div class="flat-param">
+                        {{ data.flat.params.square }} {{ trans.text_m2 }}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if data.flat.params.floor %}
+                <div class="col-4 col-xl-2 text-center mb-3">
+                    <div class="flat-param">
+                        {{ data.flat.params.floor }} {{ trans.text_floor }}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if data.mortgage %}
+                <div class="col-4 col-xl-2 text-center mb-3">
+                    <div class="flat-param">
+                        {{ trans.text_mortgage_available }}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if data.haggle %}
+                <div class="col-4 col-xl-2 text-center mb-3">
+                    <div class="flat-param">
+                        {{ trans.text_haggle_available }}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

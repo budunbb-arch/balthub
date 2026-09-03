@@ -4,61 +4,62 @@
 
     {% for plan in page_obj %}
 
-        <div class="flatplan-card col-lg-4 col-md-6 col-12">
+        <div class="flatplan-card col-6 col-xl-3">
+            <h5>{{ plan.flat.house.project.name }}</h5>
+            <div class="flatplan-card-image">
+                {% load image_utils %}
+                <img
+                    src="{{ plan.plan_image|image_variant:480 }}"
+                    srcset="{{ plan.plan_image|image_srcset:'320,480' }}"
+                    sizes="(max-width: 768px) 100vw, 66vw"
+                    loading="lazy"
+                    class="img-fluid"
+                    alt=""
+                >
+            </div>
 
-            <div class="row">
+            <div class="flatplan-card-description">
 
-                <div class="flatplan-card-image col-9">
-                    {% load image_utils %}
-                    <img
-                        src="{{ plan.plan_image|image_variant:480 }}"
-                        srcset="{{ plan.plan_image|image_srcset:'320,480' }}"
-                        sizes="(max-width: 768px) 100vw, 66vw"
-                        loading="lazy"
-                        class="img-fluid"
-                        alt=""
-                    >
-                </div>
 
-                <div class="flatplan-card-description col-3">
-                    <div class="flatplan-card-description-squareline">
-                        <div class="flatplan-card-description-squareline-block text-center">
-                            <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.square }}</strong> м²</span>
-                            <span class="flatplan-card-description-squareline-block-hint uppercase">{{ trans.full_square }}</span>
-                        </div>
-                        <div class="flatplan-card-description-squareline-block text-center">
-                            <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.living_square }}</strong> м²</span>
-                            <span class="flatplan-card-description-squareline-block-hint uppercase">{{ trans.living_square }}</span>
-                        </div>
-                        <div class="flatplan-card-description-squareline-block text-center">
-                            <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.kitchen_square }}</strong> м²</span>
-                            <span class="flatplan-card-description-squareline-block-hint uppercase">{{ trans.kitchen_square }}</span>
-                        </div>
-                        <div class="flatplan-card-description-squareline-block text-center">
-                            <span class="flatplan-card-description-squareline-block-num">
-                                <span class="flatplan-card-description-squareline-block-hint">{{ trans.text_from }}<br></span>
-                                <strong>{{ plan.price_per_m2 }}</strong>
-                            </span>
-                            <span class="flatplan-card-description-squareline-block-hint">{{ trans.specific_price }}</span>
-                        </div>
+
+
+
+                <div class="flatplan-card-description-squareline">
+                    <div class="flatplan-card-description-squareline-block text-center">
+                        <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.square }}</strong> м²</span>
+                        <span class="flatplan-card-description-squareline-block-hint uppercase">{{ trans.full_square }}</span>
+                    </div>
+                    <div class="flatplan-card-description-squareline-block text-center">
+                        <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.living_square }}</strong> м²</span>
+                        <span class="flatplan-card-description-squareline-block-hint uppercase">{{ trans.living_square }}</span>
+                    </div>
+                    <div class="flatplan-card-description-squareline-block text-center">
+                        <span class="flatplan-card-description-squareline-block-num"><strong>{{ plan.kitchen_square }}</strong> м²</span>
+                        <span class="flatplan-card-description-squareline-block-hint uppercase">{{ trans.kitchen_square }}</span>
+                    </div>
+                    <div class="flatplan-card-description-squareline-block text-center">
+                        <span class="flatplan-card-description-squareline-block-num">
+                            <span class="flatplan-card-description-squareline-block-hint">{{ trans.text_from }}<br></span>
+                            <strong>{{ plan.price_per_m2 }}</strong>
+                        </span>
+                        <span class="flatplan-card-description-squareline-block-hint">{{ trans.specific_price }}</span>
                     </div>
                 </div>
+            </div>
 
-                <div class="flatplan-card-content col-12">
+            <div class="flatplan-card-content col-12">
 
-                    <ul class="list-unstyled">
-                        <li>{{ plan.balcony_type__name }}</li>
-                        <li>{{ plan.bathroom_unit_type__name }} {{ trans.text_bathroom }}</li>
-                        <li>{{ plan.finish_type__name }}</li>
-                    </ul>
+                <ul class="list-unstyled">
+                    <li>{{ plan.balcony_type.name }}</li>
+                    <li>{{ plan.bathroom_unit_type.name }} {{ trans.text_bathroom }}</li>
+                    <li>{{ plan.finish_type.name }}</li>
+                </ul>
 
-                    <button>
-                        {{  trans.text_free }}
-                        <strong>{{ plan.flats_count }}</strong>
-                        {{ trans.of_flats }}
-                    </button>
-
-                </div>
+                <button>
+                    {{  trans.text_free }}
+                    <strong>{{ plan.flats_count }}</strong>
+                    {{ trans.of_flats }}
+                </button>
 
             </div>
 

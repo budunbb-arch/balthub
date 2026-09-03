@@ -1,0 +1,55 @@
+.project-flats h2 {
+    background: linear-gradient(rgba(0 0 0 / 50%), rgba(0 0 0 / 50%)), var(--flat-project-first-image);
+}
+.project-flats h2 {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin: 0;
+    font-weight: 700;
+    color: var(--text-color);
+    text-transform: uppercase;
+}
+.project-flats h2 {
+    background-position: center;
+}
+
+
+.form-check-input {
+    margin-top: 0;
+}
+.picker-range-fields {
+    gap: 0;
+}
+input.picker-range-input {
+    width: 100%;
+    border-radius: 50vh;
+    border: none;
+    padding: .2em .5em;
+    text-align: center;
+}
+span.picker-range-label {
+    color: var(--bg-color);
+    font-family: var(--cgr);
+    font-weight: 400;
+}
+ul.flat-tags li {
+    background: var(--hover-light);
+    padding: 0 1em;
+    border-radius: 50vh;
+    margin-bottom: .3em;
+}
+.flat-price-sum {
+    font-size: larger;
+    font-weight: 700;
+    color: var(--bg-color);
+}
+.flat-price-per-m2 {
+    font-size: small;
+    opacity: .8;
+    margin-top: .2em;
+}
+img.img-contain {
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    width: 100%;
+}

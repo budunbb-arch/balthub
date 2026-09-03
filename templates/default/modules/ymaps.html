@@ -5,11 +5,11 @@
 {% if map_settings.enabled and map_settings.provider == "yandex" %}
 
 <link rel="stylesheet" href="{% static 'assets/css/maps.css' %}">
-<div class="col-12 col-xl-6">
+<div class="col-12">
 
 <section class="main-map position-relative">
 
-    <div id="collection-map-footer" data-zoom="16"></div>
+    <div id="collection-map-footer" data-zoom="10"></div>
     <div class="maps-overlay position-absolute"><span class="maps-toggler position-absolute text-center"><i class="fa-solid fa-lock"></i></span></div>
 
     {{ data.points|json_script:"collection-map-data-footer" }}

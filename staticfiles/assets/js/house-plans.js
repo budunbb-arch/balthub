@@ -74,11 +74,17 @@ document.addEventListener("DOMContentLoaded", () => {
             el.classList.remove("open");
         });
 
+        document.querySelectorAll(".rooms-toggle").forEach(btn => {
+            btn.classList.remove("is-open");
+        });
+
         if (alreadyOpen) {
             return;
         }
 
         currentContent.classList.add("open");
+
+        toggle.classList.add("is-open");
 
         await loadGroup(toggle);
         
@@ -109,6 +115,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll(".rooms-content.open").forEach(el => {
         el.classList.remove("open");
+    });
+
+    document.querySelectorAll(".rooms-toggle.is-open").forEach(btn => {
+        btn.classList.remove("is-open");
     });
 
     if (toggles.length) {

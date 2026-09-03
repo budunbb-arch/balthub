@@ -244,3 +244,57 @@ class FlatQuerySet(PublicQuerySet):
         return self.filter(
             params__kitchen_square__lte=value
         )
+
+    def rooms_alias(self, aliases):
+
+        if not aliases:
+            return self
+
+        return self.filter(
+            params__rooms_alias__in=aliases
+        )
+
+    def balcony_type(self, types):
+
+        if not types:
+            return self
+
+        return self.filter(
+            params__balcony_type__in=types
+        )
+
+    def bathroom_unit_type(self, types):
+
+        if not types:
+            return self
+
+        return self.filter(
+            params__bathroom_unit_type__in=types
+        )
+
+    def finish_type(self, types):
+
+        if not types:
+            return self
+
+        return self.filter(
+            params__finish_type__in=types
+        )
+
+    def haggle(self, value):
+
+        if not value:
+            return self
+
+        return self.filter(
+            deals__haggle=True
+        ).distinct()
+
+    def mortgage(self, value):
+
+        if not value:
+            return self
+
+        return self.filter(
+            deals__mortgage=True
+        ).distinct()

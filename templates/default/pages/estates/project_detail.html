@@ -55,7 +55,13 @@
 {% if map_points %}
 
     {% with map_id="collection-map-project" data_id="collection-map-data-project" %}
-    <div id="{{ map_id }}" data-zoom="12"></div>
+    <div id="{{ map_id }}" class="position-relative" data-zoom="16">
+
+        <div class="maps-overlay position-absolute">
+            <span class="maps-toggler position-absolute text-center"><i class="fa-solid fa-lock"></i></span>
+        </div>
+    </div>
+    
     {{ map_points|json_script:data_id }}
     {% endwith %}
 
@@ -113,7 +119,7 @@
                 </div>
                 <div class="flats-list-content col-12 col-xl-9">
                     <div id="flats-block">
-                        <div class="" data-items>
+                        <div class="row" data-items>
                             {% if flats_page_obj %}
                                 {% for flat in flats_page_obj %}
                                     {% include "default/pages/estates/project_flat_card.html" with flat=flat %}

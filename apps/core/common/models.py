@@ -141,6 +141,8 @@ MODULE_TYPES = [
     ("tags_menu", "Меню тегов"),
     ("tag_collection", "Подборка тегов"),
     ("project_description", "Описание проекта"),
+    ("house_description", "Описание дома"),
+    ("flat_description", "Описание квартиры"),
 ]
 
 

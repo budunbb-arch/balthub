@@ -1,16 +1,28 @@
 {% load humanize %}
 {% load price_utils %}
 
-<div class="card p-3 mb-3">
-    <div class="row">
-        <div class="flat-plan col-12 col-xl-2">
-            <img src="{{ flat.plan }}" class="flat-plan-img img-contain">
+<div class="col-6 col-xl-4 pb-4">
+    <div class="card p-3">
+        <h5 class="uppercase">{{ flat.house.project.name }}</h5>
+        <ul class="card-params list-unstyled font-size-fix h-list mb-3">
+            {% if flat.number %}
+                <li>№{{ flat.number }}</li>
+            {% endif %}
+            <li>{{ flat.params.rooms_alias }}</li>
+            {% if flat.params.square %}
+                <li>{{ flat.params.square }} {{ trans.text_m2 }}</li>
+            {% endif %}
+            {% if flat.params.floor %}
+                <li>{{ flat.params.floor }} {{ trans.text_floor }}</li>
+            {% endif %}
+        </ul>
+        <div class="flat-plan mb-3">
+            <a href="{{ flat.get_absolute_url }}" class="">
+                <img src="{{ flat.plan }}" class="flat-plan-img img-contain">
+            </a>
         </div>
-        <div class="flat-description col-12 col-xl-7">
-            <h5 class="mb-4"><a href="{{ flat.get_absolute_url }}">{{ flat.params.rooms_alias }}, {{ flat.params.square }} {{ trans.text_m2 }}</a>
-                <small class="text-muted"><br>{{ flat.house.project.name }}, {% if flat.house.params.corpus %}{{ flat.house.params.corpus }}, {% endif %} {{ flat.params.floor }} <span class="lowercase">{{ trans.text_floor }}</span>{% if flat.number %}, №{{ flat.number }}{% endif %}</small>
-            </h5>
-            <ul class="list-unstyled h-list flat-tags">
+        <div class="card-data">
+            <ul class="list-unstyled h-list flat-tags d-none">
                 {% if flat.house.params.deadline and flat.house.params.deadline_year %}
                     <li>{{ flat.house.params.deadline }} {{ flat.house.params.deadline_year }}</li>
                 {% endif %}
@@ -18,20 +30,24 @@
                     <li class="flat-tag">{{ tag.tag.name }}</li>
                 {% endfor %}
             </ul>
+            {% if flat.params.finish_type %}
+                <p class="small text-muted">{{ flat.params.finish_type }}</p>
+            {% endif %}
         </div>
-        <div class="flat-price text-end col-12 col-xl-3">
+        <div class="flat-price text-end">
             {% with deal=flat.deals.first %}
                 {% if deal and deal.price %}
-                    <span class="flat-price-sum">
-                        {{ deal.price|format_price }} {{ deal.currency.postfix }}
-                    </span>
-                    {% if flat.price_per_m2 %}
-                        <div class="flat-price-per-m2">
-                            {{ flat.price_per_m2|format_price }} {{ deal.currency.postfix }}/{{ trans.text_m2 }}
-                        </div>
-                    {% endif %}
+                    <div class="flat-price-sum">
+                        {{ deal.currency.prefix }} {{ deal.price|format_price }} {{ deal.currency.postfix }}
+                    </div>
+                    <div class="flat-price-per-m2 text-muted">
+                        {{ deal.currency.prefix }} {{ flat.price_per_m2|format_price }} {{ deal.currency.postfix }}/{{ trans.text_m2 }}
+                    </div>
                 {% endif %}
             {% endwith %}
+        </div>
+        <div class="flat-actions text-center mt-3">
+            <a href="{{ flat.get_absolute_url }}" class="uppercase">{{ trans.text_more }}</a>
         </div>
     </div>
 </div>

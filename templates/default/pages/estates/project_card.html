@@ -8,13 +8,15 @@
   {# изображение проекта #} 
   {% if project.images.all %} 
     <div class="card-img-wrapper position-relative">
-      <img
-        src="{{ project.images.first.image|image_variant:480 }}"
-        srcset="{{ project.images.first.image|image_srcset:'320,480,640' }}"
-        sizes="(max-width: 768px) 100vw, 33vw"
-        loading="lazy"
-        class="card-img-top"
-        alt="{{ project.name }}">
+      <a href="{% url 'project_detail' project.slug %}">
+        <img
+          src="{{ project.images.first.image|image_variant:480 }}"
+          srcset="{{ project.images.first.image|image_srcset:'320,480,640' }}"
+          sizes="(max-width: 768px) 100vw, 33vw"
+          loading="lazy"
+          class="card-img-top"
+          alt="{{ project.name }}">
+      </a>
       {# девелопер #} 
       {% if project.developer and project.developer.logo and project.developer.slug %} 
         <div class="developer-logo position-absolute px-1 py-1">

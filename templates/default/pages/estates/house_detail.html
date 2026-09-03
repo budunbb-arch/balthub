@@ -10,112 +10,18 @@
 
 {% block content %}
 
-<h1>{{ seo.h1|default:house.params.address|default:trans.text_house }}</h1>
-
-<p><strong>{{ trans.text_project }}:</strong> {{ house.project.name }}</p>
-<p><strong>{{ trans.text_city }}:</strong> {{ house.project.params.city.name }}</p>
-
-<hr>
-
-<ul>
-    <li>{{ trans.text_corpus }}: {{ house.params.corpus }}</li>
-    <li>{{ trans.text_phase }}: {{ house.params.phase }}</li>
-    <li>{{ trans.text_floors }}: {{ house.params.floors }}</li>
-    <li>{{ trans.text_deadline }}: {{ house.params.deadline }}</li>
-    <li>{{ trans.text_deadline_year }}: {{ house.params.deadline_year }}</li>
-    <li>{{ trans.text_house_structure_type }}: {{ house.params.house_structure_type }}</li>
-    <li>{{ trans.text_building_status }}: {{ house.params.building_status }}</li>
-</ul>
-
-<hr>
-
-<p>
-    {{ trans.text_parking }}: {{ house.params.parking|yesno_i18n }}<br>
-    {{ trans.text_lift }}: {{ house.params.lift|yesno_i18n }}
-</p>
-
-<hr>
+<h1>{{ seo.h1|default:house.project.params.city.name }}, {{ house.params.address|default:trans.text_house }}</h1>
 
 
-
-<h2>Квартиры</h2>
-
-
-<div
-    data-ajax-list
-    data-container="#flat-list-container"
-    data-form=".house-filter-form"
-    data-push-state="true"
->
-
-    <div class="ajax-loader-overlay hidden">
-        <div class="spinner"></div>
-    </div>
-    
-    <div id="flat-list-container">
-        {% include "default/pages/estates/ajax/_flat_list.html" %}
-    </div>
-</div>
-
-<h2>{{ trans.text_layouts }}</h2>
-
-{% if rooms_groups %}
-
-    <div class="house-layouts">
-
-        {% for rooms in rooms_groups %}
-
-            <div class="rooms-group mb-4">
-
-                <button
-                    class="rooms-toggle btn btn-dark w-100 text-start"
-                    data-rooms="{{ rooms }}"
-                    data-house="{{ house.slug }}"
-                >
-                    {{ rooms }}-{{ trans.text_roomcols }}
-                </button>
-
-                <div
-                    class="rooms-content mt-4"
-                    id="rooms-content-{{ rooms }}"
-                    data-plans-url="{% url 'house_plans_ajax' house.slug %}"
-                >
-
-                    <div
-                        class="plans-wrapper"
-                        data-ajax-list
-                        data-container=".plans-container-wrapper"
-                    >
-
-                        <div class="ajax-loader-overlay hidden">
-                            <div class="spinner"></div>
-                        </div>
-
-                        <div class="plans-container-wrapper">
-
-                            {% include "default/pages/estates/ajax/_plans_items.html" %}
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        {% endfor %}
-
-    </div>
-
-{% endif %}
 
 {% if map_settings.enabled and house.params.latitude and house.params.longitude %}
 
-<div class="house-map">
-
-    <h2>Расположение</h2>
+<div class="house-map position-relative">
 
     <div id="house-map"></div>
+    <div class="maps-overlay position-absolute">
+        <span class="maps-toggler position-absolute text-center"><i class="fa-solid fa-lock"></i></span>
+    </div>
 
     {{ map_points|json_script:"house-map-data" }}
 
@@ -123,17 +29,91 @@
 
 {% endif %}
 
+<div class="house-media row">
+    {% if house.image %}
+        <div class="house-photo position-relative col-6 pe-0">
+            <img src="{{ house.image }}" alt="{{ house.project.name }} | {{ house.project.params.city.name }}, {{ house.params.address }}" class="img-presentation img-fluid w-100">
+
+            <div class="house-photo-caption position-absolute">
+                {{ trans.text_house_photo_caption }}
+            </div>
+        </div>
+    {% endif %}
+    {% if house.plan %}
+        <div class="house-plan position-relative col-6 ps-0">
+            <img src="{{ house.plan }}" alt="{{ house.project.name }} | {{ house.project.params.city.name }}, {{ house.params.address }}" class="img-presentation img-fluid w-100">
+
+            <div class="house-photo-caption position-absolute">
+                {{ trans.text_house_plan_caption }}
+            </div>
+        </div>  
+    {% endif %}
+</div>
+
+<div class="house-flats mb-4">
+    <!-- Квартиры -->
+    <div id="flats-list">
+        <h2 class="text-center mb-4">{{ trans.choose_flat }} {{ house.params.address }} {{ house.params.corpus }}</h2>
+
+        <div
+            data-ajax-list
+            data-container="#flats-block"
+            data-form=".house-filter-form"
+            data-push-state="true"
+            data-section="flats"
+        >
+            <div class="ajax-loader-overlay hidden">
+                <div class="spinner"></div>
+            </div>
+
+            <div class="flats-list row">
+                <div class="flats-list-pickers col-12 col-xl-3">
+                    {% include "default/modules/picker_flats.html" with pickers=flats_pickers %}
+                </div>
+                <div class="flats-list-content col-12 col-xl-9">
+                    <div id="flats-block">
+                        <div class="row" data-items>
+                            {% if flats_page_obj %}
+                                {% for flat in flats_page_obj %}
+                                    {% include "default/pages/estates/project_flat_card.html" with flat=flat %}
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12 flats-empty">
+                                    <p>{{ trans.no_flats }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="pagination-wrapper" data-pagination>
+                        {% include "default/includes/infinite_pagination.html" with page_obj=flats_page_obj paginator=flats_paginator page_range=flats_page_range %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_css%}
     <link rel="stylesheet" href="{% static 'assets/css/picker.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/maps.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/house_detail.css' %}">
+
+    {% if house.image %}
+        <style>
+            :root {
+                --house-image: url('{{ house.image }}');
+            }
+        </style>
+    {% endif %}
 {% endblock %}
 
 {% block extra_js %}
     <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
     <script src="{% static 'assets/js/picker_stable.js' %}"></script>
-    <script src="{% static 'assets/js/house-plans.js' %}"></script>
+    <script src="{% static 'assets/js/img-presentation.js' %}"></script>
 
     {% if map_settings.enabled and map_settings.provider == "yandex" %}
         <script src="https://api-maps.yandex.ru/v3/?apikey={{ map_settings.api_key }}&lang={{ map_settings.language }}"></script>

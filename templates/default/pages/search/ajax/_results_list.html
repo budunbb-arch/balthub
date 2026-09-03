@@ -5,7 +5,7 @@
 <div data-items>
     <div class="row">
         {% for item_type, item in results %}
-            <div class="col-md-4 mb-4">
+            <div class="col-12 col-xl-3 mb-4">
                 {% include "default/pages/estates/project_card.html" with project=item %}
             </div>
         {% endfor %}

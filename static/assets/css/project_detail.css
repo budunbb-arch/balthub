@@ -1,5 +1,5 @@
 .header-bg {
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), var(--project-first-image);
+    background: linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 50%)), var(--project-first-image);
     background-size: cover;
 }
 .module.module-project-description {
@@ -25,10 +25,10 @@
 }
 
 .project-map {
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), var(--project-second-image);
+    background: linear-gradient(rgb(0 0 0 / 50%), rgb(0 0 0 / 50%)), var(--project-second-image);
 }
 .project-slides, .project-houses h2, .project-flats h2 {
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), var(--project-last-image);
+    background: linear-gradient(rgba(0 0 0 / 50%), rgba(0 0 0 / 50%)), var(--project-last-image);
 }
 .project-map h2, .project-slides h2, .project-houses h2, .project-flats h2 {
     padding-top: 1em;
@@ -71,7 +71,6 @@ div[data-picker-name="house"] .w-img input[type="checkbox"] {
 .flats-empty {
     text-align: center;
     padding: 3em 1em;
-    color: var(--text-color);
     opacity: .8;
 }
 

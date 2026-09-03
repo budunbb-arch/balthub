@@ -3,9 +3,7 @@
 <div class="row" data-items>
     {% if flats %}
         {% for flat in flats %}
-            <div class="col-md-4 mb-4">
-                {% include "default/pages/estates/house_card.html" with house=flat.house %}
-            </div>
+            {% include "default/pages/estates/house_card.html" with house=flat.house %}
         {% endfor %}
     {% else %}
         <p>{{ trans.empty_search }}</p>

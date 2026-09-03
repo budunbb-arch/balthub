@@ -1,5 +1,6 @@
 from apps.core.dictionaries.models import BuildingStatus
 from apps.estates.houses.models import House
+from apps.core.localization import t
 
 
 def get_picker_label(picker, selected_values):
@@ -181,93 +182,248 @@ def house_list_pickers(
 def house_detail_pickers(
     *,
     sort,
-    selected_rooms,
-    square_from,
-    square_to,
-    price_from,
-    price_to,
+    selected_rooms_alias,
+    selected_floor_from,
+    selected_floor_to,
+    selected_ceiling_height_from,
+    selected_ceiling_height_to,
+    selected_square_from,
+    selected_square_to,
+    selected_living_square_from,
+    selected_living_square_to,
+    selected_kitchen_square_from,
+    selected_kitchen_square_to,
+    selected_balcony_type,
+    selected_bathroom_unit_type,
+    selected_finish_type,
+    selected_haggle,
+    selected_mortgage,
     price_limits,
-    rooms_queryset,
+    rooms_alias_queryset,
+    balcony_type_queryset,
+    bathroom_unit_type_queryset,
+    finish_type_queryset,
+    floor_limits,
+    ceiling_height_limits,
     square_limits,
+    living_square_limits,
+    kitchen_square_limits,
 ):
     pickers = [
 
         # =====================================================
-        # SORT
+        # ROOMS ALIAS
         # =====================================================
-        {
-            "name": "sort",
-            "value": sort,
-            "placeholder": "Сортировка",
-            "auto_submit": True,
-            "input_type": "radio",
-            "options": [
-                {"value": "rooms", "label": "Комнаты ↑"},
-                {"value": "-rooms", "label": "Комнаты ↓"},
-                {"value": "square", "label": "Площадь ↑"},
-                {"value": "-square", "label": "Площадь ↓"},
-                {"value": "price", "label": "Цена ↑"},
-                {"value": "-price", "label": "Цена ↓"},
-            ],
-        },
 
-        # =====================================================
-        # ROOMS
-        # =====================================================
         {
-            "name": "rooms",
-            "value": selected_rooms,
-            "placeholder": "Комнаты",
+            "name": "rooms_alias",
+            "value": selected_rooms_alias,
+            "placeholder": t("text_numrooms"),
             "multiple": True,
             "auto_submit": False,
             "input_type": "checkbox",
+
             "options": [
-                {"value": str(room), "label": str(room)}
-                for room in rooms_queryset
+                {"value": alias, "label": alias}
+                for alias in rooms_alias_queryset
             ],
         },
 
         # =====================================================
-        # SQUARE RANGE
+        # BALCONY TYPE
         # =====================================================
+
+        {
+            "name": "balcony_type",
+            "value": selected_balcony_type,
+            "placeholder": t("text_balcony_type"),
+            "multiple": True,
+            "auto_submit": False,
+            "input_type": "checkbox",
+
+            "options": [
+                {"value": str(item.id), "label": item.name}
+                for item in balcony_type_queryset
+            ],
+        },
+
+        # =====================================================
+        # BATHROOM UNIT TYPE
+        # =====================================================
+
+        {
+            "name": "bathroom_unit_type",
+            "value": selected_bathroom_unit_type,
+            "placeholder": t("text_bathroom_unit_type"),
+            "multiple": True,
+            "auto_submit": False,
+            "input_type": "checkbox",
+
+            "options": [
+                {"value": str(item.id), "label": item.name}
+                for item in bathroom_unit_type_queryset
+            ],
+        },
+
+        # =====================================================
+        # FINISH TYPE
+        # =====================================================
+
+        {
+            "name": "finish_type",
+            "value": selected_finish_type,
+            "placeholder": t("text_finish_type"),
+            "multiple": True,
+            "auto_submit": False,
+            "input_type": "checkbox",
+
+            "options": [
+                {"value": str(item.id), "label": item.name}
+                for item in finish_type_queryset
+            ],
+        },
+
+        # =====================================================
+        # FLOOR
+        # =====================================================
+
+        {
+            "name": "floor",
+            "type": "range",
+            "label": t("text_floor"),
+            "placeholder": t("text_floor"),
+            "auto_submit": True,
+            "range": {
+                "from_name": "floor_from",
+                "to_name": "floor_to",
+                "from_value": selected_floor_from,
+                "to_value": selected_floor_to,
+                "from_placeholder": floor_limits.get("min_floor") or "",
+                "to_placeholder": floor_limits.get("max_floor") or "",
+            },
+        },
+
+        # =====================================================
+        # CEILING HEIGHT
+        # =====================================================
+
+        {
+            "name": "ceiling_height",
+            "type": "range",
+            "label": t("text_ceiling_height"),
+            "placeholder": t("text_ceiling_height"),
+            "auto_submit": True,
+            "range": {
+                "from_name": "ceiling_height_from",
+                "to_name": "ceiling_height_to",
+                "from_value": selected_ceiling_height_from,
+                "to_value": selected_ceiling_height_to,
+                "from_placeholder": ceiling_height_limits.get("min_ceiling_height") or "",
+                "to_placeholder": ceiling_height_limits.get("max_ceiling_height") or "",
+            },
+        },
+
+        # =====================================================
+        # SQUARE
+        # =====================================================
+
         {
             "name": "square",
-            "label": "Площадь",
             "type": "range",
+            "label": t("text_square"),
+            "placeholder": t("text_square"),
             "auto_submit": True,
             "range": {
                 "from_name": "square_from",
                 "to_name": "square_to",
-                "from_value": square_from,
-                "to_value": square_to,
-                "from_placeholder": int(square_limits["min_square"] or 0),
-                "to_placeholder": int(square_limits["max_square"] or 0),
+                "from_value": selected_square_from,
+                "to_value": selected_square_to,
+                "from_placeholder": square_limits.get("min_square") or "",
+                "to_placeholder": square_limits.get("max_square") or "",
             },
         },
 
         # =====================================================
-        # PRICE RANGE
+        # LIVING SQUARE
         # =====================================================
+
         {
-            "name": "price",
-            "label": "Цена",
+            "name": "living_square",
             "type": "range",
+            "label": t("text_living_square"),
+            "placeholder": t("text_living_square"),
             "auto_submit": True,
             "range": {
-                "from_name": "price_from",
-                "to_name": "price_to",
-                "from_value": price_from,
-                "to_value": price_to,
-                "from_placeholder": int(price_limits["min_price"] or 0),
-                "to_placeholder": int(price_limits["max_price"] or 0),
+                "from_name": "living_square_from",
+                "to_name": "living_square_to",
+                "from_value": selected_living_square_from,
+                "to_value": selected_living_square_to,
+                "from_placeholder": living_square_limits.get("min_living_square") or "",
+                "to_placeholder": living_square_limits.get("max_living_square") or "",
             },
+        },
+
+        # =====================================================
+        # KITCHEN SQUARE
+        # =====================================================
+
+        {
+            "name": "kitchen_square",
+            "type": "range",
+            "label": t("text_kitchen_square"),
+            "placeholder": t("text_kitchen_square"),
+            "auto_submit": True,
+            "range": {
+                "from_name": "kitchen_square_from",
+                "to_name": "kitchen_square_to",
+                "from_value": selected_kitchen_square_from,
+                "to_value": selected_kitchen_square_to,
+                "from_placeholder": kitchen_square_limits.get("min_kitchen_square") or "",
+                "to_placeholder": kitchen_square_limits.get("max_kitchen_square") or "",
+            },
+        },
+
+        # =====================================================
+        # HAGGLE
+        # =====================================================
+
+        {
+            "name": "haggle",
+            "value": selected_haggle,
+            "multiple": False,
+            "auto_submit": False,
+            "input_type": "checkbox",
+            "no_header": True,
+
+            "options": [
+                {"value": "1", "label": t("text_haggle")},
+            ],
+        },
+
+        # =====================================================
+        # MORTGAGE
+        # =====================================================
+
+        {
+            "name": "mortgage",
+            "value": selected_mortgage,
+            "multiple": False,
+            "auto_submit": False,
+            "input_type": "checkbox",
+            "no_header": True,
+
+            "options": [
+                {"value": "1", "label": t("text_mortgage")},
+            ],
         },
     ]
 
     for picker in pickers:
-        picker["selected_label"] = get_picker_label(
-            picker,
-            picker.get("value", [])
+
+        picker["selected_label"] = ", ".join(
+            option["label"]
+            for option in picker.get("options", [])
+            if str(option["value"]) in map(str, picker.get("value", []))
         )
 
     return pickers

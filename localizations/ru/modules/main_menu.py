@@ -7,7 +7,7 @@ translations = {
     "project_list": "Все ЖК",
     "house_list": "Дома",
     "plans": "Планировки",
-    "mortgage": "Ипотека",
+    "mortgage": "Помощь с ипотекой",
     "kaliningrad": "Калининград",
     "suburb": "Пригород",
     "seaside": "Побережье",

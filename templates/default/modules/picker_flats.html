@@ -33,8 +33,10 @@
                 </div>
             </div>
         {% else %}
-            <div class="flat-picker mb-5" data-picker-name="{{ picker.name }}">
+            <div class="flat-picker{% if not picker.no_header %} mb-5{% endif %}" data-picker-name="{{ picker.name }}">
+                {% if not picker.no_header %}
                 <h4>{{ picker.placeholder }}</h4>
+                {% endif %}
                 <div class="flat-picker-options mt-2">
                     {% for option in picker.options %}
                         {% if option.image %}
