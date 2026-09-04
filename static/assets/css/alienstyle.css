@@ -387,7 +387,7 @@ ol.document li ol>li, ol.document>li dl dd, ol.document>li>p {
 .card img {
     transition: var(--animation-05);
 }
-.card:hover .card-img-wrapper img.card-img-top {
+.card:hover .card-img-wrapper img.card-img-top, .card:hover img.flat-plan-img {
     transform: scale(1.1);
 }
 
