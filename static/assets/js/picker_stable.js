@@ -98,72 +98,78 @@ class PickerSystem {
             });
 
         // select values
-        this.root.querySelectorAll("[data-picker-value]").forEach(input => {
+        this.root.addEventListener("change", (e) => {
 
-            input.addEventListener("change", (e) => {
+            const input = e.target.closest("[data-picker-value]");
+            if (!input) return;
 
-                const picker = e.target.closest("[data-picker-name]");
-                const name = picker.dataset.pickerName;
-                const type = e.target.type;
-                const value = e.target.value;
+            const picker = input.closest("[data-picker-name]");
+            const name = picker.dataset.pickerName;
+            const type = input.type;
+            const value = input.value;
 
-                // =====================================================
-                // RADIO (single value)
-                // =====================================================
+            // =====================================================
+            // RADIO (single value)
+            // =====================================================
 
-                if (type === "radio") {
+            if (type === "radio") {
 
-                    this.state[name] = [value];
-                    this.syncURL(); 
+                this.state[name] = [value];
+                this.syncURL(); 
 
-                    picker.querySelectorAll('input[type="radio"]').forEach(r => {
-                        r.checked = (r.value === value);
+                picker.querySelectorAll('input[type="radio"]').forEach(r => {
+                    r.checked = (r.value === value);
+                });
+
+                return;
+
+            }
+
+            // =====================================================
+            // CHECKBOX (multi value)
+            // =====================================================
+
+            else {
+
+                if (!this.state[name]) {
+                    this.state[name] = [];
+                }
+
+                if (input.checked) {
+                    if (!this.state[name].includes(value)) {
+                        this.state[name].push(value);
+                    }
+                } else {
+                    this.state[name] =
+                        this.state[name].filter(v => v !== value);
+                }
+
+                if (name === "city") {
+                    this.state["district"] = [];
+                    this.state["project"] = [];
+                    this.state["house"] = [];
+                }
+
+                if (name === "district") {
+                    this.state["house"] = [];
+                }
+
+                if (name === "project") {
+                    this.state["house"] = [];
+                    this.filterHouseOptions();
+
+                    this.updateHousePicker().finally(() => {
+                        this.syncURL();
                     });
 
                     return;
-
                 }
 
-                // =====================================================
-                // CHECKBOX (multi value)
-                // =====================================================
-
-                else {
-
-                    if (!this.state[name]) {
-                        this.state[name] = [];
-                    }
-
-                    if (e.target.checked) {
-                        if (!this.state[name].includes(value)) {
-                            this.state[name].push(value);
-                        }
-                    } else {
-                        this.state[name] =
-                            this.state[name].filter(v => v !== value);
-                    }
-
-                    if (name === "city") {
-                        this.state["district"] = [];
-                        this.state["project"] = [];
-                        this.state["house"] = [];
-                    }
-
-                    if (name === "district") {
-                        this.state["house"] = [];
-                    }
-
-                    if (name === "project") {
-                        this.state["house"] = [];
-                    }
-
-                    const picker = e.target.closest("[data-picker-name]");
-                    if (picker && !picker.querySelector(".picker-apply")) {
-                        this.syncURL();
-                    }
+                const picker = input.closest("[data-picker-name]");
+                if (picker && !picker.querySelector(".picker-apply")) {
+                    this.syncURL();
                 }
-            });
-
+            }
         });
 
         // range inputs
@@ -395,6 +401,85 @@ class PickerSystem {
                     `${checkedLabels[0]} + ${checkedLabels.length - 1}`;
             }
         }
+
+        this.filterHouseOptions();
+    }
+
+    filterHouseOptions() {
+        const projectIds = this.state["project"] || [];
+        const housePicker = this.root.querySelector('[data-picker-name="house"]');
+        if (!housePicker) return;
+
+        if (projectIds.length > 0) {
+            housePicker.classList.remove("is-disabled");
+        } else {
+            housePicker.classList.add("is-disabled");
+        }
+
+        housePicker.querySelectorAll(".form-check[data-project-id]").forEach(option => {
+            const projectId = option.dataset.projectId;
+            if (projectIds.length === 0 || projectIds.includes(projectId)) {
+                option.style.display = "";
+                const input = option.querySelector('input[type="checkbox"]');
+                if (input) input.disabled = false;
+            } else {
+                option.style.display = "none";
+                const input = option.querySelector('input[type="checkbox"]');
+                if (input) input.disabled = true;
+            }
+        });
+    }
+
+    updateHousePicker() {
+        const housePicker = this.root.querySelector('[data-picker-name="house"]');
+        if (!housePicker) return Promise.resolve();
+
+        const params = new URLSearchParams();
+        for (const key in this.state) {
+            this.state[key].forEach(v => params.append(key, v));
+        }
+        params.delete("page");
+
+        const url = `${location.pathname}?${params}`;
+
+        return fetch(url, {
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-Picker-Name": "house"
+            }
+        })
+        .then(r => r.text())
+        .then(html => {
+            const newPicker = new DOMParser().parseFromString(html, 'text/html').body.querySelector('[data-picker-name="house"]');
+            if (newPicker) {
+                housePicker.outerHTML = newPicker.outerHTML;
+
+                const updatedPicker = this.root.querySelector('[data-picker-name="house"]');
+                if (updatedPicker) {
+                    const values = this.state["house"] || [];
+                    updatedPicker.querySelectorAll("[data-picker-value]").forEach(input => {
+                        input.checked = values.includes(input.value);
+                    });
+
+                    const trigger = updatedPicker.querySelector(".picker-trigger");
+                    if (trigger) {
+                        const checkedLabels = [...updatedPicker.querySelectorAll("[data-picker-value]")]
+                            .filter(i => i.checked)
+                            .map(i => i.parentElement.textContent.trim());
+
+                        if (checkedLabels.length === 0) {
+                            trigger.textContent = trigger.dataset.placeholder || "Выбрать";
+                        } else if (checkedLabels.length === 1) {
+                            trigger.textContent = checkedLabels[0];
+                        } else {
+                            trigger.textContent = `${checkedLabels[0]} + ${checkedLabels.length - 1}`;
+                        }
+                    }
+                }
+
+                this.filterHouseOptions();
+            }
+        });
     }
 
     // =====================================================

@@ -33,20 +33,21 @@
                 </div>
             </div>
         {% else %}
-            <div class="flat-picker{% if not picker.no_header %} mb-5{% endif %}" data-picker-name="{{ picker.name }}">
+            <div class="flat-picker{% if not picker.no_header %} mb-5{% endif %}{% if picker.disabled %} is-disabled{% endif %}" data-picker-name="{{ picker.name }}">
                 {% if not picker.no_header %}
                 <h4>{{ picker.placeholder }}</h4>
                 {% endif %}
                 <div class="flat-picker-options mt-2">
                     {% for option in picker.options %}
                         {% if option.image %}
-                            <div class="form-check d-block align-items-center gap-2 mb-2 w-img position-relative">
+                            <div class="form-check d-block align-items-center gap-2 mb-2 w-img position-relative" data-project-id="{{ option.project_id|default:'' }}">
                                 <input
                                     class="form-check-input flex-shrink-0"
                                     type="checkbox"
                                     value="{{ option.value }}"
                                     data-picker-value
                                     id="flat-picker-{{ picker.name }}-{{ option.value }}"
+                                    {% if picker.disabled %}disabled{% endif %}
                                 >
                                 <label
                                     class="form-check-label mb-0 row"
@@ -66,13 +67,14 @@
                                 </label>
                             </div>
                         {% else %}
-                            <div class="form-check d-flex align-items-center gap-2 position-relative">
+                            <div class="form-check d-flex align-items-center gap-2 position-relative" data-project-id="{{ option.project_id|default:'' }}">
                                 <input
                                     class="form-check-input flex-shrink-0"
                                     type="checkbox"
                                     value="{{ option.value }}"
                                     data-picker-value
                                     id="flat-picker-{{ picker.name }}-{{ option.value }}"
+                                    {% if picker.disabled %}disabled{% endif %}
                                 >
                                 <label
                                     class="form-check-label mb-0"

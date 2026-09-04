@@ -217,6 +217,13 @@ def site_settings(request):
             settings.phones = []
     if settings and not settings.phones:
         settings.phones = []
+    if settings and isinstance(settings.addresses, str):
+        try:
+            settings.addresses = json.loads(settings.addresses)
+        except (json.JSONDecodeError, TypeError):
+            settings.addresses = []
+    if settings and not settings.addresses:
+        settings.addresses = []
     cache.set(cache_key, settings, 300)
     return {
         "site_settings": settings

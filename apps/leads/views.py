@@ -2,6 +2,7 @@
 
 import json
 import logging
+import re
 
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_POST
@@ -178,5 +179,154 @@ def order_call_send(request):
         message=message,
     )
     logger.info("[ORDER_CALL] created lead_id=%s", lead.pk)
+
+    return JsonResponse({"success": True})
+
+
+def feedback_page(request):
+    from apps.core.documents.models import Document
+    from apps.core.dictionaries.models import Country
+    from apps.core.models import SiteSettings
+    from django.shortcuts import render
+
+    settings_obj = SiteSettings.get_solo()
+    turnstile_site_key = ""
+    if settings_obj and settings_obj.turnstile_enabled and settings_obj.turnstile_site_key:
+        turnstile_site_key = settings_obj.turnstile_site_key
+
+    personal_data_doc = None
+    policy_doc = None
+    try:
+        personal_data_doc = Document.objects.filter(
+            document_name__icontains="персональн",
+            document_public=True,
+            document_status="released",
+        ).first()
+        policy_doc = Document.objects.filter(
+            document_name__icontains="политик",
+            document_public=True,
+            document_status="released",
+        ).first()
+    except Exception:
+        logger.exception("[FEEDBACK_PAGE] failed to load documents")
+
+    first_address = None
+    if settings_obj and settings_obj.addresses:
+        first_address = settings_obj.addresses[0]
+
+    context = {
+        "phone_countries": list(Country.objects.all().values("code", "name", "phone_code")),
+        "turnstile_site_key": turnstile_site_key,
+        "personal_data_doc": personal_data_doc,
+        "policy_doc": policy_doc,
+        "site_settings": settings_obj,
+        "first_address_json": json.dumps(first_address or {}),
+    }
+
+    return render(request, "default/pages/feedback.html", context)
+
+
+@require_POST
+def feedback_page_send(request):
+    data = request.POST.dict()
+
+    name = (data.get("name") or "").strip()
+    phone = (data.get("phone") or "").strip()
+    email = (data.get("email") or "").strip()
+    message = (data.get("message") or "").strip()
+    personal_data = data.get("personal_data") in ("on", "true", "1")
+    policy = data.get("policy") in ("on", "true", "1")
+
+    if is_turnstile_enabled():
+        token = (data.get("cf-turnstile-response") or "").strip()
+        if not token:
+            return JsonResponse(
+                {"success": False, "error": "Подтвердите, что вы не робот."}, status=400
+            )
+        if not verify_turnstile_token(token, request.META.get("REMOTE_ADDR")):
+            return JsonResponse(
+                {
+                    "success": False,
+                    "error": "Не удалось подтвердить капчу. Попробуйте ещё раз.",
+                },
+                status=400,
+            )
+
+    if not name:
+        return JsonResponse({"success": False, "error": "Укажите имя."}, status=400)
+
+    if not message:
+        return JsonResponse({"success": False, "error": "Укажите сообщение."}, status=400)
+
+    if phone:
+        digits = re.sub(r"\D", "", phone)
+        if not digits:
+            phone = ""
+        elif len(digits) <= 3:
+            phone = ""
+        elif len(digits) < 10:
+            return JsonResponse(
+                {"success": False, "error": "Укажите корректный номер телефона."},
+                status=400,
+            )
+
+    if not phone and not email:
+        return JsonResponse(
+            {"success": False, "error": "Укажите телефон или email."},
+            status=400,
+        )
+
+    if email and not re.match(r"^[^@]+@[^@]+\.[^@]+$", email):
+        return JsonResponse(
+            {"success": False, "error": "Укажите корректный email."},
+            status=400,
+        )
+
+    personal_data_doc = None
+    policy_doc = None
+    try:
+        from apps.core.documents.models import Document
+        personal_data_doc = Document.objects.filter(
+            document_name__icontains="персональн",
+            document_public=True,
+            document_status="released",
+        ).first()
+        policy_doc = Document.objects.filter(
+            document_name__icontains="политик",
+            document_public=True,
+            document_status="released",
+        ).first()
+    except Exception:
+        logger.exception("[FEEDBACK_PAGE] failed to load documents")
+
+    if personal_data_doc and not personal_data:
+        return JsonResponse(
+            {"success": False, "error": "Требуется согласие на обработку персональных данных."},
+            status=400,
+        )
+
+    if policy_doc and not policy:
+        return JsonResponse(
+            {"success": False, "error": "Требуется согласие с политикой конфиденциальности."},
+            status=400,
+        )
+
+    parts = ["Форма обратной связи"]
+    parts.append(f"Имя: {name}")
+    if phone:
+        parts.append(f"Телефон: {phone}")
+    if email:
+        parts.append(f"Email: {email}")
+    parts.append(f"Сообщение: {message}")
+    lead_message = "\n".join(parts)
+
+    Lead.objects.create(
+        name=name,
+        phone=phone,
+        email=email,
+        telegram="",
+        max="",
+        message=lead_message,
+    )
 
     return JsonResponse({"success": True})

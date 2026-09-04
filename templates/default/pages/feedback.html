@@ -1,0 +1,214 @@
+{% extends "default/base.html" %}
+
+{% load static %}
+
+{% block title %}{{ trans.text_feedback }}{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <h1 class="mb-4">{{ trans.text_feedback }}</h1>
+
+    <div class="feedback-map col-12 col-xl-3">
+        <img
+            src="https://static-maps.yandex.ru/1.x/?ll=20.508214,54.711364&z=15&l=map&pt=20.508214,54.711364,pm2blm&size=450,400"
+            alt="{{ trans.feedback_map_title }}"
+            style="width:100%;height:auto;min-height:400px;object-fit:cover;"
+            loading="lazy">
+    </div>
+
+    <div class="feedback-form col-12 col-xl-6">
+
+            <form class="feedback-form" id="feedbackPageForm">
+                {% csrf_token %}
+
+                <div class="form-field field-user position-relative mb-3">
+                    <input type="text" name="name" class="form-control" placeholder="Имя" required>
+                    <span class="form-field-icon"></span>
+                </div>
+
+                <div class="row">
+                    {% if phone_countries %}
+                        <div class="col-3 mb-3">
+                            <div class="form-field field-country position-relative">
+                                <select class="form-select phone-country" name="phone_country" aria-label="Страна">
+                                    <option value="" data-prefix="">{{ trans.text_country }}</option>
+                                    {% for country in phone_countries %}
+                                        <option value="{{ country.phone_code }}" data-prefix="{{ country.phone_code }}"{% if country.code == "RU" %} selected{% endif %}>{{ country.name }} (+{{ country.phone_code }})</option>
+                                    {% endfor %}
+                                </select>
+                                <span class="form-field-icon"></span>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="col-9 mb-3">
+                        <div class="form-field field-phone position-relative">
+                            <input type="tel" name="phone" class="form-control phone-input" placeholder="+7 (___) ___-__-__" autocomplete="tel">
+                            <span class="form-field-icon"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-field field-email position-relative mb-3">
+                    <input type="email" name="email" class="form-control" placeholder="{{ trans.text_email }}">
+                    <span class="form-field-icon"></span>
+                </div>
+
+                <div class="form-field field-message position-relative mb-5">
+                    <textarea name="message" class="form-control" rows="8" placeholder="{{ trans.text_message }}" required></textarea>
+                    <span class="form-field-icon"></span>
+                </div>
+
+                {% if personal_data_doc %}
+                    <div class="form-check text-start text-small mb-2">
+                        <input class="form-check-input" type="checkbox" id="personalData" name="personal_data" required>
+                        <label class="form-check-label" for="personalData">
+                            {{ trans.text_agree }} <a href="{% url 'document_modal' personal_data_doc.id %}" class="document-modal" data-title="{{ personal_data_doc.document_name }}">{{ trans.text_personaldata }}</a>
+                        </label>
+                    </div>
+                {% endif %}
+
+                {% if policy_doc %}
+                    <div class="form-check text-start text-small mb-4">
+                        <input class="form-check-input" type="checkbox" id="policy" name="policy" required>
+                        <label class="form-check-label" for="policy">
+                            {{ trans.text_agree }} <a href="{% url 'document_modal' policy_doc.id %}" class="document-modal" data-title="{{ policy_doc.document_name }}">{{ trans.text_policy }}</a>
+                        </label>
+                    </div>
+                {% endif %}
+
+                <div class="row">
+                    {% if turnstile_site_key %}
+                        <div class="cf-turnstile col-6" data-sitekey="{{ turnstile_site_key }}"></div>
+                    {% endif %}
+
+                    <div class="col-6">
+                        <button type="submit" class="btn btn-primary">{{ trans.text_send }}</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="success-form mt-4" style="display:none;">
+                <h4>{{ trans.text_success_title }}</h4>
+                <p>{{ trans.text_success_message }}</p>
+                <div class="text-center mt-4">
+                    <a href="{% url 'home' %}" class="btn btn-primary">{{ trans.text_to_home }}</a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-12 col-xl-3">
+
+
+            {% if site_settings and site_settings.phones %}
+                <ul class="feedback-contacts list-unstyled">
+                    {% if site_settings.phones %}
+                        {% with primary=site_settings.phones|first %}
+                            <li class="mb-3">
+                                <div class="row">
+                                    <div class="list-icon col-2 d-flex align-items-center justify-content-center text-center">
+                                        <i class="fa-solid fa-phone"></i>
+                                    </div>
+                                    <div class="col-10 d-flex align-items-center">
+                                        <a href="tel:{{ primary.value }}">{{ primary.value }}</a>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endwith %}
+                    {% endif %}
+                    {% if site_settings.addresses %}
+                        {% with primary=site_settings.addresses|first %}
+                            <li class="mb-3">
+                                <div class="row">
+                                    <div class="list-icon col-2 d-flex align-items-center justify-content-center text-center">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                    </div>
+                                    <div class="col-10 d-flex align-items-center">
+                                        {{ primary.value }}
+                                    </div>
+                                </div>
+                            </li>
+                        {% endwith %}
+                    {% endif %}
+                </ul>
+            {% elif site_settings and site_settings.addresses %}
+                <ul class="feedback-contacts mb-4 p-3 border rounded">
+                    {% with primary=site_settings.addresses|first %}
+                        <li class="mb-3">
+                            <div class="row">
+                                <div class="list-icon col-2 d-flex align-items-center justify-content-center text-center">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div class="col-10 d-flex align-items-center">
+                                    {{ primary.value }}
+                                </div>
+                            </div>
+                        </li>
+                    {% endwith %}
+                </ul>
+            {% endif %}
+
+    </div>
+</div>
+
+<!-- Bootstrap модальное окно для документов -->
+<div class="modal fade" id="documentModal" tabindex="-1" aria-labelledby="documentModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="documentModalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ trans.text_close }}"></button>
+            </div>
+            <div class="modal-body document-modal-content"></div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/feedback.js' %}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('feedbackPageForm');
+        if (!form) return;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var formData = new FormData(form);
+
+            fetch("{% url 'feedback_page_send' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken') || document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                body: formData,
+            })
+            .then(function(response) {
+                return response.json().then(function(data) {
+                    return {status: response.status, data: data};
+                });
+            })
+            .then(function(result) {
+                if (result.status === 200 && result.data.success) {
+                    form.style.display = 'none';
+                    form.parentElement.querySelector('.success-form').style.display = 'block';
+                    if (window.turnstile) {
+                        try { window.turnstile.reset(); } catch (err) {}
+                    }
+                } else {
+                    toastr.error(result.data.error || '{{ trans.text_error }}');
+                }
+            })
+            .catch(function() {
+                toastr.error('{{ trans.text_error }}');
+            });
+        });
+    });
+    </script>
+{% endblock %}

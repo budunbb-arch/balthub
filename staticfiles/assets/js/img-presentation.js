@@ -10,7 +10,7 @@ const initImgPresentation = () => {
 
         overlay.innerHTML = `
             <button class="img-presentation-close" aria-label="Закрыть">&times;</button>
-            <img class="img-presentation-image" src="" alt="">
+            <img class="img-presentation-image img-grayscale" src="" alt="">
         `;
 
         document.body.appendChild(overlay);

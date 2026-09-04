@@ -1,0 +1,17 @@
+translations = {
+    "text_feedback": "Написать нам",
+    "text_country": "Страна",
+    "text_email": "Email",
+    "text_message": "Сообщение",
+    "text_send": "Отправить",
+    "text_success_title": "Спасибо!",
+    "text_success_message": "Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.",
+    "text_error": "Ошибка отправки",
+    "text_error_message": "Произошла ошибка при отправке формы. Пожалуйста, попробуйте позже.",
+    "text_name": "Имя",
+    "text_phone": "Телефон",
+    "text_subject": "Тема",
+    "text_to_home": "На главную",
+    "text_close": "Закрыть",
+    "feedback_map_title": "Мы здесь",
+}

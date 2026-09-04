@@ -69,6 +69,12 @@ class SiteSettings(models.Model):
         verbose_name="Телефоны",
         help_text="JSON-список: [{'label': 'Основной', 'value': '+7...'}]",
     )
+    addresses = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="Адреса",
+        help_text="JSON-список: [{'label': 'Основной', 'value': 'ул. Ленина, д. 10'}]",
+    )
 
     class Meta:
         db_table = "core_sitesettings"

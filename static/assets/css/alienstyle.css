@@ -163,7 +163,7 @@ a:hover, a:focus, a:active {
 }
 
 
-.form-field input.form-control, .search-filter select.form-select, .form-field select.form-select, textarea.form-control {
+.form-field input.form-control, .search-filter select.form-select, .form-field select.form-select {
     height: 60px;
     padding-left: 60px;
     border-radius: 5px;
@@ -185,9 +185,11 @@ select {
     padding-right: 30px;      /* Важно: освобождаем место справа под вашу новую иконку */
 }
 textarea.form-control {
+    height: auto;
     border-radius: 5px;
     padding: 1em;
     overflow: hidden;
+    background: rgb(255 255 255 / 70%);
 }
 
 /* Специально для Internet Explorer / Edge (на всякий случай) */
@@ -385,7 +387,7 @@ ol.document li ol>li, ol.document>li dl dd, ol.document>li>p {
 .card img {
     transition: var(--animation-05);
 }
-.card:hover .card-img-wrapper img.card-img-top, .card:hover img {
+.card:hover .card-img-wrapper img.card-img-top {
     transform: scale(1.1);
 }
 
@@ -1208,4 +1210,16 @@ ul.card-params li:last-child::after {
     margin-right: .35em;
     margin-bottom: .25em;
     color: var(--text-color);
+}
+
+img.img-grayscale {
+    filter: grayscale(100%) contrast(1.2);
+}
+
+div.list-icon {
+    aspect-ratio: 1 / 1;
+    background: var(--seagreen);
+    color: var(--text-color);
+    font-size: larger;
+    border-radius: 5px;
 }

@@ -113,12 +113,6 @@ def tag_detail(request, tag_slug):
     flats_qs = flats_qs | project_flat_qs
     flats_qs = flats_qs.distinct()
 
-    if selected_cities:
-        flats_qs = flats_qs.filter(house__project__params__city_id__in=selected_cities)
-
-    if selected_districts:
-        flats_qs = flats_qs.filter(house__project__params__district_id__in=selected_districts)
-
     if selected_projects:
         flats_qs = flats_qs.filter(house__project_id__in=selected_projects)
 
@@ -186,10 +180,9 @@ def tag_detail(request, tag_slug):
         selected_balcony_type=selected_balcony_type,
         selected_bathroom_unit_type=selected_bathroom_unit_type,
         selected_finish_type=selected_finish_type,
-        selected_cities=selected_cities,
-        selected_districts=selected_districts,
         selected_projects=selected_projects,
         flat_qs=flats_qs,
+        projects_qs=projects_qs,
     )
 
     context = {
@@ -205,6 +198,20 @@ def tag_detail(request, tag_slug):
     }
 
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+
+        if request.headers.get("X-Picker-Name") == "house":
+            house_picker = next(
+                (p for p in context["flats_pickers"] if p["name"] == "house"),
+                None,
+            )
+            if house_picker:
+                return render(
+                    request,
+                    "default/modules/picker_flats.html",
+                    {
+                        "pickers": [house_picker],
+                    },
+                )
 
         section = request.headers.get("X-Picker-Section")
         tab = request.GET.get("tab", "projects")

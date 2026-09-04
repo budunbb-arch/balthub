@@ -37,26 +37,36 @@
             </div>
         </div>
         <div class="tab-pane fade" id="flats-pane" role="tabpanel" aria-labelledby="flats-tab" tabindex="0">
-            <div 
-                data-ajax-list
-                data-container="#flat-list-container"
-                data-scroll="top"
-                data-push-state="true"
-                data-section="flats"
-                class="row"
-            >
-                <div class="ajax-loader-overlay hidden">
-                    <div class="spinner"></div>
+            <div class="flats-list row">
+                <div class="flats-list-pickers col-12 col-xl-3">
+                    {% include "default/modules/picker_flats.html" with pickers=flats_pickers %}
                 </div>
-                <div id="flat-list-container">
-                    <div class="flats-list row">
-                        <div class="flats-list-pickers col-12 col-xl-3">
-                            {% include "default/modules/picker_flats.html" with pickers=flats_pickers %}
+                <div class="flats-list-content col-12 col-xl-9">
+                    <div 
+                        data-ajax-list
+                        data-container="#flats-block"
+                        data-scroll="top"
+                        data-push-state="true"
+                        data-section="flats"
+                    >
+                        <div class="ajax-loader-overlay hidden">
+                            <div class="spinner"></div>
                         </div>
-                        <div class="flats-list-content col-12 col-xl-9">
-                            <div class="ajax-loader-overlay hidden">
-                                <div class="spinner"></div>
+                        <div id="flats-block">
+                            <div class="row" data-items>
+                                {% if flats_page_obj %}
+                                    {% for flat in flats_page_obj %}
+                                        {% include "default/pages/estates/project_flat_card.html" with flat=flat %}
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="col-12 flats-empty">
+                                        <p>{{ trans.no_flats }}</p>
+                                    </div>
+                                {% endif %}
                             </div>
+                        </div>
+                        <div class="pagination-wrapper" data-pagination>
+                            {% include "default/includes/infinite_pagination.html" with page_obj=flats_page_obj paginator=flats_paginator page_range=flats_page_range %}
                         </div>
                     </div>
                 </div>
@@ -78,11 +88,11 @@
     document.addEventListener('DOMContentLoaded', function() {
         var flatsTab = document.getElementById('flats-tab');
         var flatsPane = document.getElementById('flats-pane');
-        var flatsContainer = document.getElementById('flat-list-container');
+        var flatsBlock = document.getElementById('flats-block');
         var flatsLoaded = false;
 
         function loadFlats() {
-            if (!flatsContainer || flatsLoaded) return;
+            if (!flatsBlock || flatsLoaded) return;
             var url = '?tab=flats';
             fetch(url, {
                 headers: {
@@ -93,28 +103,12 @@
                 return response.text();
             })
             .then(function(html) {
-                flatsContainer.innerHTML = html;
+                flatsBlock.innerHTML = html;
                 flatsLoaded = true;
-                reinitInfiniteScroll(flatsContainer);
-            });
-        }
-
-        function reinitInfiniteScroll(container) {
-            if (typeof InfiniteScroll !== 'undefined' && window.infiniteScrollInstances) {
-                var ajaxWrapper = container.closest('[data-ajax-list]');
-                if (ajaxWrapper && window.infiniteScrollInstances.has(ajaxWrapper)) {
-                    window.infiniteScrollInstances.get(ajaxWrapper).disabled = true;
-                    window.infiniteScrollInstances.delete(ajaxWrapper);
+                if (typeof initPickers === 'function') {
+                    initPickers();
                 }
-                window.infiniteScrollInstances.forEach(function(instance, wrapper) {
-                    if (!document.body.contains(wrapper)) {
-                        instance.disabled = true;
-                    }
-                });
-            }
-            if (typeof initPickers === 'function') {
-                initPickers();
-            }
+            });
         }
 
         if (flatsTab) {

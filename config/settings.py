@@ -25,6 +25,8 @@ ALLOWED_HOSTS = [
     'xn--b1afkwdgk7a.xn--p1ai',
     '212.192.0.71',
     '*.cloudflare.com',
+    'localhost',
+    '127.0.0.1',
 ]
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

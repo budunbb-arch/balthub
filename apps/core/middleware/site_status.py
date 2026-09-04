@@ -10,6 +10,7 @@ ALLOWED_SITE_DISABLED_PATHS = [
     settings.MEDIA_URL,
     "/admin/",
     "/api/",
+    "/feedback/",
 ]
 
 

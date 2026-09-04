@@ -361,49 +361,27 @@ def tag_detail_flat_pickers(
     selected_balcony_type,
     selected_bathroom_unit_type,
     selected_finish_type,
-    selected_cities,
-    selected_districts,
     selected_projects,
     flat_qs,
+    projects_qs=None,
 ):
 
     qs = FlatParams.objects.filter(flat__in=flat_qs)
 
-    city_qs = City.objects.order_by("name")
-
-    district_queryset = District.objects.none()
-    if selected_cities:
-        district_ids = (
-            flat_qs
-            .values_list("house__project__params__district_id", flat=True)
-            .distinct()
-        )
-        district_queryset = (
-            District.objects
-            .filter(id__in=district_ids)
-            .select_related("city")
-            .order_by("name")
-        )
-
-    projects_qs = Project.objects.none()
-    if selected_cities or selected_districts:
-        project_ids = (
-            flat_qs
-            .values_list("house__project_id", flat=True)
-            .distinct()
-        )
+    if projects_qs is None:
         projects_qs = (
             Project.objects
-            .filter(id__in=project_ids)
+            .filter(houses__flats__in=flat_qs)
+            .distinct()
             .select_related("params__city", "params__district")
             .order_by("name")
         )
 
     houses_qs = House.objects.none()
-    if selected_projects or selected_districts:
+    if selected_projects:
         houses_qs = (
             House.objects
-            .filter(flats__in=flat_qs)
+            .filter(project_id__in=selected_projects)
             .distinct()
             .order_by("id")
         )
@@ -480,37 +458,6 @@ def tag_detail_flat_pickers(
 
     pickers = [
         {
-            "name": "city",
-            "value": selected_cities,
-            "placeholder": t("text_city"),
-            "multiple": True,
-            "auto_submit": False,
-            "input_type": "checkbox",
-            "options": [
-                {
-                    "value": str(city.id),
-                    "label": city.name,
-                }
-                for city in city_qs
-            ]
-        },
-        {
-            "name": "district",
-            "value": selected_districts,
-            "placeholder": t("text_district"),
-            "multiple": True,
-            "disabled": not selected_cities,
-            "auto_submit": False,
-            "input_type": "checkbox",
-            "options": [
-                {
-                    "value": str(district.id),
-                    "label": district.name,
-                }
-                for district in district_queryset
-            ]
-        },
-        {
             "name": "project",
             "value": selected_projects,
             "placeholder": t("text_project"),
@@ -530,6 +477,7 @@ def tag_detail_flat_pickers(
             "value": selected_houses,
             "placeholder": t("text_house"),
             "multiple": True,
+            "disabled": not selected_projects,
             "auto_submit": False,
             "input_type": "checkbox",
             "options": [
@@ -537,6 +485,7 @@ def tag_detail_flat_pickers(
                     "value": str(house.id),
                     "label": (house.params.address or str(house.id)) + (" " + house.params.corpus if house.params.corpus else ""),
                     "image": house.image,
+                    "project_id": house.project_id,
                 }
                 for house in houses_qs
             ]

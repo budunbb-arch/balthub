@@ -147,6 +147,11 @@ button.picker-reset {
     pointer-events: none;
 }
 
+.flat-picker.is-disabled {
+    opacity: .5;
+    pointer-events: none;
+}
+
 .picker[data-picker-name="sort"]::before {
     content: '\f885';
 }

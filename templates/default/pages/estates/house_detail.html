@@ -41,7 +41,7 @@
     {% endif %}
     {% if house.plan %}
         <div class="house-plan position-relative col-6 ps-0">
-            <img src="{{ house.plan }}" alt="{{ house.project.name }} | {{ house.project.params.city.name }}, {{ house.params.address }}" class="img-presentation img-fluid w-100">
+            <img src="{{ house.plan }}" alt="{{ house.project.name }} | {{ house.project.params.city.name }}, {{ house.params.address }}" class="img-presentation img-fluid img-grayscale w-100">
 
             <div class="house-photo-caption position-absolute">
                 {{ trans.text_house_plan_caption }}

@@ -57,12 +57,60 @@ class PhoneWidget(forms.Widget):
         )
 
 
+class AddressWidget(forms.Widget):
+    class Media:
+        css = {
+            'all': ('admin/css/phone_widget.css',)
+        }
+        js = ('admin/js/phone_widget.js',)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        import json
+        if value is None:
+            value = []
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except (json.JSONDecodeError, TypeError):
+                value = []
+        widget_id = attrs.get('id') or name
+        items_html = ''
+        for idx, item in enumerate(value):
+            label = item.get('label', '') if isinstance(item, dict) else ''
+            addr = item.get('value', '') if isinstance(item, dict) else str(item)
+            items_html += (
+                '<div class="phone-item" data-index="%d">'
+                '<input type="text" class="phone-label" value="%s" placeholder="Подпись" data-field="label">'
+                '<input type="text" class="phone-value" value="%s" placeholder="Адрес" data-field="value">'
+                '<button type="button" class="phone-remove">×</button>'
+                '</div>'
+            ) % (idx, format_html(label), format_html(addr))
+        return format_html(
+            '<div class="phone-widget" id="{}">'
+            '<div class="phone-list">{}</div>'
+            '<button type="button" class="phone-add">Добавить адрес</button>'
+            '<input type="hidden" name="{}" id="{}_hidden" value="{}">'
+            '</div>',
+            widget_id,
+            mark_safe(items_html),
+            name,
+            widget_id,
+            escape(json.dumps(value, ensure_ascii=False)),
+        )
+
+
 class SiteSettingsForm(forms.ModelForm):
     phones = forms.JSONField(
         widget=PhoneWidget(),
         required=False,
         label="Телефоны",
         help_text="JSON-список: [{'label': 'Основной', 'value': '+7...'}]",
+    )
+    addresses = forms.JSONField(
+        widget=AddressWidget(),
+        required=False,
+        label="Адреса",
+        help_text="JSON-список: [{'label': 'Основной', 'value': 'ул. Ленина, д. 10'}]",
     )
 
     class Meta:
@@ -340,6 +388,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         "default_canonical",
         "default_robots",
         "phone_display",
+        "address_display",
     )
     fieldsets = (
         (None, {
@@ -352,6 +401,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 "default_canonical",
                 "default_robots",
                 "phones",
+                "addresses",
             )
         }),
         ("Капча Turnstile", {
@@ -371,6 +421,15 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             for p in obj.phones
         )
     phone_display.short_description = "Телефоны"
+
+    def address_display(self, obj):
+        if not obj.addresses:
+            return '-'
+        return ', '.join(
+            f"{a.get('label', '')}: {a.get('value', '')}"
+            for a in obj.addresses
+        )
+    address_display.short_description = "Адреса"
 
     def has_add_permission(self, request):
         return not SiteSettings.objects.exists()
