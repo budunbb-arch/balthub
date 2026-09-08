@@ -42,16 +42,15 @@
         <a class="nav-link" href="{% url 'feedback_page' %}">{{ trans.contacts }}</a>
     </li>
 
+    <!--
     <li class="nav-item phone-item">
-        <!--
-        <a class="nav-link" href="#">+7 921 102 6623</a>
-        -->
         {% if site_settings and site_settings.phones %}
             {% with primary=site_settings.phones|first %}
                 <a class="nav-link" href="tel:{{ primary.value }}">{{ primary.value }}</a>
             {% endwith %}
         {% endif %}
     </li>
+    -->
 
     <li class="nav-item call-item">
         <a class="btn menu-btn" href="#" data-bs-toggle="modal" data-bs-target="#orderCallModal">{{ trans.order_call }}</a>
