@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.estates.flats',
     'apps.estates.tags',
     'apps.core.dictionaries',
+    'apps.parsing_section',
     'django_celery_beat',
     'apps.modules.apps.ModulesConfig',
     'apps.leads',

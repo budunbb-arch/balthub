@@ -32,6 +32,7 @@ from apps.estates.tags.models import Tag, ProjectTag
 from apps.estates.parsing.utils import cache_key
 
 from . import helpers
+from . import images
 from apps.estates.parsing.cache import ImportCache
 from apps.estates.parsing.services.nmarket.helpers import BulkUpdater
 
