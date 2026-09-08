@@ -6,39 +6,47 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_DB: bh_database
-      POSTGRES_USER: bh_database_connect
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
 
   web:
     build: .
     container_name: balthub_www_box
+    restart: always
     command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/app
     ports:
-      - "8002:8000"
+      - "8000:8000"
+    volumes:
+      - ./staticfiles:/app/staticfiles
+      - ./media:/app/media
     depends_on:
       - db
       - redis
     env_file:
       - .env
     environment:
-      DB_NAME: bh_database
-      DB_USER: bh_database_connect
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       DB_HOST: db
       DB_PORT: 5432
       DJANGO_SETTINGS_MODULE: config.settings
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DB: ${REDIS_DB}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
 
 
   celery_worker:
     build: .
     container_name: balthub_celery_worker_box
+    restart: always
     command: celery -A config worker --loglevel=info
     volumes:
       - .:/app
@@ -48,16 +56,21 @@ services:
     env_file:
       - .env
     environment:
-      DB_NAME: bh_database
-      DB_USER: bh_database_connect
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       DB_HOST: db
       DB_PORT: 5432
       DJANGO_SETTINGS_MODULE: config.settings
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DB: ${REDIS_DB}
 
   celery_beat:
     build: .
     container_name: balthub_celery_beat_box
+    restart: always
     command: celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     volumes:
       - .:/app
@@ -67,12 +80,16 @@ services:
     env_file:
       - .env
     environment:
-      DB_NAME: bh_database
-      DB_USER: bh_database_connect
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
       DB_HOST: db
       DB_PORT: 5432
       DJANGO_SETTINGS_MODULE: config.settings
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DB: ${REDIS_DB}
 
   redis:
     image: redis:7-alpine

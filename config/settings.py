@@ -19,23 +19,11 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    'balthub.rf39.ru',
-    'квартирукупить.рф',
-    'xn--b1afkwdgk7a.xn--p1ai',
-    '212.192.0.71',
-    '*.cloudflare.com',
-    'localhost',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://balthub.rf39.ru",
-    "https://квартирукупить.рф",
-    "https://xn--b1afkwdgk7a.xn--p1ai",
-]
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(',')
 
 
 # Application definition
@@ -58,7 +46,6 @@ INSTALLED_APPS = [
     'apps.estates.flats',
     'apps.estates.tags',
     'apps.core.dictionaries',
-    'apps.parsing_section',
     'django_celery_beat',
     'apps.modules.apps.ModulesConfig',
     'apps.leads',
