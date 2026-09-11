@@ -94,6 +94,7 @@ nav.navbar {
     right: 0;
     min-width: 300px;
     border-top: 2px solid var(--text-color);
+    z-index: 2;
 }
 .navbar-collapse::before {
     content: '';
@@ -114,9 +115,24 @@ nav.navbar {
     right: 20%;
 }
 
+@media (min-width: 992px) {
+    nav.navbar {
+        padding: 0.5em 0;
+    }
+    .navbar-collapse {
+        position: initial;
+        background: none;
+        text-align: right;
+        min-width: 0;
+        border-top: none;
+    }
+    .navbar-collapse::before, .navbar-collapse::after {
+        content: none;
+    }
+}
+
 header a.nav-link {
     position: relative;
-    font-size: x-large;
     color: var(--text-color);
     transition: var(--animation-05);
     overflow: hidden;
@@ -201,7 +217,7 @@ a:hover, a:focus, a:active {
 
 button.navbar-toggler,button.navbar-toggler:focus {
     border: none;
-    font-size: xxx-large;
+    font-size: large;
     color: var(--text-color);
     box-shadow: none;
 }
