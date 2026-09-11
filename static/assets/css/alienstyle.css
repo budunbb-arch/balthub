@@ -24,6 +24,7 @@
     --nicoletta: 'NicolettaScript';
     --main-color: #0ff;
     --bg-color: #333;
+    --dark-blue: rgb(22 54 74);
     --dark-blue-transparent: rgb(22 54 74 / 50%);
     --text-color: #fff;
     --hover-color: #888;
@@ -83,14 +84,50 @@ body {
 }
 nav.navbar {
     background: var(--dark-blue-transparent);
+    padding: 1em;
 }
+.navbar-collapse {
+    position: absolute;
+    background: var(--dark-blue);
+    text-align: left;
+    top: 100%;
+    right: 0;
+    min-width: 300px;
+    border-top: 2px solid var(--text-color);
+}
+.navbar-collapse::before {
+    content: '';
+    position: absolute;
+    border-bottom: 20px solid var(--text-color);
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    top: -20px;
+    right: 20%;
+}
+.navbar-collapse::after {
+    content: '';
+    position: absolute;
+    border-bottom: 20px solid rgb(22 54 74);
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    top: -16px;
+    right: 20%;
+}
+
 header a.nav-link {
     position: relative;
-    font-size: small;
+    font-size: x-large;
     color: var(--text-color);
     transition: var(--animation-05);
     overflow: hidden;
 }
+
+@media (min-width: 992px) {
+    header a.nav-link {
+        font-size: small;
+    }
+}
+
 header a.nav-link:hover {
     color: var(--hover-light);
 }
@@ -160,6 +197,13 @@ a {
 }
 a:hover, a:focus, a:active {
     color: var(--hover-color);
+}
+
+button.navbar-toggler,button.navbar-toggler:focus {
+    border: none;
+    font-size: xxx-large;
+    color: var(--text-color);
+    box-shadow: none;
 }
 
 
@@ -278,9 +322,25 @@ a.btn.btn-primary {
 a.btn.menu-btn {
     background: var(--text-color);
 }
+
+.navbar-collapse a.btn.menu-btn {
+    display: block;
+    font-size: x-large;
+    margin-top: 1em;
+}
+
+@media (min-width: 992px) {
+    .navbar-collapse a.btn.menu-btn {
+        display: inline-block;
+        font-size: large;
+        margin-top: 0;
+    }
+}
+
 a.btn.menu-btn:hover, a.btn.menu-btn:active, a.btn.menu-btn:focus, a.btn.menu-btn:active:focus {
     background: var(--hover-color);
     color: var(--text-color);
+    box-shadow: none;
 }
 button.btn.btn-primary.inverted, a.btn.btn-primary.inverted {
     background: rgb(50 50 50 / 70%);

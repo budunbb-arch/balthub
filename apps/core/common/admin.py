@@ -99,6 +99,58 @@ class AddressWidget(forms.Widget):
         )
 
 
+class AnalyticsCountersWidget(forms.Widget):
+    class Media:
+        css = {
+            'all': ('admin/css/phone_widget.css',)
+        }
+        js = ('admin/js/analytics_counters_widget.js',)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        import json
+        if value is None:
+            value = []
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except (json.JSONDecodeError, TypeError):
+                value = []
+        widget_id = attrs.get('id') or name
+        items_html = ''
+        for idx, item in enumerate(value):
+            counter_name = ''
+            code = ''
+            if isinstance(item, dict):
+                counter_name = item.get('name', item.get('label', ''))
+                code = item.get('code', item.get('value', ''))
+            else:
+                code = str(item)
+            items_html += format_html(
+                '<div class="phone-item analytics-counter-item" data-index="{}">'
+                '<input type="text" class="phone-label" value="{}" '
+                'placeholder="Название" data-field="name">'
+                '<textarea class="phone-value analytics-counter-code" '
+                'placeholder="HTML-код счётчика" data-field="code">{}</textarea>'
+                '<button type="button" class="phone-remove">×</button>'
+                '</div>',
+                idx,
+                counter_name,
+                code,
+            )
+        return format_html(
+            '<div class="phone-widget analytics-counters-widget" id="{}">'
+            '<div class="phone-list">{}</div>'
+            '<button type="button" class="phone-add">Добавить счётчик</button>'
+            '<input type="hidden" name="{}" id="{}_hidden" value="{}">'
+            '</div>',
+            widget_id,
+            mark_safe(items_html),
+            name,
+            widget_id,
+            escape(json.dumps(value, ensure_ascii=False)),
+        )
+
+
 class SiteSettingsForm(forms.ModelForm):
     phones = forms.JSONField(
         widget=PhoneWidget(),
@@ -111,6 +163,12 @@ class SiteSettingsForm(forms.ModelForm):
         required=False,
         label="Адреса",
         help_text="JSON-список: [{'label': 'Основной', 'value': 'ул. Ленина, д. 10'}]",
+    )
+    analytics_counters = forms.JSONField(
+        widget=AnalyticsCountersWidget(),
+        required=False,
+        label="Счётчики аналитики",
+        help_text="Добавьте название сервиса и HTML-код каждого счётчика.",
     )
 
     class Meta:
@@ -402,6 +460,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 "default_robots",
                 "phones",
                 "addresses",
+                "analytics_counters",
             )
         }),
         ("Капча Turnstile", {

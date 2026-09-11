@@ -75,6 +75,12 @@ class SiteSettings(models.Model):
         verbose_name="Адреса",
         help_text="JSON-список: [{'label': 'Основной', 'value': 'ул. Ленина, д. 10'}]",
     )
+    analytics_counters = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="Счётчики аналитики",
+        help_text="JSON-список: [{'name': 'Яндекс Метрика', 'code': '<script>...</script>'}]",
+    )
 
     class Meta:
         db_table = "core_sitesettings"

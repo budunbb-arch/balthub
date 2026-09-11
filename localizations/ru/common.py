@@ -49,5 +49,6 @@ translations = {
     "seo_flat_description": "Квартира {number} в ЖК {project_name}.",
     "seo_developer_title": "{name} — застройщик",
     "seo_developer_description": "{name}. Проекты, дома, квартиры.",
+    "slide_to_top": "Наверх",
 
 }

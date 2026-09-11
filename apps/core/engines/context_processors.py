@@ -224,6 +224,20 @@ def site_settings(request):
             settings.addresses = []
     if settings and not settings.addresses:
         settings.addresses = []
+    if settings and isinstance(settings.analytics_counters, str):
+        try:
+            settings.analytics_counters = json.loads(settings.analytics_counters)
+        except (json.JSONDecodeError, TypeError):
+            settings.analytics_counters = []
+    if settings:
+        settings.analytics_counters = [
+            {
+                "name": counter.get("name", counter.get("label", "")),
+                "code": counter.get("code", counter.get("value", "")),
+            }
+            for counter in settings.analytics_counters
+            if isinstance(counter, dict)
+        ]
     cache.set(cache_key, settings, 300)
     return {
         "site_settings": settings
