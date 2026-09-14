@@ -8,14 +8,13 @@
         <!--<h2 class="search-heading mb-2" data-textfit data-fill="0.7">{{ trans.search_heading }}</h2>-->
         <form action="{% url 'search_results' %}" method="get" class="row g-2 align-items-end" id="searchForm">
 
-            <div class="col-10 form-field position-relative">
+            <div class="col-9 col-sm-10 position-relative">
                 <input type="text" name="q" class="form-control field-search" placeholder="{{ trans.search }}" value="{{ request.GET.q|default:'' }}">
-                <span class="form-field-icon"></span>
             </div>
-            <div class="col-2">
-                <button type="submit" class="btn btn-primary">{{ trans.button_search }}</button>
+            <div class="col-3 col-sm-2">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass-location"></i></button>
             </div>
-            <div class="col-2 search-filter position-relative">
+            <div class="col-12 col-md-2 search-filter position-relative d-none d-lg-flex">
                 <select name="city" class="form-select">
                     <option value="">{{ trans.text_city }}</option>
                     {% for city in data.cities %}
@@ -23,7 +22,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-2 search-filter position-relative">
+            <div class="col-12 col-md-2 search-filter position-relative d-none d-lg-flex">
                 <select name="district" class="form-select">
                     <option value="">{{ trans.text_district }}</option>
                     {% for district in data.districts %}
@@ -32,7 +31,7 @@
                 </select>
                 <label class="position-absolute">{{ trans.text_district }}</label>
             </div>
-            <div class="col-2 search-filter position-relative">
+            <div class="col-12 col-md-2 search-filter position-relative d-none d-lg-flex">
                 <select name="property_type" class="form-select">
                     <option value="">{{ trans.text_property_type }}</option>
                     {% for pt in data.property_types %}
@@ -40,7 +39,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-2 search-filter position-relative">
+            <div class="col-12 col-md-2 search-filter position-relative d-none d-lg-flex">
                 <select name="rooms_alias" class="form-select">
                         <option value="">{{ trans.text_rooms }}</option>
                     {% for alias in data.rooms_aliases %}
@@ -48,7 +47,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-2 search-filter position-relative">
+            <div class="col-12 col-md-2 search-filter position-relative d-none d-lg-flex">
                 <select name="price_band" class="form-select">
                     <option value="">{{ trans.text_price }}</option>
                     {% for min_p, max_p, label in data.price_bands %}

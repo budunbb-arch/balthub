@@ -4,7 +4,7 @@
     <div class="feedback-module" data-module-id="{{ data.feedback.id }}">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-10 offset-1 col-xl-6 offset-xl-3 text-center">
+                <div class="col-12 col-xl-6 offset-xl-3 text-center">
                     <h3 class="mb-4">{{ data.feedback.header }}</h3>
 
                     {% if data.feedback.hint == "no_call" %}
@@ -22,15 +22,14 @@
 
                         <div class="row">
                             {% if data.has_phone %}
-                                <div class="col-3 mb-3">
-                                    <div class="form-field field-country position-relative">
+                                <div class="col-3 mb-3 phone-prefix pe-0">
+                                    <div class="field-country position-relative">
                                         <select class="form-select phone-country" name="phone_country" aria-label="Страна">
                                             <option value="" data-prefix="">{{ trans.text_country }}</option>
                                             {% for country in data.phone_countries %}
                                                 <option value="{{ country.phone_code }}" data-prefix="{{ country.phone_code }}"{% if country.code == "RU" %} selected{% endif %}>{{ country.name }} (+{{ country.phone_code }})</option>
                                             {% endfor %}
                                         </select>
-                                        <span class="form-field-icon"></span>
                                     </div>
                                 </div>
                             {% endif %}

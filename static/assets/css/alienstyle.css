@@ -26,6 +26,7 @@
     --bg-color: #333;
     --dark-blue: rgb(22 54 74);
     --dark-blue-transparent: rgb(22 54 74 / 50%);
+    --light-transparent: rgb(255 255 255 / 70%);
     --text-color: #fff;
     --hover-color: #888;
     --hover-light: #ddd;
@@ -204,7 +205,23 @@ h6 {
     font-family: var(--nicoletta);
 }
 .module-search {
-    margin-bottom: 5em;
+    margin-bottom: 2em;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+form#searchForm {
+    padding-left: .5em;
+}
+
+@media (min-width: 992px) {
+    .module-search {
+        margin-bottom: 5em;
+        padding-left: initial;
+        padding-right: initial;
+    }
+    form#searchForm {
+        padding-left: initial;
+    }
 }
 
 a {
@@ -227,7 +244,7 @@ button.navbar-toggler,button.navbar-toggler:focus {
     height: 60px;
     padding-left: 60px;
     border-radius: 5px;
-    background: rgb(255 255 255 / 70%);
+    background: var(--light-transparent);
 }
 .search-filter select.form-select {
     height: 40px;
@@ -276,9 +293,6 @@ select:disabled + label.position-absolute {
 .field-user span.form-field-icon::after {
     content: '\f007';
 }
-.field-country span.form-field-icon::after {
-    content: '\f57d';
-}
 .field-phone span.form-field-icon::after {
     content: '\f095';
 }
@@ -310,6 +324,17 @@ select:disabled + label.position-absolute {
     color: var(--bg-color);
 }
 
+input.field-search {
+    height: 6vh;
+    background: var(--light-transparent);
+}
+
+@media (min-width: 992px) {
+    input.field-search {
+        height: 10vh;
+    }
+}
+
 a.btn.btn-primary, button.btn.btn-primary {
     display: block;
     width: 100%;
@@ -339,6 +364,34 @@ a.btn.menu-btn {
     background: var(--text-color);
 }
 
+.search button.btn.btn-primary {
+    height: 6vh;
+    font-size: large;
+}
+
+@media (min-width: 992px) {
+    .search button.btn.btn-primary {
+        height: 10vh;
+        font-size: xx-large;
+    }
+}
+
+.search button.btn.btn-primary:hover, .search button.btn.btn-primary:focus {
+    color: var(--seagreen);
+}
+.search button.btn.btn-primary:active {
+    color: var(--main-color);
+}
+
+select.phone-country {
+    height: 60px;
+    padding: .5em;
+    background: var(--light-transparent);
+}
+
+.navbar-collapse {
+    z-index: 3;
+}
 .navbar-collapse a.btn.menu-btn {
     display: block;
     font-size: x-large;
@@ -391,9 +444,13 @@ button.btn.btn-primary.inverted:hover, button.btn.btn-primary.inverted:focus, bu
  .colored-main {
     color: var(--main-color);
  }
- .site-header .module.html-module {
-    padding-left: 0;
+
+ @media (min-width: 992px) {
+    .site-header .module.html-module {
+        padding-left: 0;
+    }
 }
+
 .site-stats .number+.number {
     border-left: 1px solid var(--text-color);
 }
@@ -486,6 +543,7 @@ ol.document li ol>li, ol.document>li dl dd, ol.document>li>p {
         grid-template-rows: repeat(2, minmax(0, 1fr));
         gap: 0;
     }
+}
     .project-block {
         overflow: hidden;
         min-width: 0;
@@ -609,8 +667,6 @@ ol.document li ol>li, ol.document>li dl dd, ol.document>li>p {
         line-clamp: 6;
         box-orient: vertical;
     }
-
-}
 
 .module-homepage-text, .module-homepage-icons, .feedback-module {
     padding-top: 5em;
@@ -1298,4 +1354,82 @@ div.list-icon {
     color: var(--text-color);
     font-size: larger;
     border-radius: 5px;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        width: min(300px, calc(100vw - 2rem));
+        min-width: 0;
+        max-width: calc(100vw - 2rem);
+    }
+
+    #mainNavbar {
+        padding: 1rem;
+    }
+
+    .content-wrapper {
+        padding: .75rem;
+    }
+
+    .project-title,
+    h1,
+    h2,
+    h3 {
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 575.98px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    nav.navbar {
+        padding: .75rem .5rem;
+    }
+
+    #logo img {
+        max-height: 42px;
+    }
+
+    .navbar-collapse {
+        right: -.5rem;
+    }
+
+    input.field-search,
+    .search button.btn.btn-primary {
+        min-height: 48px;
+    }
+
+    .search-filter select.form-select {
+        height: 48px;
+    }
+
+    .house-media {
+        row-gap: .75rem;
+    }
+
+    .house-photo,
+    .house-plan {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .picker-range-fields {
+        row-gap: .5rem;
+    }
+
+    .module.module-project-description {
+        padding: 1rem;
+    }
+
+    .project-map h2,
+    .project-slides h2,
+    .project-houses h2,
+    .project-flats h2,
+    .house-flats h2,
+    .house-plans h2 {
+        padding: .75rem .5rem;
+        font-size: 1.25rem;
+    }
 }

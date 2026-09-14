@@ -26,7 +26,7 @@
 
                     {# название проекта #}
 
-                    <a href="{% url 'project_detail' project.slug %}" class="project-title d-block position-absolute text-center" data-textfit data-padding="30" data-fill="0.7" data-max-size="60">{{ project.name }}</a>
+                    <a href="{% url 'project_detail' project.slug %}" class="project-title d-block w-100 position-absolute text-center" data-textfit data-padding="30" data-fill="0.7" data-max-size="60">{{ project.name }}</a>
                     
                     {# город через ProjectParams #}
                     {% if project.params and project.params.city %}
@@ -36,7 +36,7 @@
             </div>
         {% else %}
             {% if forloop.counter == 6 %}
-                <div class="project-block-row">
+                <div class="project-block-row d-none d-md-flex">
             {% endif %}
             <div class="project-block position-relative project-block-secondary">
                 <div class="module-card">
