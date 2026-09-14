@@ -325,7 +325,7 @@ select:disabled + label.position-absolute {
 }
 
 input.field-search {
-    height: 6vh;
+    height: 40px;
     background: var(--light-transparent);
 }
 
@@ -371,7 +371,7 @@ a.btn.menu-btn {
 }
 
 .search button.btn.btn-primary {
-    height: 6vh;
+    height: 40px;
     font-size: large;
 }
 
