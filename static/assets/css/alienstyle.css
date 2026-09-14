@@ -118,7 +118,7 @@ nav.navbar {
 
 @media (min-width: 992px) {
     nav.navbar {
-        padding: 0.5em 0;
+        padding: 0.5em;
     }
     .navbar-collapse {
         position: initial;
@@ -331,6 +331,12 @@ input.field-search {
 
 @media (min-width: 992px) {
     input.field-search {
+        height: 40px;
+    }
+}
+
+@media (min-width: 1400px) {
+    input.field-search {
         height: 10vh;
     }
 }
@@ -370,6 +376,12 @@ a.btn.menu-btn {
 }
 
 @media (min-width: 992px) {
+    .search button.btn.btn-primary {
+        height: 40px;
+    }
+}
+
+@media (min-width: 1400px) {
     .search button.btn.btn-primary {
         height: 10vh;
         font-size: xx-large;
@@ -505,6 +517,7 @@ ol.document li ol>li, ol.document>li dl dd, ol.document>li>p {
 
 .card-img-wrapper {
     width: 100%;
+    height: 100%;
     aspect-ratio: 3 / 4; /* можно 4/3 или 1/1 */
     overflow: hidden;
 }
@@ -536,7 +549,16 @@ ol.document li ol>li, ol.document>li dl dd, ol.document>li>p {
     font-size: small;
 }
 
-@media (min-width: 1400px) {
+@media (min-width: 768px) {
+    .module-row {
+        display: grid;
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+        gap: 0;
+    }
+}
+
+@media (min-width: 1200px) {
     .module-row {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
