@@ -408,7 +408,17 @@ class PickerSystem {
     filterHouseOptions() {
         const projectIds = this.state["project"] || [];
         const housePicker = this.root.querySelector('[data-picker-name="house"]');
+        const projectPicker = this.root.querySelector('[data-picker-name="project"]');
         if (!housePicker) return;
+
+        // On project detail pages the project is fixed by the page context.
+        if (!projectPicker) {
+            housePicker.classList.remove("is-disabled");
+            housePicker.querySelectorAll('input[type="checkbox"]').forEach(input => {
+                input.disabled = false;
+            });
+            return;
+        }
 
         if (projectIds.length > 0) {
             housePicker.classList.remove("is-disabled");

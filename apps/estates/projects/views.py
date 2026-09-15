@@ -347,16 +347,21 @@ def project_detail(request, project_slug):
         section = request.headers.get("X-Picker-Section")
         if (
             section == "flats"
-            or "house" in request.GET
-            or "rooms_alias" in request.GET
-            or "floor_from" in request.GET
-            or "ceiling_height_from" in request.GET
-            or "square_from" in request.GET
-            or "living_square_from" in request.GET
-            or "kitchen_square_from" in request.GET
-            or "balcony_type" in request.GET
-            or "bathroom_unit_type" in request.GET
-            or "finish_type" in request.GET
+            or (
+                section != "houses"
+                and (
+                    "house" in request.GET
+                    or "rooms_alias" in request.GET
+                    or "floor_from" in request.GET
+                    or "ceiling_height_from" in request.GET
+                    or "square_from" in request.GET
+                    or "living_square_from" in request.GET
+                    or "kitchen_square_from" in request.GET
+                    or "balcony_type" in request.GET
+                    or "bathroom_unit_type" in request.GET
+                    or "finish_type" in request.GET
+                )
+            )
         ):
             return render(
                 request,

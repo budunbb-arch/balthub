@@ -8,8 +8,6 @@ from apps.core.dictionaries.models import (
     BalconyType,
     BathroomUnitType,
     FinishType,
-    City,
-    District,
 )
 from apps.estates.projects.models import Project
 from apps.core.localization import t

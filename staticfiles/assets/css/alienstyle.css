@@ -183,9 +183,16 @@ h1 small {
     display: block;
     text-transform: none;
     font-family: var(--cgr);
-    font-size: medium;
+    font-size: small;
     margin-bottom: 1em;
 }
+
+@media (min-width: 992px) {
+    h1 small {
+        font-size: medium;
+    }
+}
+
 h2 {
     font-size: 32px;
     font-weight: 700;

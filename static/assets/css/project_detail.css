@@ -5,7 +5,7 @@
 .module.module-project-description {
     background: rgb(0 0 0 / 40%);
     padding: 2em 3em;
-    border-radius: 5px;
+    border-radius: 0;
     margin-bottom: 1em;
 }
 .module.module-project-description .project-description-content {
@@ -15,6 +15,22 @@
     scrollbar-color: rgb(255 255 255 / 30%) transparent;
     padding-right: 1em;
 }
+.project-description-content p {
+    font-size: small;
+}
+
+@media (min-width: 768px) {
+    .module.module-project-description {
+        border-radius: 5px;
+    }
+}
+
+@media (min-width: 576px) {
+    .project-description-content p {
+        font-size: initial;
+    }
+}
+
 .module.module-project-description .project-description-content::-webkit-scrollbar-button {
     display: none;
 }
@@ -112,4 +128,8 @@ img.img-contain {
     aspect-ratio: 4 / 3;
     object-fit: contain;
     width: 100%;
+}
+
+.modal-thumbs button.modal-thumb {
+    max-width: 40%;
 }
