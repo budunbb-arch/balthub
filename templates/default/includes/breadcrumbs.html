@@ -1,5 +1,11 @@
 {% if breadcrumbs %}
-    <nav aria-label="breadcrumb" class="breadcrumbs mb-4">
+    <nav aria-label="breadcrumb" class="breadcrumbs row mb-4">
+        <div class="col-1 d-sm-none">
+        <a href="#" class="breadcrumbs-back d-inline-flex d-sm-none" aria-label="Назад" title="Назад" onclick="history.back(); return false;">
+            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+        </a>
+        </div>
+        <div class="col-11 col-md-12">
         <ol class="breadcrumb">
 
             {% for item in breadcrumbs %}
@@ -19,5 +25,6 @@
             {% endfor %}
 
         </ol>
+        </div>
     </nav>
 {% endif %}

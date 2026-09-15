@@ -185,6 +185,25 @@ def tag_detail(request, tag_slug):
         projects_qs=projects_qs,
     )
 
+    flat_filter_keys = {
+        "house",
+        "rooms_alias",
+        "floor_from",
+        "floor_to",
+        "ceiling_height_from",
+        "ceiling_height_to",
+        "square_from",
+        "square_to",
+        "living_square_from",
+        "living_square_to",
+        "kitchen_square_from",
+        "kitchen_square_to",
+        "balcony_type",
+        "bathroom_unit_type",
+        "finish_type",
+    }
+    active_tab = "flats" if request.GET.get("tab") == "flats" or flat_filter_keys.intersection(state) else "projects"
+
     context = {
         "page_obj": projects_page_obj,
         "paginator": projects_paginator,
@@ -195,6 +214,7 @@ def tag_detail(request, tag_slug):
         "pickers": pickers,
         "flats_pickers": flats_pickers,
         "tag": tag,
+        "active_tab": active_tab,
     }
 
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":

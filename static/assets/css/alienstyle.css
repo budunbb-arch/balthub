@@ -76,7 +76,7 @@ body {
 }
 .content-wrapper {
     background: rgb(255 255 255 / 75%);
-    border-radius: 0;
+    border-radius: 5px;
     padding: 1em;
     color: var(--bg-color);
 }
@@ -442,6 +442,42 @@ button.btn.btn-primary.inverted:hover, button.btn.btn-primary.inverted:focus, bu
 
 .breadcrumbs {
     border-bottom: 2px solid var(--white);
+}
+
+.breadcrumbs-back {
+    margin-right: .5rem;
+    color: inherit;
+}
+
+@media (max-width: 575.98px) {
+    .breadcrumbs .breadcrumb {
+        flex-wrap: nowrap;
+        overflow: hidden;
+    }
+
+    .breadcrumbs .breadcrumb-item {
+        display: none;
+    }
+
+    .breadcrumbs .breadcrumb-item:nth-last-child(-n + 2) {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .breadcrumbs .breadcrumb-item:nth-last-child(2) {
+        flex-shrink: 1;
+    }
+
+    .breadcrumbs .breadcrumb-item:last-child {
+        flex-shrink: 0;
+    }
+
+    .breadcrumbs .breadcrumb-item:nth-last-child(2)::before {
+        display: none;
+    }
 }
 
 
