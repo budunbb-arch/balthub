@@ -33,7 +33,7 @@
 
       {# short description #}
       {% if project.description %}
-        <div class="card-short-description position-absolute">
+        <div class="card-short-description d-none d-xl-block position-absolute">
           {{ project.description.description|truncatewords:40|safe }}
         </div>
       {% endif %}

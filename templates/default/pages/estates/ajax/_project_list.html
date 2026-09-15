@@ -7,7 +7,7 @@
 <div class="row" data-items>
     {% if page_obj %}
         {% for project in page_obj %}
-            <div class="col-md-3">
+            <div class="col-12 col-sm-6 col-md-4 col-xl-3">
                 {% include "default/pages/estates/project_card.html" with project=project %}
             </div>
         {% endfor %}
