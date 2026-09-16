@@ -20,8 +20,8 @@
                             <td>
                                 <a href="{% url 'document_detail' document.id %}">{{ document.document_name }}</a>
                             </td>
-                            <td>{{ document.document_date|date:"d.m.Y" }}</td>
-                            <td>
+                            <td class="text-center">{{ document.document_date|date:"d.m.Y" }}</td>
+                            <td class="text-center">
                                 {% if document.document_file %}
                                     <a href="{{ document.document_file.url }}" target="_blank">{{ trans.text_open }}</a>
                                 {% else %}

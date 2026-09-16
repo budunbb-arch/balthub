@@ -21,12 +21,12 @@
 </h1>
 
 <div class="flat-description row">
-    <div class="col-12 col-xl-4">
+    <div class="col-12 col-md-5 col-xl-4 mb-4">
         {% if flat.plan %}
-            <img src="{{ flat.plan }}" alt="{{ trans.text_flat }} {{ flat.number|default:"" }} {{ trans.text_plan }}" class="img-fluid img-grayscale">
+            <img src="{{ flat.plan }}" alt="{{ trans.text_flat }} {{ flat.number|default:"" }} {{ trans.text_plan }}" class="img-fluid img-presentation img-grayscale">
         {% endif %}
     </div>
-    <div class="col-12 col-xl-8">
+    <div class="col-12 col-md-7 col-xl-8">
         <h4 class="mb-3">{{ trans.text_flat_details }}:</h4>
 
         <ul class="list-unstyled flat-params-list mb-5">
@@ -116,7 +116,7 @@
             </div>
 
             <div class="flats-list row">
-                <div class="flats-list-pickers col-12 col-xl-3">
+                <div class="flats-list-pickers col-12 col-xl-3 mb-3">
                     {% include "default/modules/picker_flats.html" with pickers=flats_pickers %}
                 </div>
                 <div class="flats-list-content col-12 col-xl-9">
@@ -165,6 +165,8 @@
 {% block extra_js %}
 
     <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+    <script src="{% static 'assets/js/img-presentation.js' %}"></script>
+
     {% if map_settings.enabled and map_settings.provider == "yandex" %}
         <script src="https://api-maps.yandex.ru/v3/?apikey={{ map_settings.api_key }}&lang={{ map_settings.language }}"></script>
         <script src="{% static 'assets/js/maps/yandex.js' %}"></script>

@@ -14,7 +14,7 @@
 
     {% for picker in pickers %}
 
-        <div class="picker position-relative col-md-3 col-xl-2 {% if picker.disabled %}disabled{% endif %}"
+        <div class="picker position-relative col-12 col-md-3 col-xxl-2 {% if picker.disabled %}disabled{% endif %}"
             data-picker-name="{{ picker.name }}"
             data-auto-submit="{{ picker.auto_submit|yesno:'true,false' }}">
 

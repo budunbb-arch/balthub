@@ -10,20 +10,14 @@
 
     <h1 class="mb-4">{{ trans.text_tags }}</h1>
 
-    <div class="row">
+    <ul class="row list-unstyled">
         {% for tag in tags %}
-            <div class="col-md-4 mb-3">
-                <a href="{% url 'tags:tag_detail' tag.slug %}" class="text-decoration-none">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ tag.name }}</h5>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            <li class="col-12 col-sm-6 col-md-4 col-xl-3 mb-3">
+                <a href="{% url 'tags:tag_detail' tag.slug %}" class="text-decoration-none">{{ tag.name }}</a>
+            </li>
         {% empty %}
             <p>{{ trans.no_tags }}</p>
         {% endfor %}
-    </div>
+        </ul>
 
 {% endblock %}

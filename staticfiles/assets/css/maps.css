@@ -26,7 +26,7 @@ footer #collection-map, footer #collection-map-6, footer [id^="collection-map-"]
     width: auto;
     height: 100%;
     z-index: 99;
-    border-radius: 1em;
+    border-radius: 0;
 }
 .maps-overlay:hover {
     background: rgb(255 255 255 / 50%);

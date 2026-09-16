@@ -81,6 +81,17 @@ def build_breadcrumbs(request):
             })
 
         # =====================================================
+        # FEEDBACK PAGE
+        # =====================================================
+
+        elif view == "feedback_page":
+
+            breadcrumbs.append({
+                "title": "Обратная связь",
+                "url": None,
+            })
+
+        # =====================================================
         # PROJECT LIST
         # =====================================================
 
@@ -183,14 +194,8 @@ def build_breadcrumbs(request):
 
             if house:
                 breadcrumbs.append({
-                    "title": f"Дом #{house.id}",
-                    "url": reverse(
-                        "house_detail",
-                        kwargs={
-                            "project_slug": project.slug,
-                            "house_slug": house.slug,
-                        }
-                    ),
+                    "title": f"{house.params.corpus}",
+                    "url": None,
                 })
 
 
@@ -244,7 +249,7 @@ def build_breadcrumbs(request):
 
             if house:
                 breadcrumbs.append({
-                    "title": f"Дом #{house.id}",
+                    "title": f"{house.params.corpus}",
                     "url": reverse(
                         "house_detail",
                         kwargs={

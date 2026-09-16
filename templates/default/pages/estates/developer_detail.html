@@ -8,10 +8,17 @@
 
 {% block content %}
 
-<h1>{{ seo.h1|default:developer.name }}</h1>
-
 {% if developer.logo %}
-    <img src="{{ developer.logo.url }}" alt="{{ developer.name }}" style="max-width:200px;">
+    <div class="row">
+        <div class="col-8 col-sm-9 col-lg-10">
+            <h1>{{ seo.h1|default:developer.name }}</h1>
+        </div>
+        <div class="col-4 col-sm-3 col-lg-2">
+            <img src="{{ developer.logo.url }}" alt="{{ developer.name }}" class="img-fluid">
+        </div>
+    </div>
+{% else %}
+    <h1>{{ seo.h1|default:developer.name }}</h1>
 {% endif %}
 
 <!-- Описание -->
@@ -64,9 +71,15 @@
 
 {% if map_settings.enabled and map_settings.provider == "yandex" and map_points %}
 <section class="developer-map mb-5">
-    <h2>Объекты на карте</h2>
+    <h2>{{  trans.text_objectsmap}}</h2>
     {% with map_id="collection-map-developer" data_id="collection-map-data-developer" %}
-    <div id="{{ map_id }}"></div>
+    <div id="{{ map_id }}" class="position-relative">
+
+
+        <div class="maps-overlay position-absolute">
+            <span class="maps-toggler position-absolute text-center"><i class="fa-solid fa-lock"></i></span>
+        </div>
+    </div>
     {{ map_points|json_script:data_id }}
     {% endwith %}
 </section>

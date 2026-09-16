@@ -15,7 +15,7 @@ class SitemapView(View):
 
     def get(self, request):
 
-        base_url = "https://balthub.rf39.ru"
+        base_url = request.build_absolute_uri("/").rstrip("/")
 
         urls = []
 

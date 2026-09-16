@@ -94,6 +94,15 @@ class DeveloperQuerySet(PublicQuerySet):
             projects__params__city_id__in=cities
         )
 
+    def districts(self, districts):
+
+        if not districts:
+            return self
+
+        return self.filter(
+            projects__params__district_id__in=districts
+        )
+
     def property_categories(self, categories):
 
         if not categories:

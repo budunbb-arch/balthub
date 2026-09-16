@@ -25,11 +25,9 @@ def developer_list(request):
         return value
 
     selected_cities = state.get("city", [])
+    selected_districts = state.get("district", [])
     selected_categories = state.get("property_category", [])
     sort = get_state_value("sort", "name")
-
-    price_from = get_state_value("price_from")
-    price_to = get_state_value("price_to")
 
     # =====================================================
     # BASE QUERYSET
@@ -43,13 +41,11 @@ def developer_list(request):
 
         .cities(selected_cities)
 
+        .districts(selected_districts)
+
         .property_categories(selected_categories)
 
         .with_list_stats()
-
-        .min_price_from(price_from)
-
-        .min_price_to(price_to)
 
         .sorted(sort)
 
@@ -68,19 +64,13 @@ def developer_list(request):
     # PICKER
     # =====================================================
 
-    price_limits = qs.price_limits()
 
     pickers = developer_list_pickers(
 
         sort=sort,
-
-        selected_cities=selected_cities,
         selected_categories=selected_categories,
-
-        price_limits=price_limits,
-
-        price_from=price_from,
-        price_to=price_to,
+        selected_cities=selected_cities,
+        selected_districts=selected_districts,
     )
 
 

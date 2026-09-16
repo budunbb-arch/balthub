@@ -1,6 +1,6 @@
 <!-- templates/default/pages/estates/developer_card.html -->
 
-<div class="card p-3 mb-3">
+<div class="card text-center p-3 mb-3">
 
     {% if developer.logo %}
         {% load image_utils %}
@@ -9,8 +9,7 @@
             srcset="{{ developer.logo.url|image_srcset:'200,400' }}"
             sizes="200px"
             loading="lazy"
-            class="img-fluid mb-2"
-            style="max-height:100px;">
+            class="img-developer-logo img-fluid mb-2">
     {% endif %}
 
     <h5>

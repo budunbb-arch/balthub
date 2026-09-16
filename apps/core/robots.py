@@ -6,15 +6,17 @@ class RobotsView(View):
 
     def get(self, request):
 
+        base_url = request.build_absolute_uri("/").rstrip("/")
+
         lines = [
             "User-agent: *",
             "Allow: /",
             "Disallow: /admin/",
             "Disallow: /api/",
             "",
-            "Host: https://balthub.rf39.ru",
+            f"Host: {base_url}",
             "",
-            "Sitemap: https://balthub.rf39.ru/sitemap.xml",
+            f"Sitemap: {base_url}/sitemap.xml",
         ]
 
         return HttpResponse("\n".join(lines), content_type="text/plain")

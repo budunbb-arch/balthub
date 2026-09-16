@@ -26,7 +26,7 @@
                     <div class="form-check text-start text-small mb-2">
                         <input class="form-check-input" type="checkbox" id="orderCallPersonalData" name="personal_data" required>
                         <label class="form-check-label" for="orderCallPersonalData">
-                            {{ trans.text_agree }} <a href="{% url 'document_modal' order_call_personal_data_doc.id %}" class="document-modal" data-title="{{ order_call_personal_data_doc.document_name }}">{{ trans.text_personaldata }}</a>
+                            {{ trans.text_agree }} <a href="/documents/1" target="_blank" data-title="{{ order_call_personal_data_doc.document_name }}">{{ trans.text_personaldata }}</a>
                         </label>
                     </div>
                     {% endif %}
@@ -35,7 +35,7 @@
                     <div class="form-check text-start text-small mb-4">
                         <input class="form-check-input" type="checkbox" id="orderCallPolicy" name="policy" required>
                         <label class="form-check-label" for="orderCallPolicy">
-                            {{ trans.text_agree }} <a href="{% url 'document_modal' order_call_policy_doc.id %}" class="document-modal" data-title="{{ order_call_policy_doc.document_name }}">{{ trans.text_policy }}</a>
+                            {{ trans.text_agree }} <a href="/documents/2" target="_blank" data-title="{{ order_call_policy_doc.document_name }}">{{ trans.text_policy }}</a>
                         </label>
                     </div>
                     {% endif %}

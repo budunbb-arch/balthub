@@ -10,7 +10,7 @@ const initImgPresentation = () => {
 
         overlay.innerHTML = `
             <button class="img-presentation-close" aria-label="Закрыть">&times;</button>
-            <img class="img-presentation-image img-grayscale" src="" alt="">
+            <img class="img-presentation-image" src="" alt="">
         `;
 
         document.body.appendChild(overlay);
@@ -51,6 +51,7 @@ const initImgPresentation = () => {
             const { overlay, image } = createOverlay();
             image.src = img.src;
             image.alt = img.alt;
+            image.classList.toggle("img-grayscale", img.classList.contains("img-grayscale"));
             document.body.style.overflow = "hidden";
             requestAnimationFrame(() => {
                 overlay.classList.add("is-visible");

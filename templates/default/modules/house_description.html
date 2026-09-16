@@ -13,14 +13,14 @@
             {% if data.house.project.params.district %} 
                 {{ data.house.project.params.district.name }},
             {% endif %}
-
+                
             {{ data.house.params.address }}
         </small>
     </h2>
 
     <div class="house-params row">
         {% if data.house.params.corpus %}
-            <div class="col-4 col-xl-2 text-center mb-3">
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-3">
                 <div class="house-param">
                     {{ data.house.params.corpus }}
                 </div>
@@ -28,7 +28,7 @@
         {% endif %}
 
         {% if data.house.params.phase %}
-            <div class="col-4 col-xl-2 text-center mb-3">
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-3">
                 <div class="house-param">
                     {{ data.house.params.phase }}
                 </div>
@@ -36,7 +36,7 @@
         {% endif %}
 
         {% if data.house.params.deadline and data.house.params.deadline_year %}
-            <div class="col-4 col-xl-2 text-center mb-3">
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-3">
                 <div class="house-param">
                     <strong>{{ trans.text_deadline }}</strong><br>
                     {{ data.house.params.deadline }} {{ data.house.params.deadline_year }}
@@ -45,7 +45,7 @@
         {% endif %}
 
         {% if data.house.params.floors %}
-            <div class="col-4 col-xl-2 text-center mb-3">
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-3">
                 <div class="house-param">
                     <strong>{{ trans.text_floors }}</strong><br>
                     {{ data.house.params.floors }} {{ trans.text_floors_quantity }}
@@ -54,7 +54,7 @@
         {% endif %}
 
         {% if data.house.params.parking or data.house.params.lift %}
-            <div class="col-4 col-xl-2 text-center mb-3">
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-3">
                 <div class="house-param">
                     {% if data.house.params.parking %}
                         <strong>{{ trans.text_parking }}:</strong>

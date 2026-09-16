@@ -38,6 +38,7 @@ translations = {
     "text_mortgage": "Ипотека",
     "text_address": "Адрес",
     "text_flat_details": "Характеристики",
+    "text_objectsmap": "Объекты на карте",
     "other_flats": "Другие квартиры в ",
     "yes": "Да",
     "no": "Нет",

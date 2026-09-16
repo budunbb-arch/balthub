@@ -37,6 +37,8 @@ def get_picker_label(picker, selected_values):
                 .values_list("name", flat=True)
             )
 
+            return ", ".join(labels)
+
         case "property_category":
 
             labels = (
@@ -57,11 +59,20 @@ def developer_list_pickers(
     *,
     sort,
     selected_cities,
+    selected_districts,
     selected_categories,
-    price_limits,
-    price_from,
-    price_to,
-):
+    ):
+
+    district_queryset = District.objects.none()
+
+    if selected_cities:
+
+        district_queryset = (
+            District.objects
+            .filter(city_id__in=selected_cities)
+            .select_related("city")
+            .order_by("name")
+        )
 
     pickers = [
 
@@ -97,40 +108,6 @@ def developer_list_pickers(
                     "value": "-projects",
                     "label": "Больше проектов",
                 },
-
-                {
-                    "value": "price",
-                    "label": "Сначала дешевле",
-                },
-
-                {
-                    "value": "-price",
-                    "label": "Сначала дороже",
-                },
-            ]
-        },
-
-        # =====================================================
-        # CITY
-        # =====================================================
-
-        {
-            "name": "city",
-            "label": "Город",
-            "placeholder": "Выберите города",
-            "value": selected_cities,
-            "multiple": True,
-            "auto_submit": False,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(city.id),
-                    "label": city.name,
-                }
-
-                for city in City.objects.order_by("name")
             ]
         },
 
@@ -159,38 +136,59 @@ def developer_list_pickers(
         },
 
         # =====================================================
-        # PRICE
+        # CITY
         # =====================================================
 
         {
-            "name": "price",
-            "label": "Цена",
-            "placeholder": "Цена",
-            "type": "range",
-            "auto_submit": True,
+            "name": "city",
+            "label": "Город",
+            "placeholder": "Выберите города",
+            "value": selected_cities,
+            "multiple": True,
+            "auto_submit": False,
+            "input_type": "checkbox",
 
-            "range": {
+            "options": [
 
-                "from_name": "price_from",
-                "to_name": "price_to",
+                {
+                    "value": str(city.id),
+                    "label": city.name,
+                }
 
-                "from_value": price_from,
-                "to_value": price_to,
+                for city in City.objects.order_by("name")
+            ]
+        },
 
-                "from_placeholder": int(price_limits["min_price"] or 0),
-                "to_placeholder": int(price_limits["max_price"] or 0),
-            }
+        # =====================================================
+        # DISTRICT
+        # =====================================================
+
+        {
+            "name": "district",
+            "value": selected_districts,
+            "placeholder": "Район",
+            "multiple": True,
+            "auto_submit": False,
+            "disabled": not selected_cities,
+            "input_type": "checkbox",
+
+            "options": [
+
+                {
+                    "value": str(district.id),
+                    "label": district.name,
+                }
+
+                for district in district_queryset
+            ]
         },
     ]
 
     for picker in pickers:
 
-        if picker.get("input_type") != "checkbox":
-            continue
-
         picker["selected_label"] = get_picker_label(
             picker,
-            picker["value"]
+            picker.get("value", [])
         )
 
     return pickers
