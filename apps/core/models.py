@@ -41,6 +41,12 @@ class SiteSettings(models.Model):
         default="index, follow",
         verbose_name="Robots по умолчанию",
     )
+    google_tag = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="Google tag",
+        help_text="Значение для meta name=google-site-verification.",
+    )
     is_disabled = models.BooleanField(
         default=False,
         verbose_name="Выключить сайт",
