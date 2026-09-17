@@ -1,6 +1,8 @@
 # apps/estates/tags/views.py
 
 from django.shortcuts import render, get_object_or_404
+from django.db.models import F, FloatField, Min, ExpressionWrapper
+from django.db.models.functions import Round
 
 from apps.estates.flats.models import Flat
 from apps.estates.projects.models import Project
@@ -96,6 +98,18 @@ def tag_detail(request, tag_slug):
             "deals__currency",
             "deals__deal_type",
             "flat_tags__tag",
+        )
+        .annotate(
+            min_price=Min("deals__price"),
+        )
+        .annotate(
+            price_per_m2=Round(
+                ExpressionWrapper(
+                    F("min_price") / F("params__square"),
+                    output_field=FloatField(),
+                ),
+                0,
+            )
         )
         .order_by("id")
     )
