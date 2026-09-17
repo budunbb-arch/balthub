@@ -169,10 +169,17 @@ def seo(request):
 
     lang = (get_language() or "ru")[:2]
     path = request.path_info
+    detail_views = {
+        "project_detail",
+        "house_detail",
+        "flat_detail",
+        "developer_detail",
+    }
+    use_cache = getattr(request, "view_name", None) not in detail_views
 
     cache_key = f"seo:{path}:{lang}"
 
-    cached = cache.get(cache_key)
+    cached = cache.get(cache_key) if use_cache else None
 
     if cached is not None:
         return {"seo": cached}
@@ -184,7 +191,8 @@ def seo(request):
         logger.exception("SEO ERROR:")
         data = {}
 
-    cache.set(cache_key, data, 300)
+    if use_cache:
+        cache.set(cache_key, data, 300)
 
     return {
         "seo": data

@@ -68,6 +68,8 @@ class NMarketImporter:
         self._project_images_by_project = {}
         # Сборник всех скачанных изображений для генерации variants после цикла
         self._downloaded_images = []
+        self._developer_seo_by_id = {}
+        self._seo_objects = {}
 
 
     def bulk_update(self, obj, **fields):
@@ -75,6 +77,132 @@ class NMarketImporter:
 
         if changed:
             self.bulk.add(obj, changed)
+
+
+    def queue_seo(self, obj, **fields):
+        helpers.update_instance(obj, **fields)
+        self._seo_objects.setdefault(obj.__class__, {})[obj.pk] = obj
+
+
+    @staticmethod
+    def _seo_keywords(*values):
+        result = []
+        for value in values:
+            value = str(value).strip() if value is not None else ""
+            if value and value not in result:
+                result.append(value)
+        return ", ".join(result)
+
+
+    @staticmethod
+    def _seo_phrase(*values):
+        return " ".join(
+            str(value).strip()
+            for value in values
+            if value is not None and str(value).strip()
+        )
+
+
+    @classmethod
+    def _project_seo(cls, project, city, developer):
+        project_name = project.name
+        city_name = city.name if city else ""
+        developer_name = developer.name if developer else ""
+
+        return {
+            "meta_keywords": cls._seo_keywords(
+                f"ЖК {project_name}",
+                cls._seo_phrase(f"ЖК {project_name}", city_name),
+                cls._seo_phrase(f"ЖК {project_name}", developer_name),
+            ),
+            "meta_description": (
+                f"Выбор дома и квартиры в ЖК {project_name} "
+                f"{city_name} Калининградской области. Фото, параметры, цены, "
+                "расположение на карте."
+            ),
+        }
+
+
+    @classmethod
+    def _house_seo(cls, params, city, project):
+        city_name = city.name if city else ""
+        project_name = project.name
+        corpus = params.corpus if params else ""
+        deadline_year = params.deadline_year if params else None
+        phase = params.phase if params else ""
+
+        return {
+            "meta_keywords": cls._seo_keywords(
+                cls._seo_phrase(city_name, project_name, corpus),
+                cls._seo_phrase(city_name, project_name, deadline_year),
+                cls._seo_phrase(city_name, project_name, phase),
+            ),
+            "meta_description": (
+                f"Выбрать квартиру в {corpus or 'доме'} ЖК {project_name} "
+                f"{city_name} Калининградской области. Фото, планировки, "
+                "параметры, цены, расположение на карте."
+            ),
+        }
+
+
+    @classmethod
+    def _flat_seo(cls, params, city, project):
+        city_name = city.name if city else ""
+        project_name = project.name
+        rooms_alias = params.rooms_alias if params else ""
+        floor = params.floor if params else None
+        balcony_type = params.balcony_type.name if params and params.balcony_type else ""
+        bathroom_type = params.bathroom_unit_type.name if params and params.bathroom_unit_type else ""
+        finish_type = params.finish_type.name if params and params.finish_type else ""
+
+        return {
+            "meta_keywords": cls._seo_keywords(
+                cls._seo_phrase(rooms_alias, "квартира", city_name),
+                cls._seo_phrase(rooms_alias, "квартира", project_name),
+                cls._seo_phrase(city_name, project_name, rooms_alias),
+            ),
+            "meta_description": (
+                f"Квартира {rooms_alias or ''} в ЖК {project_name}, "
+                f"{floor if floor is not None else ''} этаж, "
+                f"{balcony_type}, {bathroom_type}, {finish_type}."
+            ),
+        }
+
+
+    @classmethod
+    def _developer_seo(cls, developer, city, project):
+        developer_name = developer.name
+        city_name = city.name if city else ""
+        project_name = project.name
+
+        return {
+            "meta_keywords": cls._seo_keywords(
+                cls._seo_phrase(developer_name, city_name),
+                cls._seo_phrase("застройщики", city_name),
+                cls._seo_phrase(city_name, project_name),
+                cls._seo_phrase(developer_name, project_name),
+                cls._seo_phrase("застройщик", developer_name),
+                cls._seo_phrase("застройщик", project_name),
+            ),
+            "meta_description": (
+                f"Проекты жилых комплексов от застройщика {developer_name}. "
+                "Фото, планировки, цены и честные сроки сдачи, расположение на карте"
+            ),
+        }
+
+
+    def _collect_developer_seo(self, developer, city, project):
+        seo = self._developer_seo_by_id.setdefault(
+            developer.id,
+            {
+                "developer": developer,
+                "keywords": [],
+            },
+        )
+        values = self._developer_seo(developer, city, project)["meta_keywords"]
+        for value in values.split(", "):
+            if value and value not in seo["keywords"]:
+                seo["keywords"].append(value)
 
 
     def save_or_bulk(
@@ -411,6 +539,12 @@ class NMarketImporter:
                 )
                 self._sync_project_tags(project)
 
+            self._collect_developer_seo(developer, city, project)
+            self.queue_seo(
+                project,
+                **self._project_seo(project, city, developer),
+            )
+
             # ------------------------
             # HOUSE
             # ------------------------
@@ -457,6 +591,11 @@ class NMarketImporter:
                     parking=to_bool(data["parking"]),
                     latitude=helpers.to_float(data["latitude"]),
                     longitude=helpers.to_float(data["longitude"]),
+                )
+
+                self.queue_seo(
+                    house,
+                    **self._house_seo(house_params, city, project),
                 )
 
             # ------------------------
@@ -515,6 +654,11 @@ class NMarketImporter:
                     ceiling_height=helpers.to_float(data["ceiling_height"]),
                 )
 
+                self.queue_seo(
+                    flat,
+                    **self._flat_seo(flat_params, city, project),
+                )
+
             # ------------------------
             # FLAT DEAL
             # ------------------------
@@ -553,8 +697,26 @@ class NMarketImporter:
             stats["offers"] += 1
 
 
-        # --- Шаг 3: Bulk update ---
+        # --- Шаг 3: SEO застройщиков и bulk update ---
+        for seo in self._developer_seo_by_id.values():
+            self.queue_seo(
+                seo["developer"],
+                meta_keywords=", ".join(seo["keywords"]),
+                meta_description=(
+                    f"Проекты жилых комплексов от застройщика "
+                    f"{seo['developer'].name}. Фото, планировки, цены и "
+                    "честные сроки сдачи, расположение на карте"
+                ),
+            )
+
         self.bulk.flush()
+
+        for model, objects in self._seo_objects.items():
+            model.objects.bulk_update(
+                list(objects.values()),
+                ["meta_keywords", "meta_description"],
+                batch_size=500,
+            )
 
         # --- Шаг 3.5: Деактивация квартир, отсутствующих в фиде ---
         logger.info("Deactivating missing flats...")

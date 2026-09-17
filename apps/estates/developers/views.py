@@ -120,6 +120,8 @@ def developer_detail(request, slug):
         slug=slug,
     )
 
+    request.developer = developer
+
     # =====================================================
     # MAP
     # =====================================================

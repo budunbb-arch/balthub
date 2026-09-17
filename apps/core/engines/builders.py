@@ -110,7 +110,7 @@ def build_seo(request, context=None):
             seo["json_ld"] = json.dumps(build_json_ld("ApartmentComplex", project), ensure_ascii=False)
 
     elif view == "house_detail":
-        house = context.get("house")
+        house = getattr(request, "house", None) or context.get("house")
 
         if house:
             seo["title"] = pick_value(house.meta_title, seo["title"])
@@ -132,7 +132,7 @@ def build_seo(request, context=None):
             seo["json_ld"] = json.dumps(build_json_ld("Residence", house), ensure_ascii=False)
 
     elif view == "flat_detail":
-        flat = context.get("flat")
+        flat = getattr(request, "flat", None) or context.get("flat")
 
         if flat:
             seo["title"] = pick_value(flat.meta_title, seo["title"])
@@ -151,7 +151,7 @@ def build_seo(request, context=None):
             seo["json_ld"] = json.dumps(build_json_ld("Apartment", flat), ensure_ascii=False)
 
     elif view == "developer_detail":
-        developer = context.get("developer")
+        developer = getattr(request, "developer", None) or context.get("developer")
 
         if developer:
             seo["title"] = pick_value(developer.meta_title, seo["title"])
