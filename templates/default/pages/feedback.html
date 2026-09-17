@@ -12,7 +12,7 @@
     <div class="col-12 order-2 col-lg-4">
         <div class="container-fluid">
             <div class="row">
-                <h3>{{ trans.feedback_map_title }}</h3>
+                <h3 class="ps-0">{{ trans.feedback_map_title }}</h3>
                 <div class="col-12 p-0 col-sm-6 ps-sm-0 col-lg-12 feedback-map mb-3">
                     <img
                         src="https://static-maps.yandex.ru/1.x/?ll=20.508214,54.711364&z=15&l=map&pt=20.508214,54.711364,pm2blm&size=450,400"
@@ -122,10 +122,11 @@
 
             <div class="row">
                 {% if turnstile_site_key %}
-                    <div class="col-12 col-sm-6 cf-turnstile" data-sitekey="{{ turnstile_site_key }}"></div>
+                    <div class="col-12 col-sm-6 col-xxl-7 cf-turnstile" data-sitekey="{{ turnstile_site_key }}"></div>
                 {% endif %}
-
-                <div class="col-12 col-sm-6">
+            </div>
+            <div class="row">
+                <div class="col-12 col-sm-6 offset-sm-6 col-xxl-5 offset-xxl-7">
                     <button type="submit" class="btn btn-primary">{{ trans.text_send }}</button>
                 </div>
             </div>
