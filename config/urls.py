@@ -16,6 +16,11 @@ from apps.leads.views_project_feedback import project_feedback_send
 
 urlpatterns = [
     path("", home, name="home"),
+    re_path(
+        r"^(?P<path>yandex_65d5c1f0cf1d4cd0\.html)$",
+        serve,
+        {"document_root": settings.BASE_DIR},
+    ),
     path("sitemap.xml", SitemapView.as_view(), name="sitemap"),
     path("robots.txt", RobotsView.as_view(), name="robots"),
     path("admin/", admin.site.urls),
