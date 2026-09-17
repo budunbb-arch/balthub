@@ -459,6 +459,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 "default_canonical",
                 "default_robots",
                 "google_tag",
+                "yandex_tag",
                 "phones",
                 "addresses",
                 "analytics_counters",

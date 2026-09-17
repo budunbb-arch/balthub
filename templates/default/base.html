@@ -14,6 +14,9 @@
     {% if site_settings and site_settings.google_tag %}
         <meta name="google-site-verification" content="{{ site_settings.google_tag }}">
     {% endif %}
+    {% if site_settings and site_settings.yandex_tag %}
+        <meta name="yandex-verification" content="{{ site_settings.yandex_tag }}">
+    {% endif %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="canonical" href="{% if seo.canonical %}{{ seo.canonical }}{% endif %}">

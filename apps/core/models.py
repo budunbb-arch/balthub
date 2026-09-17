@@ -47,6 +47,12 @@ class SiteSettings(models.Model):
         verbose_name="Google tag",
         help_text="Значение для meta name=google-site-verification.",
     )
+    yandex_tag = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="Yandex tag",
+        help_text="Значение для meta name=yandex-verification.",
+    )
     is_disabled = models.BooleanField(
         default=False,
         verbose_name="Выключить сайт",
