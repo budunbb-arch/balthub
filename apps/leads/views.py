@@ -99,6 +99,7 @@ def feedback_send(request):
     except json.JSONDecodeError:
         return HttpResponseBadRequest("Invalid JSON")
 
+    data["remote_ip"] = request.META.get("REMOTE_ADDR", "")
     return _build_lead_from_payload(data)
 
 

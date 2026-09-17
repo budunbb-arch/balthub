@@ -56,6 +56,55 @@ $(document).on('input', '.order-call-form .phone-input', function () {
         });
     });
 
+    $('.feedback-module .feedback-form').on('submit', function (e) {
+        e.preventDefault();
+        var $form = $(this);
+
+        if ($form.data('submitting')) {
+            return;
+        }
+        $form.data('submitting', true);
+
+        var formData = new FormData($form[0]);
+        var payload = Object.fromEntries(formData.entries());
+        payload.module_id = $form.data('module-id');
+
+        fetch('/feedback/send/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': $form.find('input[name="csrfmiddlewaretoken"]').val(),
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        })
+        .then(function (response) {
+            return response.json().then(function (data) {
+                return {status: response.status, data: data};
+            });
+        })
+        .then(function (result) {
+            if (result.status === 200 && result.data.success) {
+                $form[0].reset();
+                if (window.turnstile) {
+                    try { window.turnstile.reset(); } catch (err) {}
+                }
+                $form.hide();
+                $form.closest('.feedback-module').find('.success-form').show();
+                toastr.success('Заявка отправлена!');
+            } else {
+                toastr.error(result.data.error || 'Ошибка отправки');
+            }
+        })
+        .catch(function () {
+            toastr.error('Ошибка отправки');
+        })
+        .finally(function () {
+            $form.data('submitting', false);
+        });
+    });
+
     function setupProjectFeedbackForm($form) {
         var modalEl = document.getElementById('projectFeedbackModal');
         if (!modalEl) return;
@@ -174,7 +223,7 @@ $(document).on('input', '.order-call-form .phone-input', function () {
         .catch(function () {
             toastr.error('Ошибка отправки');
         })
-        .always(function () {
+        .finally(function () {
             $form.data('submitting', false);
         });
     });
@@ -304,7 +353,7 @@ $(document).on('input', '.order-call-form .phone-input', function () {
         .catch(function (err) {
             toastr.error('Ошибка отправки');
         })
-        .always(function () {
+        .finally(function () {
             $form.data('submitting', false);
         });
     });
