@@ -21,7 +21,7 @@
     <div class="house-params row">
         {% if data.house.params.corpus %}
             <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-3">
-                <div class="house-param">
+                <div class="house-param d-flex align-items-center justify-content-center">
                     {{ data.house.params.corpus }}
                 </div>
             </div>
@@ -29,7 +29,7 @@
 
         {% if data.house.params.phase %}
             <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-3">
-                <div class="house-param">
+                <div class="house-param d-flex align-items-center justify-content-center">
                     {{ data.house.params.phase }}
                 </div>
             </div>
@@ -37,36 +37,42 @@
 
         {% if data.house.params.deadline and data.house.params.deadline_year %}
             <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-3">
-                <div class="house-param">
-                    <strong>{{ trans.text_deadline }}</strong><br>
-                    {{ data.house.params.deadline }} {{ data.house.params.deadline_year }}
+                <div class="house-param d-flex align-items-center justify-content-center">
+                    <div class="text-center">
+                        <strong>{{ trans.text_deadline }}</strong><br>
+                        {{ data.house.params.deadline }} {{ data.house.params.deadline_year }}
+                    </div>
                 </div>
             </div>
         {% endif %}
 
         {% if data.house.params.floors %}
             <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-3">
-                <div class="house-param">
-                    <strong>{{ trans.text_floors }}</strong><br>
-                    {{ data.house.params.floors }} {{ trans.text_floors_quantity }}
+                <div class="house-param d-flex align-items-center justify-content-center">
+                    <div class="text-center">
+                        <strong>{{ trans.text_floors }}</strong><br>
+                        {{ data.house.params.floors }} {{ trans.text_floors_quantity }}
+                    </div>
                 </div>
             </div>
         {% endif %}
 
         {% if data.house.params.parking or data.house.params.lift %}
             <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-3">
-                <div class="house-param">
-                    {% if data.house.params.parking %}
-                        <strong>{{ trans.text_parking }}:</strong>
-                        {{ data.house.params.parking|yesno_i18n }}
-                    {% endif %}
-                    {% if data.house.params.parking and data.house.params.lift %}
-                        <br>
-                    {% endif %}
-                    {% if data.house.params.lift %}
-                        <strong>{{ trans.text_lift }}:</strong>
-                        {{ data.house.params.lift|yesno_i18n }}
-                    {% endif %}
+                <div class="house-param d-flex align-items-center justify-content-center">
+                    <div class="text-center">
+                        {% if data.house.params.parking %}
+                            <strong>{{ trans.text_parking }}:</strong>
+                            {{ data.house.params.parking|yesno_i18n }}
+                        {% endif %}
+                        {% if data.house.params.parking and data.house.params.lift %}
+                            <br>
+                        {% endif %}
+                        {% if data.house.params.lift %}
+                            <strong>{{ trans.text_lift }}:</strong>
+                            {{ data.house.params.lift|yesno_i18n }}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         {% endif %}

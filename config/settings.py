@@ -99,6 +99,7 @@ TEMPLATES = [
 ]
 
 TEMPLATES[0]['OPTIONS']['context_processors'] += [
+    'django.template.context_processors.request',
     'apps.core.engines.context_processors.layout_modules',
     'apps.core.engines.context_processors.breadcrumbs',
     'apps.core.engines.context_processors.seo',

@@ -1,45 +1,73 @@
 {# templates/default/modules/main_menu.html #}
 
+{% url 'project_list' as project_list_url %}
+{% url 'feedback_page' as feedback_page_url %}
+
 <ul class="navbar-nav align-items-lg-center gap-3">
 
-    <!--
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'home' %}">{{ trans.home }}</a>
+        <a 
+        class="nav-link{% if request.resolver_match.url_name == 'project_list' %} state{% endif %}" 
+        href="{% url 'project_list' %}"
+        {% if request.resolver_match.url_name == 'project_list' %}aria-current="page"{% endif %}>
+            {{ trans.project_list }}
+        </a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'developer_list' %}">{{ trans.developer_list }}</a>
+        <a 
+        class="nav-link{% if request.path == '/estates/tags/kalininigrad/' %} state{% endif %}" 
+        href="/estates/tags/kalininigrad/" 
+        {% if request.path == '/estates/tags/kalininigrad/' %}aria-current="page"{% endif %}>
+            {{ trans.kaliningrad }}
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.path == '/estates/tags/prigorod/' %} state{% endif %}" 
+        href="/estates/tags/prigorod/"
+        {% if request.path == '/estates/tags/prigorod/' %}aria-current="page"{% endif %}>
+            {{ trans.suburb }}
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.path == '/estates/tags/poberezhe/' %} state{% endif %}" 
+        href="/estates/tags/poberezhe/"
+        {% if request.path == '/estates/tags/poberezhe/' %}aria-current="page"{% endif %}>
+            {{ trans.seaside }}
+        </a>
+    </li>
+
+    <!--
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.path == '/estates/tags/ipoteka/' %} state{% endif %}" 
+        href="/estates/tags/ipoteka/"
+        {% if request.path == '/estates/tags/ipoteka/' %}aria-current="page"{% endif %}>
+            {{ trans.mortgage }}
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.path == '#' %} state{% endif %}" 
+        href="#"
+        {% if request.path == '#' %}aria-current="page"{% endif %}>
+            {{ trans.text_blog }}
+        </a>
     </li>
     -->
 
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'project_list' %}">{{ trans.project_list }}</a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="/estates/tags/kalininigrad/">{{ trans.kaliningrad }}</a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="/estates/tags/prigorod/">{{ trans.suburb }}</a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="/estates/tags/poberezhe/">{{ trans.seaside }}</a>
-    </li>
-
-    <!--
-    <li class="nav-item">
-        <a class="nav-link" href="/estates/tags/ipoteka/">{{ trans.mortgage }}</a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="#">{{ trans.text_blog }}</a>
-    </li>
-    -->
-
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'feedback_page' %}">{{ trans.contacts }}</a>
+        <a 
+        class="nav-link{% if request.resolver_match.url_name == 'feedback_page' %} state{% endif %}" 
+        href="{% url 'feedback_page' %}"
+        {% if request.resolver_match.url_name == 'feedback_page' %}aria-current="page"{% endif %}>
+            {{ trans.contacts }}
+        </a>
     </li>
 
     <!--
@@ -55,15 +83,5 @@
     <li class="nav-item call-item">
         <a class="btn menu-btn" href="#" data-bs-toggle="modal" data-bs-target="#orderCallModal">{{ trans.order_call }}</a>
     </li>
-
-    <!--
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'house_list' %}">{{ trans.house_list }}</a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'plans' %}">{{ trans.plans }}</a>
-    </li>
-    -->
 
 </ul>
