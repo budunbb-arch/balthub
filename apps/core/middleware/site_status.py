@@ -8,6 +8,8 @@ from apps.core.engines.builders import get_default_seo
 ALLOWED_SITE_DISABLED_PATHS = [
     settings.STATIC_URL,
     settings.MEDIA_URL,
+    "/robots.txt",
+    "/sitemap.xml",
     "/admin/",
     "/api/",
     "/feedback/",
