@@ -2,6 +2,7 @@ from apps.core.models import SiteSettings
 
 import json
 import logging
+from urllib.parse import urljoin
 
 logger = logging.getLogger(__name__)
 
@@ -13,8 +14,11 @@ def get_default_seo(request):
     default_title = site_settings.default_title
     default_description = site_settings.default_description if site_settings else ""
     default_keywords = site_settings.default_keywords if site_settings else ""
-    default_canonical = site_settings.default_canonical if site_settings and site_settings.default_canonical else request.build_absolute_uri()
+    default_canonical = site_settings.default_canonical if site_settings and site_settings.default_canonical else request.build_absolute_uri(request.path)
     default_robots = site_settings.default_robots if site_settings else "index, follow"
+    default_og_image = request.build_absolute_uri(
+        "/static/assets/images/006.balthub-favicon-transparent.png"
+    )
 
     return {
         "title": default_title,
@@ -28,8 +32,9 @@ def get_default_seo(request):
             if default_sitename and default_title
             else (default_sitename or default_title)
         ),
+        "og_type": "website",
         "og_description": default_description,
-        "og_image": "",
+        "og_image": default_og_image,
         "og_url": default_canonical,
         "json_ld": {},
         "site_name": default_sitename,
@@ -56,17 +61,36 @@ def build_seo(request, context=None):
         return f"{index}, {follow}"
 
     def build_og_image(obj):
-        if not obj:
-            return ""
-        images = getattr(obj, "images", None)
-        if images:
-            try:
-                first = images.first()
-                if first:
-                    return first.image.url if hasattr(first, "image") else ""
-            except Exception:
-                pass
-        return ""
+        if obj:
+            images = getattr(obj, "images", None)
+            if images:
+                try:
+                    first = images.first()
+                    if first:
+                        image = getattr(first, "image", "")
+                        image_url = getattr(image, "url", image)
+                        if image_url:
+                            return urljoin(request.build_absolute_uri("/"), image_url)
+                except Exception:
+                    pass
+
+            for field_name in ("image", "plan", "logo"):
+                image = getattr(obj, field_name, "")
+                image_url = getattr(image, "url", image)
+                if image_url:
+                    return urljoin(request.build_absolute_uri("/"), image_url)
+
+            house = getattr(obj, "house", None)
+            if house:
+                image_url = getattr(house, "image", "")
+                if image_url:
+                    return urljoin(request.build_absolute_uri("/"), image_url)
+
+            project = getattr(obj, "project", None)
+            if project:
+                return build_og_image(project)
+
+        return request.build_absolute_uri("/static/assets/images/006.balthub-favicon-transparent.png")
 
     def build_json_ld(obj_type, obj):
         if not obj:
@@ -76,7 +100,7 @@ def build_seo(request, context=None):
             "@context": "https://schema.org",
             "@type": obj_type,
             "name": getattr(obj, "name", ""),
-            "url": getattr(obj, "canonical_url", "") or request.build_absolute_uri(),
+            "url": getattr(obj, "canonical_url", "") or request.build_absolute_uri(request.path),
         }
 
         if hasattr(obj, "meta_description") and obj.meta_description:
@@ -100,10 +124,11 @@ def build_seo(request, context=None):
             seo["h1"] = pick_value(project.seo_h1, project.name)
             seo["canonical"] = pick_value(
                 project.canonical_url,
-                request.build_absolute_uri()
+                request.build_absolute_uri(request.path)
             )
             seo["robots"] = build_robots(project)
             seo["og_title"] = f"{seo['title']} - {seo['site_name']} - {seo['site_title']}"
+            seo["og_type"] = "website"
             seo["og_description"] = seo["description"]
             seo["og_image"] = build_og_image(project)
             seo["og_url"] = seo["canonical"]
@@ -122,7 +147,7 @@ def build_seo(request, context=None):
             )
             seo["canonical"] = pick_value(
                 house.canonical_url,
-                request.build_absolute_uri()
+                request.build_absolute_uri(request.path)
             )
             seo["robots"] = build_robots(house)
             seo["og_title"] = seo["title"]
@@ -141,7 +166,7 @@ def build_seo(request, context=None):
             seo["h1"] = pick_value(flat.seo_h1, f"Квартира {flat.number}")
             seo["canonical"] = pick_value(
                 flat.canonical_url,
-                request.build_absolute_uri()
+                request.build_absolute_uri(request.path)
             )
             seo["robots"] = build_robots(flat)
             seo["og_title"] = seo["title"]
@@ -160,7 +185,7 @@ def build_seo(request, context=None):
             seo["h1"] = pick_value(developer.seo_h1, developer.name)
             seo["canonical"] = pick_value(
                 developer.canonical_url,
-                request.build_absolute_uri()
+                request.build_absolute_uri(request.path)
             )
             seo["robots"] = build_robots(developer)
             seo["og_title"] = seo["title"]
@@ -179,7 +204,7 @@ def build_seo(request, context=None):
             seo["h1"] = pick_value(tag.seo_h1, tag.name)
             seo["canonical"] = pick_value(
                 tag.canonical_url,
-                request.build_absolute_uri()
+                request.build_absolute_uri(request.path)
             )
             seo["robots"] = build_robots(tag)
             seo["og_title"] = seo["title"]

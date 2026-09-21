@@ -1,20 +1,13 @@
 # apps/core/common/views.py
 
 from django.shortcuts import render
-from django.core.cache import cache
 from apps.core.engines.builders import get_default_seo
 
 
 def home(request):
-    cache_key = "home_page"
-    cached = cache.get(cache_key)
-    if cached is not None:
-        return cached
-    response = render(request, "default/pages/common/home.html", {
+    return render(request, "default/pages/common/home.html", {
         "is_home": True,
     })
-    cache.set(cache_key, response, 300)
-    return response
 
 
 def error_403(request, exception):
