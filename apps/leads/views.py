@@ -11,12 +11,13 @@ from django.conf import settings
 from django.template.loader import render_to_string
 
 from .models import FeedbackModule, Lead
+from .captcha import create_challenge, verify_challenge
 from .turnstile import is_turnstile_enabled, verify_turnstile_token
 
 logger = logging.getLogger(__name__)
 
 
-def _build_lead_from_payload(data, settings_obj=None):
+def _build_lead_from_payload(data, settings_obj=None, request=None):
     module_id = data.get("module_id")
     name = (data.get("name") or "").strip()
     phone = (data.get("phone") or "").strip()
@@ -29,20 +30,10 @@ def _build_lead_from_payload(data, settings_obj=None):
     policy = data.get("policy") in ("on", "true", "1")
     message_tpl = (data.get("message_tpl") or "").strip()
 
-    if is_turnstile_enabled():
-        token = (data.get("cf-turnstile-response") or "").strip()
-        if not token:
-            return JsonResponse(
-                {"success": False, "error": "Подтвердите, что вы не робот."}, status=400
-            )
-        if not verify_turnstile_token(token, data.get("remote_ip") or ""):
-            return JsonResponse(
-                {
-                    "success": False,
-                    "error": "Не удалось подтвердить капчу. Попробуйте ещё раз.",
-                },
-                status=400,
-            )
+    if request is None or not verify_challenge(request, data.get("captcha_id"), data.get("captcha_value")):
+        return JsonResponse(
+            {"success": False, "error": "Пройдите проверку ползунком."}, status=400
+        )
 
     if not module_id:
         return JsonResponse({"success": False, "error": "Не указан модуль."}, status=400)
@@ -100,7 +91,7 @@ def feedback_send(request):
         return HttpResponseBadRequest("Invalid JSON")
 
     data["remote_ip"] = request.META.get("REMOTE_ADDR", "")
-    return _build_lead_from_payload(data)
+    return _build_lead_from_payload(data, request=request)
 
 
 @require_POST
@@ -191,9 +182,6 @@ def feedback_page(request):
     from django.shortcuts import render
 
     settings_obj = SiteSettings.get_solo()
-    turnstile_site_key = ""
-    if settings_obj and settings_obj.turnstile_enabled and settings_obj.turnstile_site_key:
-        turnstile_site_key = settings_obj.turnstile_site_key
 
     personal_data_doc = None
     policy_doc = None
@@ -217,7 +205,7 @@ def feedback_page(request):
 
     context = {
         "phone_countries": list(Country.objects.all().values("code", "name", "phone_code")),
-        "turnstile_site_key": turnstile_site_key,
+        "captcha": create_challenge(request),
         "personal_data_doc": personal_data_doc,
         "policy_doc": policy_doc,
         "site_settings": settings_obj,
@@ -238,20 +226,10 @@ def feedback_page_send(request):
     personal_data = data.get("personal_data") in ("on", "true", "1")
     policy = data.get("policy") in ("on", "true", "1")
 
-    if is_turnstile_enabled():
-        token = (data.get("cf-turnstile-response") or "").strip()
-        if not token:
-            return JsonResponse(
-                {"success": False, "error": "Подтвердите, что вы не робот."}, status=400
-            )
-        if not verify_turnstile_token(token, request.META.get("REMOTE_ADDR")):
-            return JsonResponse(
-                {
-                    "success": False,
-                    "error": "Не удалось подтвердить капчу. Попробуйте ещё раз.",
-                },
-                status=400,
-            )
+    if not verify_challenge(request, data.get("captcha_id"), data.get("captcha_value")):
+        return JsonResponse(
+            {"success": False, "error": "Пройдите проверку ползунком."}, status=400
+        )
 
     if not name:
         return JsonResponse({"success": False, "error": "Укажите имя."}, status=400)

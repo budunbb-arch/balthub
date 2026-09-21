@@ -60,6 +60,11 @@ $(document).on('input', '.order-call-form .phone-input', function () {
         e.preventDefault();
         var $form = $(this);
 
+        if (!$form.find('.slider-captcha.is-passed').length) {
+            toastr.error('Пройдите проверку ползунком.');
+            return;
+        }
+
         if ($form.data('submitting')) {
             return;
         }

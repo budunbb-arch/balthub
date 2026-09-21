@@ -1,10 +1,9 @@
 # apps/leads/feedback_module.py
 
 from .models import FeedbackModule
+from .captcha import create_challenge
 from apps.core.common.models import Module
 from apps.core.dictionaries.models import Country
-from apps.core.models import SiteSettings
-from .turnstile import is_turnstile_enabled
 
 
 MODULE = "default/modules/feedback.html"
@@ -80,10 +79,6 @@ def get_context(request, module):
         "feedback_contact_fields": contact_fields,
         "has_phone": any(f["input_name"] == "phone" for f in contact_fields),
         "phone_countries": list(Country.objects.all().values("code", "name", "phone_code")),
-        "turnstile_site_key": (
-            SiteSettings.get_solo().turnstile_site_key
-            if is_turnstile_enabled()
-            else ""
-        ),
+        "captcha": create_challenge(request),
     }
 

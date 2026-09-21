@@ -72,14 +72,12 @@
                             </div>
                         {% endif %}
 
-                        {% if data.turnstile_site_key %}
-                            <div class="cf-turnstile text-center mb-3" data-sitekey="{{ data.turnstile_site_key }}"></div>
-                        {% endif %}
+                        {% include "default/modules/slider_captcha.html" with captcha=data.captcha %}
 
                         <div class="row">
                             <div class="col col-xl-8 offset-xl-2">
                                 <input type="hidden" name="message_tpl" value="{{ data.feedback.message_tpl|escapejs }}">
-                                <button type="submit" class="btn btn-primary">Отправить</button>
+                                <button type="submit" class="btn btn-primary" disabled>Отправить</button>
                             </div>
                         </div>
 

@@ -121,13 +121,13 @@
             {% endif %}
 
             <div class="row">
-                {% if turnstile_site_key %}
-                    <div class="col-12 col-sm-6 col-xxl-7 cf-turnstile" data-sitekey="{{ turnstile_site_key }}"></div>
-                {% endif %}
+                <div class="col-12 col-sm-6 offset-sm-3 col-xxl-4 offset-xxl-4 captcha">
+                    {% include "default/modules/slider_captcha.html" with captcha=captcha %}
+                </div>
             </div>
             <div class="row">
-                <div class="col-12 col-sm-6 offset-sm-6 col-xxl-5 offset-xxl-7">
-                    <button type="submit" class="btn btn-primary">{{ trans.text_send }}</button>
+                <div class="col-12 col-sm-6 offset-sm-3 col-xxl-4 offset-xxl-4">
+                    <button type="submit" class="btn btn-primary" disabled>{{ trans.text_send }}</button>
                 </div>
             </div>
         </form>
@@ -188,9 +188,6 @@
                 if (result.status === 200 && result.data.success) {
                     form.style.display = 'none';
                     form.parentElement.querySelector('.success-form').style.display = 'block';
-                    if (window.turnstile) {
-                        try { window.turnstile.reset(); } catch (err) {}
-                    }
                 } else {
                     toastr.error(result.data.error || '{{ trans.text_error }}');
                 }
