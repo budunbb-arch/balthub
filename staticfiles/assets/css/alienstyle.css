@@ -1321,11 +1321,11 @@ ul.nav.nav-tabs li.nav-item:last-child button::after, ul.nav.nav-tabs li.nav-ite
     font-size: large;
 }
 .house-media>div {
-    aspect-ratio: 2 / 1;
     overflow: hidden;
 }
 .house-media>div img {
     height: 100%;
+    aspect-ratio: 2 / 1;
     object-fit: cover;
     object-position: center;
 }

@@ -41,8 +41,14 @@
                     {% endif %}
 
                     {% if order_call_turnstile_site_key %}
-                    <div class="cf-turnstile text-center mb-3" data-sitekey="{{ order_call_turnstile_site_key }}"></div>
+                        <div class="cf-turnstile text-center mb-3" data-sitekey="{{ order_call_turnstile_site_key }}"></div>
                     {% endif %}
+
+                    <div class="row">
+                        <div class="col-12 col-sm-10 offset-sm-1 col-xl-8 offset-xl-2 captcha">
+                            {% include "default/modules/slider_captcha.html" with captcha=order_call_captcha %}
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="col col-xl-8 offset-xl-2">

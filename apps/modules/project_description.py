@@ -4,6 +4,7 @@ from apps.core.common.models import Module
 from apps.core.dictionaries.models import Country
 from apps.core.models import SiteSettings
 from apps.leads.turnstile import is_turnstile_enabled
+from apps.leads.captcha import create_challenge
 from .models import ProjectDescriptionSettings
 
 MODULE = "default/modules/project_description.html"
@@ -38,4 +39,5 @@ def get_context(request, module):
         "turnstile_site_key": turnstile_site_key,
         "phone_countries": phone_countries,
         "has_phone": bool(phone_countries),
+        "captcha": create_challenge(request),
     }

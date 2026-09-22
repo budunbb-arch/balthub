@@ -255,34 +255,38 @@ def site_settings(request):
 def order_call_modal(request):
     from apps.core.documents.models import Document
     from apps.core.models import SiteSettings
+    from apps.leads.captcha import create_challenge
 
     cache_key = "order_call_modal"
     cached = cache.get(cache_key)
     if cached is not None:
-        return cached
+        result = cached
+    else:
+        personal_data_doc = Document.objects.filter(
+            document_name__icontains="персональн",
+            document_public=True,
+            document_status="released",
+        ).first()
+        policy_doc = Document.objects.filter(
+            document_name__icontains="политик",
+            document_public=True,
+            document_status="released",
+        ).first()
 
-    personal_data_doc = Document.objects.filter(
-        document_name__icontains="персональн",
-        document_public=True,
-        document_status="released",
-    ).first()
-    policy_doc = Document.objects.filter(
-        document_name__icontains="политик",
-        document_public=True,
-        document_status="released",
-    ).first()
+        ss = SiteSettings.get_solo()
+        turnstile_site_key = ""
+        if ss and ss.turnstile_enabled and ss.turnstile_site_key:
+            from apps.leads.turnstile import is_turnstile_enabled
+            if is_turnstile_enabled():
+                turnstile_site_key = ss.turnstile_site_key
 
-    ss = SiteSettings.get_solo()
-    turnstile_site_key = ""
-    if ss and ss.turnstile_enabled and ss.turnstile_site_key:
-        from apps.leads.turnstile import is_turnstile_enabled
-        if is_turnstile_enabled():
-            turnstile_site_key = ss.turnstile_site_key
+        result = {
+            "order_call_personal_data_doc": personal_data_doc,
+            "order_call_policy_doc": policy_doc,
+            "order_call_turnstile_site_key": turnstile_site_key,
+        }
+        cache.set(cache_key, result, 300)
 
-    result = {
-        "order_call_personal_data_doc": personal_data_doc,
-        "order_call_policy_doc": policy_doc,
-        "order_call_turnstile_site_key": turnstile_site_key,
-    }
-    cache.set(cache_key, result, 300)
+    result = dict(result)
+    result["order_call_captcha"] = create_challenge(request)
     return result

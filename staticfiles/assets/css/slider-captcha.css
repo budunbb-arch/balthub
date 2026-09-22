@@ -21,18 +21,19 @@
 
 .slider-captcha__target {
     position: absolute;
-    top: -5px;
-    width: 4px;
-    height: 16px;
+    top: -.75em;
+    border-top: 16px solid var(--seagreen);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
     transform: translateX(-2px);
-    background: #d34b36;
+    z-index: 9;
 }
 
 .slider-captcha__input {
     position: relative;
     width: 100%;
     margin: 0;
-    accent-color: #315f78;
+    accent-color: var(--bg-color);
 }
 
 .slider-captcha__status {

@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 
 from .models import Lead
 from .turnstile import is_turnstile_enabled, verify_turnstile_token
+from .captcha import verify_challenge
 from apps.modules.models import ProjectDescriptionSettings
 
 
@@ -28,6 +29,12 @@ def project_feedback_send(request):
     personal_data = data.get("personal_data") in ("on", "true", "1")
     policy = data.get("policy") in ("on", "true", "1")
     message_tpl = (data.get("message_tpl") or "").strip()
+
+    if not verify_challenge(request, data.get("captcha_id"), data.get("captcha_value")):
+        return JsonResponse(
+            {"success": False, "error": "Подтвердите, что вы не робот."},
+            status=400,
+        )
 
     if is_turnstile_enabled():
         token = (data.get("cf-turnstile-response") or "").strip()

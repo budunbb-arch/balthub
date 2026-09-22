@@ -11,8 +11,8 @@ from django.conf import settings
 from django.template.loader import render_to_string
 
 from .models import FeedbackModule, Lead
-from .captcha import create_challenge, verify_challenge
 from .turnstile import is_turnstile_enabled, verify_turnstile_token
+from .captcha import verify_challenge
 
 logger = logging.getLogger(__name__)
 
@@ -103,6 +103,12 @@ def order_call_send(request):
     personal_data = data.get("personal_data") in ("on", "true", "1")
     policy = data.get("policy") in ("on", "true", "1")
 
+    if not verify_challenge(request, data.get("captcha_id"), data.get("captcha_value")):
+        return JsonResponse(
+            {"success": False, "error": "Подтвердите, что вы не робот."},
+            status=400,
+        )
+
     if is_turnstile_enabled():
         token = (data.get("cf-turnstile-response") or "").strip()
         if not token:
@@ -178,6 +184,7 @@ def order_call_send(request):
 def feedback_page(request):
     from apps.core.documents.models import Document
     from apps.core.dictionaries.models import Country
+    from apps.leads.captcha import create_challenge
     from apps.core.models import SiteSettings
     from django.shortcuts import render
 

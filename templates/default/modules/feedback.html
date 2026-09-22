@@ -72,10 +72,14 @@
                             </div>
                         {% endif %}
 
-                        {% include "default/modules/slider_captcha.html" with captcha=data.captcha %}
+                        <div class="row">
+                            <div class="col-12 col-sm-6 offset-sm-3 col-xxl-4 offset-xxl-4 captcha">
+                                {% include "default/modules/slider_captcha.html" with captcha=data.captcha %}
+                            </div>
+                        </div>
 
                         <div class="row">
-                            <div class="col col-xl-8 offset-xl-2">
+                            <div class="col col-xl-6 offset-xl-3">
                                 <input type="hidden" name="message_tpl" value="{{ data.feedback.message_tpl|escapejs }}">
                                 <button type="submit" class="btn btn-primary" disabled>Отправить</button>
                             </div>
