@@ -442,6 +442,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
     list_display = (
         "site_name",
         "is_disabled",
+        "is_fully_disabled",
         "default_title",
         "default_canonical",
         "default_robots",
@@ -454,6 +455,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 "site_name",
                 "template",
                 "is_disabled",
+                "is_fully_disabled",
                 "default_title",
                 "default_description",
                 "default_keywords",

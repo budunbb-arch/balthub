@@ -75,6 +75,11 @@ class SiteSettings(models.Model):
         verbose_name="Выключить сайт",
         help_text="Показывать заглушку всем пользователям, кроме администраторов.",
     )
+    is_fully_disabled = models.BooleanField(
+        default=False,
+        verbose_name="Полностью выключить сайт",
+        help_text="Показывать отдельную заглушку на всех публичных страницах, включая формы и API.",
+    )
     turnstile_enabled = models.BooleanField(
         default=False,
         verbose_name="Включить Turnstile",

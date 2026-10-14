@@ -5,12 +5,15 @@ from apps.core.models import SiteSettings
 from apps.core.engines.builders import get_default_seo
 
 
-ALLOWED_SITE_DISABLED_PATHS = [
+ALWAYS_ALLOWED_PATHS = [
     settings.STATIC_URL,
-    settings.MEDIA_URL,
+    "/admin/",
+]
+
+SOFT_DISABLE_ALLOWED_PATHS = [
     "/robots.txt",
     "/sitemap.xml",
-    "/admin/",
+    settings.MEDIA_URL,
     "/api/",
     "/feedback/",
 ]
@@ -23,8 +26,22 @@ class SiteStatusMiddleware:
 
     def __call__(self, request):
         path = request.path_info
+        user = getattr(request, "user", None)
 
-        if any(path.startswith(prefix) for prefix in ALLOWED_SITE_DISABLED_PATHS):
+        if user and getattr(user, "is_staff", False):
+            return self.get_response(request)
+
+        if any(path.startswith(prefix) for prefix in ALWAYS_ALLOWED_PATHS):
+            return self.get_response(request)
+
+        site_settings = SiteSettings.get_solo()
+
+        if site_settings and site_settings.is_fully_disabled:
+            response = render(request, "errors/full_maintenance.html", status=503)
+            response["Cache-Control"] = "no-store"
+            return response
+
+        if any(path.startswith(prefix) for prefix in SOFT_DISABLE_ALLOWED_PATHS):
             return self.get_response(request)
 
         try:
@@ -32,10 +49,7 @@ class SiteStatusMiddleware:
         except Resolver404:
             return self.get_response(request)
 
-        site_settings = SiteSettings.get_solo()
-        user = getattr(request, "user", None)
-
-        if site_settings and site_settings.is_disabled and not (user and getattr(user, "is_staff", False)):
+        if site_settings and site_settings.is_disabled:
             seo = get_default_seo(request)
             seo["title"] = f"{seo.get('site_title', '')} | {seo.get('site_name', '')}"
             return render(request, "default/errors/maintenance.html", status=503, context={"seo": seo})
