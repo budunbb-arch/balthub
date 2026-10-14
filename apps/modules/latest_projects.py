@@ -14,6 +14,6 @@ def get_context(request, module):
         .active()
         .select_related("developer", "params__city")
         .prefetch_related("images")
-        .order_by("-id")[:9]
+        .order_by("-id")[:5]
     )
     return {"latest_projects": projects}

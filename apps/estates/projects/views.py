@@ -185,6 +185,8 @@ def project_detail(request, project_slug):
 
         .phases(selected_phases)
 
+        .with_available_flats_count()
+
         .select_related(
             "project",
             "project__developer",

@@ -2,16 +2,75 @@
 
 {% load querystring %}
 
-{% if page_obj.has_next %}
+{% if page_obj.has_other_pages %}
 
     <div data-pagination>
 
-        <a
-            href="?{% query_transform page=page_obj.next_page_number %}"
-            data-next-page
-        >
-            {{ trans.text_next }}
-        </a>
+        {% if page_obj.has_next %}
+            <div class="text-center mb-3">
+                <button class="btn btn-dark" type="button" data-load-more data-url="?{% query_transform page=page_obj.next_page_number %}">
+                    {{ trans.button_load_more }}
+                </button>
+            </div>
+        {% endif %}
+
+        <nav aria-label="Pagination">
+            <ul class="pagination justify-content-center flex-wrap">
+                {% if page_obj.paginator.num_pages > 8 %}
+                    <li class="page-item {% if page_obj.number == 1 %}active{% endif %}">
+                        {% if page_obj.number == 1 %}
+                            <span class="page-link" aria-current="page">1</span>
+                        {% else %}
+                            <a class="page-link" href="?{% query_transform page=1 %}">1</a>
+                        {% endif %}
+                    </li>
+
+                    {% if page_obj.number > 3 %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+
+                    {% if page_obj.number > 2 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% query_transform page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+                        </li>
+                    {% endif %}
+
+                    {% if page_obj.number > 1 and page_obj.number < page_obj.paginator.num_pages %}
+                        <li class="page-item active">
+                            <span class="page-link" aria-current="page">{{ page_obj.number }}</span>
+                        </li>
+                    {% endif %}
+
+                    {% if page_obj.has_next and page_obj.next_page_number < page_obj.paginator.num_pages %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% query_transform page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+                        </li>
+                    {% endif %}
+
+                    {% if page_obj.number < page_obj.paginator.num_pages|add:"-2" %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+
+                    <li class="page-item {% if page_obj.number == page_obj.paginator.num_pages %}active{% endif %}">
+                        {% if page_obj.number == page_obj.paginator.num_pages %}
+                            <span class="page-link" aria-current="page">{{ page_obj.paginator.num_pages }}</span>
+                        {% else %}
+                            <a class="page-link" href="?{% query_transform page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+                        {% endif %}
+                    </li>
+                {% else %}
+                    {% for item in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_obj.number == item %}active{% endif %}">
+                            {% if page_obj.number == item %}
+                                <span class="page-link" aria-current="page">{{ item }}</span>
+                            {% else %}
+                                <a class="page-link" href="?{% query_transform page=item %}">{{ item }}</a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        </nav>
 
     </div>
 

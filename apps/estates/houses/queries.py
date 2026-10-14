@@ -1,3 +1,5 @@
+from django.db.models import Count, Q
+
 from apps.core.common.querysets import PublicQuerySet
 
 
@@ -10,6 +12,15 @@ class HouseQuerySet(PublicQuerySet):
 
             project__developer__is_deleted=False,
             project__developer__is_public=True,
+        )
+
+    def with_available_flats_count(self):
+        return self.annotate(
+            available_flats_count=Count(
+                "flats",
+                filter=Q(flats__is_public=True),
+                distinct=True,
+            )
         )
 
     def deadline_years(self, years):

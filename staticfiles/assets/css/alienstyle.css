@@ -49,6 +49,11 @@
 
 html {
     overflow-anchor: none;
+    scrollbar-gutter: stable;
+}
+
+body.modal-open {
+    padding-right: 0 !important;
 }
 body {
     color: var(--text-color);
@@ -413,6 +418,19 @@ select.phone-country {
     height: 60px;
     padding: .5em;
     background: var(--light-transparent);
+}
+
+#orderCallModal .modal-dialog {
+    box-sizing: border-box;
+    width: calc(100% - 1rem);
+    max-width: 500px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+#orderCallModal .modal-content,
+#orderCallModal .modal-body {
+    min-width: 0;
 }
 
 .navbar-collapse {
@@ -1132,10 +1150,6 @@ img.card-logo:hover {
     font-size: 14px;
 }
 
-[data-pagination] {
-    visibility: hidden !important;
-}
-
 /* flat plans */
 
 .flatplan-card .row {
@@ -1439,6 +1453,27 @@ div.list-icon {
     color: var(--text-color);
     font-size: larger;
     border-radius: 5px;
+}
+
+@media (min-width: 992px) {
+    #mainNavbar {
+        width: 100%;
+        min-width: 0;
+    }
+
+    #mainNavbar > div {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    #mainNavbar .js-overflow-menu {
+        width: 100%;
+        flex-wrap: nowrap;
+    }
+
+    #mainNavbar .js-overflow-menu > .nav-item {
+        flex-shrink: 0;
+    }
 }
 
 @media (max-width: 991.98px) {

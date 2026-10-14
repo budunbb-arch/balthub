@@ -5,6 +5,7 @@ translations = {
     "sitename": "КвартируКупить.РФ",
     "slogan": "Цены застройщика",
     "new_builds": "новостройки",
+    "new_builds_flats": "Квартиры в новостройках",
     "kaliningrada": "Калининграда",
     "and_seaside": "и побережья",
     "no_fee": "0% комиссии",

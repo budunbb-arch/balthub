@@ -5,6 +5,7 @@ translations = {
     "url_home": "/",
 
     "button_more": "Подробнее",
+    "button_load_more": "Загрузить еще",
     "text_more": "Подробнее",
     "text_choose": "Выберите",
 
@@ -17,12 +18,13 @@ translations = {
     "text_city": "Город",
     "text_district": "Район",
     "text_country": "Страна",
-    "text_property_type": "Тип",
+    "text_property_type": "Тип недвижимости",
     "text_rooms": "Комнат",
     "text_price": "Цена",
     "text_developers": "Застройщики",
     "text_projects": "Жилые комплексы",
     "text_flats": "Квартиры",
+    "text_available_flats": "Свободных квартир:",
     "text_rub": "руб.",
     "text_newfirst": "Сначала новые",
     "text_oldfirst": "Сначала старые",
@@ -32,8 +34,12 @@ translations = {
     "text_floors_desc": "Этажность ↓",
     "text_blog": "Блог",
     "text_send": "Отправить",
+    "text_unknown": "Неизвестно",
+    "text_menu": "Меню",
+    "text_menu_more": "Ещё",
 
     "order_call": "Заказать звонок",
+    "feedback_button": "Связаться",
 
     "text_maintenance": "Сайт временно не доступен",
     "maintenance_message": "Мы уже работаем над этим. Пожалуйста, зайдите позже.",

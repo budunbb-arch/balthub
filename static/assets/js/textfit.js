@@ -4,7 +4,7 @@
 
     function fit(el) {
 
-        const min = Number(el.dataset.minSize || 12);
+        const min = Number(el.dataset.minSize || 11);
         const max = Number(el.dataset.maxSize || 120);
         const padding = Number(el.dataset.padding || 0);
         const fill = Number(el.dataset.fill || 1);

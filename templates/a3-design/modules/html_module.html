@@ -1,0 +1,7 @@
+{# html_module.html #}
+
+{% load static %}
+
+{% if data.html_content %}
+    {{ data.html_content|safe }}
+{% endif %}

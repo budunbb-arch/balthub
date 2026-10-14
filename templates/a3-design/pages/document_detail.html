@@ -1,0 +1,26 @@
+{% extends "default/base.html" %}
+
+{% block title %}{{ document.document_name }}{% endblock %}
+
+{% block content %}
+    <h1>{{ document.document_name }}</h1>
+    <div class="">{{ document.document_date|date:"d.m.Y" }}</div>
+
+    <hr class="my-3">
+
+    {% if document.document_content %}
+        <div class="document-content mb-3">{{ document.document_content|safe }}</div>
+    {% endif %}
+
+    {% if document.document_file %}
+        <p>
+            <a href="{{ document.document_file.url }}" class="btn btn-primary" target="_blank">
+                {{ trans.text_download }}
+            </a>
+        </p>
+    {% endif %}
+
+    {% if document.document_comment %}
+        <p class="mb-0">{{ document.document_comment }}</p>
+    {% endif %}
+{% endblock %}

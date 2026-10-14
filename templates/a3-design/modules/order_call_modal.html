@@ -1,0 +1,78 @@
+{% load static %}
+
+<div class="modal fade" id="orderCallModal" tabindex="-1" aria-labelledby="orderCallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderCallModalLabel">{{ trans.order_call }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form class="order-call-form" data-module-id="order-call">
+                    {% csrf_token %}
+
+                    <div class="row phonenumber">
+                        {% if phone_countries %}
+                            <div class="col-5 mb-3 phone-prefix pe-0">
+                                <div class="form-field field-country position-relative">
+                                    <select class="form-select phone-country" name="phone_country" aria-label="{{ trans.text_country }}">
+                                        <option value="" data-prefix="">{{ trans.text_country }}</option>
+                                        {% for country in phone_countries %}
+                                            <option value="{{ country.phone_code }}" data-prefix="{{ country.phone_code }}"{% if country.code == "RU" %} selected{% endif %}>{{ country.name }} (+{{ country.phone_code }})</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="form-field-icon"></span>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="col-7 ps-0 mb-3">
+                            <div class="form-field field-phone position-relative">
+                                <input type="tel" name="phone" class="form-control phone-input" placeholder="___ ___-__-__" autocomplete="tel">
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if order_call_personal_data_doc %}
+                    <div class="form-check text-start text-small mb-2">
+                        <input class="form-check-input" type="checkbox" id="orderCallPersonalData" name="personal_data" required>
+                        <label class="form-check-label" for="orderCallPersonalData">
+                            {{ trans.text_agree }} <a href="/documents/1" target="_blank" data-title="{{ order_call_personal_data_doc.document_name }}">{{ trans.text_personaldata }}</a>
+                        </label>
+                    </div>
+                    {% endif %}
+
+                    {% if order_call_policy_doc %}
+                    <div class="form-check text-start text-small mb-4">
+                        <input class="form-check-input" type="checkbox" id="orderCallPolicy" name="policy" required>
+                        <label class="form-check-label" for="orderCallPolicy">
+                            {{ trans.text_agree }} <a href="/documents/2" target="_blank" data-title="{{ order_call_policy_doc.document_name }}">{{ trans.text_policy }}</a>
+                        </label>
+                    </div>
+                    {% endif %}
+
+                    {% if order_call_turnstile_site_key %}
+                        <div class="cf-turnstile text-center mb-3" data-sitekey="{{ order_call_turnstile_site_key }}"></div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-8 offset-xl-2 captcha">
+                            {% include "default/modules/slider_captcha.html" with captcha=order_call_captcha %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-8 offset-2 col-sm-6 offset-sm-3 col-xl-6 offset-xl-3">
+                            <button type="submit" class="btn btn-primary">{{ trans.text_send }}</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="success-form" style="display:none;">
+                    <h4 class="mt-4">{{ trans.text_success_title }}</h4>
+                    <p>{{ trans.text_success_message }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

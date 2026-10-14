@@ -10,16 +10,26 @@
             <div class="modal-body">
                 <form class="order-call-form" data-module-id="order-call">
                     {% csrf_token %}
-                    <!--
-                    <div class="form-field field-user position-relative mb-3">
-                        <input type="text" name="name" class="form-control" placeholder="Имя">
-                        <span class="form-field-icon"></span>
-                    </div>
-                    -->
+                    <div class="row phonenumber">
+                        {% if phone_countries %}
+                            <div class="col-4 mb-3 phone-prefix pe-0">
+                                <div class="form-field field-country position-relative">
+                                    <select class="form-select phone-country" name="phone_country" aria-label="{{ trans.text_country }}">
+                                        <option value="" data-prefix="">{{ trans.text_country }}</option>
+                                        {% for country in phone_countries %}
+                                            <option value="{{ country.phone_code }}" data-prefix="{{ country.phone_code }}"{% if country.code == "RU" %} selected{% endif %}>{{ country.name }} (+{{ country.phone_code }})</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="form-field-icon"></span>
+                                </div>
+                            </div>
+                        {% endif %}
 
-                    <div class="form-field field-phone position-relative mb-3">
-                        <input type="tel" name="phone" class="form-control phone-input" placeholder="+7 (___) ___-__-__" autocomplete="tel" required>
-                        <span class="form-field-icon"></span>
+                        <div class="{% if phone_countries %}col-8 ps-0{% else %}col-12{% endif %} mb-3">
+                            <div class="form-field field-phone position-relative">
+                                <input type="tel" name="phone" class="form-control phone-input" placeholder="___ ___-__-__" autocomplete="tel" required>
+                            </div>
+                        </div>
                     </div>
 
                     {% if order_call_personal_data_doc %}

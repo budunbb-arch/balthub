@@ -24,11 +24,22 @@ class InfiniteScroll {
             return;
         }
 
-        // cleanup старого observer
         if (this.observer) {
             this.observer.disconnect();
+            this.observer = null;
         }
 
+        const loadMoreButton = pagination.querySelector("[data-load-more]");
+
+        if (loadMoreButton) {
+            loadMoreButton.addEventListener("click", event => {
+                event.preventDefault();
+                this.loadNext(loadMoreButton);
+            });
+            return;
+        }
+
+        // cleanup старого observer
         this.observer = new IntersectionObserver(entries => {
 
             entries.forEach(entry => {
@@ -49,7 +60,7 @@ class InfiniteScroll {
 
     }
 
-    async loadNext() {
+    async loadNext(loadMoreButton = null) {
 
         if (this.loading || this.disabled) {
             return;
@@ -61,13 +72,17 @@ class InfiniteScroll {
             return;
         }
 
-        const nextLink = pagination.querySelector("[data-next-page]");
+        const nextLink = loadMoreButton || pagination.querySelector("[data-next-page]");
 
         if (!nextLink) {
             return;
         }
 
         this.loading = true;
+
+        if (loadMoreButton) {
+            loadMoreButton.disabled = true;
+        }
 
         const overlay = this.wrapper.querySelector(".ajax-loader-overlay");
 
@@ -85,7 +100,8 @@ class InfiniteScroll {
                 headers["X-Picker-Section"] = section;
             }
 
-            const response = await fetch(nextLink.href, {
+            const nextUrl = nextLink.dataset.url || nextLink.href;
+            const response = await fetch(nextUrl, {
                 headers: headers
             });
 
@@ -155,6 +171,10 @@ class InfiniteScroll {
         } finally {
 
             overlay?.classList.add("hidden");
+
+            if (loadMoreButton?.isConnected) {
+                loadMoreButton.disabled = false;
+            }
 
             this.loading = false;
 

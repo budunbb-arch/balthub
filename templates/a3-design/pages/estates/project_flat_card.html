@@ -1,0 +1,66 @@
+{% load humanize %}
+{% load price_utils %}
+
+<div class="col-12 col-sm-6 col-lg-4 col-xl-4 pb-3">
+    <div class="card p-3">
+        <h5 class="uppercase">{{ flat.house.project.name }}</h5>
+        <div class="text-center">
+            <ul class="card-params list-unstyled font-size-fix h-list mb-3">
+                {% if flat.number %}
+                    <li>№{{ flat.number }}</li>
+                {% endif %}
+                <li>{{ flat.params.rooms_alias }}</li>
+                {% if flat.params.floor %}
+                    <li>{{ flat.params.floor }} {{ trans.text_floor }}</li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="flat-plan mb-3">
+            <a href="{{ flat.get_absolute_url }}" class="">
+                <img src="{{ flat.plan }}" class="flat-plan-img img-contain img-grayscale">
+            </a>
+        </div>
+        <div class="card-data text-center">
+            <ul class="list-unstyled h-list flat-tags d-none">
+                {% if flat.house.params.deadline and flat.house.params.deadline_year %}
+                    <li>{{ flat.house.params.deadline }} {{ flat.house.params.deadline_year }}</li>
+                {% endif %}
+                {% for tag in flat.flat_tags.all %}
+                    <li class="flat-tag">{{ tag.tag.name }}</li>
+                {% endfor %}
+            </ul>
+            <ul class="card-params list-unstyled font-size-fix h-list mb-3">
+                {% if flat.params.square %}
+                    <li>{{ flat.params.square }} {{ trans.text_m2 }}</li>
+                {% endif %}
+                {% if flat.params.living_square %}
+                    <li>{{ flat.params.living_square }} {{ trans.text_m2 }}</li>
+                {% endif %}
+                {% if flat.params.kitchen_square %}
+                    <li>{{ flat.params.kitchen_square }} {{ trans.text_m2 }}</li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="flat-price text-center">
+            {% with deal=flat.deals.first %}
+                {% if deal and deal.price %}
+                    <ul class="card-params list-unstyled font-size-fix h-list mb-3">
+                        <li>
+                            <div class="flat-price-sum">
+                                {{ deal.currency.prefix }} {{ deal.price|format_price }} {{ deal.currency.postfix }}
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flat-price-per-m2 text-muted">
+                                {{ deal.currency.prefix }} {{ flat.price_per_m2|format_price }} {{ deal.currency.postfix }}/{{ trans.text_m2 }}
+                            </div>
+                        </li>    
+                    </ul>
+                {% endif %}
+            {% endwith %}
+        </div>
+        <div class="flat-actions text-center mt-auto">
+            <a href="{{ flat.get_absolute_url }}" class="btn btn-dark m-0">{{ trans.text_more }}</a>
+        </div>
+    </div>
+</div>

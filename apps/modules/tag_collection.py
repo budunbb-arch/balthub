@@ -1,8 +1,6 @@
 # apps/modules/tag_collection.py
 
-from django.shortcuts import get_list_or_404
-
-from .models import TagCollection, TagCollectionItem
+from .models import TagCollection
 
 MODULE = "default/modules/tag_collection.html"
 
@@ -13,16 +11,21 @@ def get_context(request, module):
     except TagCollection.DoesNotExist:
         return {"tag_collection": None}
 
-    items = collection.items.filter(is_active=True).order_by("order", "id")
-    tags = [item.tag for item in items]
+    items = list(
+        collection.items
+        .filter(is_active=True)
+        .select_related("tag")
+        .order_by("order", "id")
+    )
 
     if collection.random:
         import random
-        random.shuffle(tags)
+        random.shuffle(items)
 
-    tags = tags[: collection.quantity]
+    items = items[: collection.quantity]
 
     return {
         "tag_collection": collection,
-        "tag_collection_tags": tags,
+        "tag_collection_tags": [item.tag for item in items],
+        "tag_collection_items": items,
     }

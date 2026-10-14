@@ -1,6 +1,6 @@
 # /opt/balthub/apps/estates/flats/pickers.py
 
-from django.db.models import Min, Max
+from django.db.models import Max, Min, Q
 
 from apps.estates.houses.models import House
 from apps.estates.flats.models import FlatParams
@@ -424,34 +424,17 @@ def tag_detail_flat_pickers(
     )
     finish_type_qs = FinishType.objects.filter(id__in=finish_type_ids).order_by("name")
 
-    floor_limits = qs.aggregate(
+    limits = qs.aggregate(
         min_floor=Min("floor"),
         max_floor=Max("floor"),
-    )
-    ceiling_height_limits = (
-        qs.exclude(ceiling_height=0)
-        .aggregate(
-            min_ceiling_height=Min("ceiling_height"),
-            max_ceiling_height=Max("ceiling_height"),
-        )
-    )
-    square_limits = qs.aggregate(
+        min_ceiling_height=Min("ceiling_height", filter=~Q(ceiling_height=0)),
+        max_ceiling_height=Max("ceiling_height", filter=~Q(ceiling_height=0)),
         min_square=Min("square"),
         max_square=Max("square"),
-    )
-    living_square_limits = (
-        qs
-        .aggregate(
-            min_living_square=Min("living_square"),
-            max_living_square=Max("living_square"),
-        )
-    )
-    kitchen_square_limits = (
-        qs
-        .aggregate(
-            min_kitchen_square=Min("kitchen_square"),
-            max_kitchen_square=Max("kitchen_square"),
-        )
+        min_living_square=Min("living_square"),
+        max_living_square=Max("living_square"),
+        min_kitchen_square=Min("kitchen_square"),
+        max_kitchen_square=Max("kitchen_square"),
     )
 
     pickers = [
@@ -464,10 +447,10 @@ def tag_detail_flat_pickers(
             "input_type": "checkbox",
             "options": [
                 {
-                    "value": str(project.id),
-                    "label": project.name,
+                    "value": str(project_id),
+                    "label": project_name,
                 }
-                for project in projects_qs
+                for project_id, project_name in projects_qs.values_list("id", "name")
             ]
         },
         {
@@ -557,8 +540,8 @@ def tag_detail_flat_pickers(
             "range": {
                 "from_name": "floor_from",
                 "to_name": "floor_to",
-                "from_placeholder": floor_limits.get("min_floor") or "",
-                "to_placeholder": floor_limits.get("max_floor") or "",
+                "from_placeholder": limits.get("min_floor") or "",
+                "to_placeholder": limits.get("max_floor") or "",
                 "from_value": selected_floor_from,
                 "to_value": selected_floor_to,
             }
@@ -572,8 +555,8 @@ def tag_detail_flat_pickers(
             "range": {
                 "from_name": "ceiling_height_from",
                 "to_name": "ceiling_height_to",
-                "from_placeholder": ceiling_height_limits.get("min_ceiling_height") or "",
-                "to_placeholder": ceiling_height_limits.get("max_ceiling_height") or "",
+                "from_placeholder": limits.get("min_ceiling_height") or "",
+                "to_placeholder": limits.get("max_ceiling_height") or "",
                 "from_value": selected_ceiling_height_from,
                 "to_value": selected_ceiling_height_to,
             }
@@ -587,8 +570,8 @@ def tag_detail_flat_pickers(
             "range": {
                 "from_name": "square_from",
                 "to_name": "square_to",
-                "from_placeholder": square_limits.get("min_square") or "",
-                "to_placeholder": square_limits.get("max_square") or "",
+                "from_placeholder": limits.get("min_square") or "",
+                "to_placeholder": limits.get("max_square") or "",
                 "from_value": selected_square_from,
                 "to_value": selected_square_to,
             }
@@ -602,8 +585,8 @@ def tag_detail_flat_pickers(
             "range": {
                 "from_name": "living_square_from",
                 "to_name": "living_square_to",
-                "from_placeholder": living_square_limits.get("min_living_square") or "",
-                "to_placeholder": living_square_limits.get("max_living_square") or "",
+                "from_placeholder": limits.get("min_living_square") or "",
+                "to_placeholder": limits.get("max_living_square") or "",
                 "from_value": selected_living_square_from,
                 "to_value": selected_living_square_to,
             }
@@ -617,8 +600,8 @@ def tag_detail_flat_pickers(
             "range": {
                 "from_name": "kitchen_square_from",
                 "to_name": "kitchen_square_to",
-                "from_placeholder": kitchen_square_limits.get("min_kitchen_square") or "",
-                "to_placeholder": kitchen_square_limits.get("max_kitchen_square") or "",
+                "from_placeholder": limits.get("min_kitchen_square") or "",
+                "to_placeholder": limits.get("max_kitchen_square") or "",
                 "from_value": selected_kitchen_square_from,
                 "to_value": selected_kitchen_square_to,
             }

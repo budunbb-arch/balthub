@@ -452,6 +452,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         (None, {
             "fields": (
                 "site_name",
+                "template",
                 "is_disabled",
                 "default_title",
                 "default_description",

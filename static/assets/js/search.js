@@ -2,6 +2,8 @@
     const citySelect = document.querySelector('select[name="city"]');
     const districtSelect = document.querySelector('select[name="district"]');
     if (!citySelect || !districtSelect) return;
+    const chooseCityText = districtSelect.dataset.chooseCity || '';
+    const districtLabel = districtSelect.dataset.districtLabel || '';
 
     const districts = Array.from(districtSelect.options).map(opt => ({
         id: opt.value,
@@ -10,7 +12,7 @@
     }));
 
     function resetDistricts() {
-        districtSelect.innerHTML = '<option value=""></option>';
+        districtSelect.replaceChildren(new Option(chooseCityText, ''));
         districtSelect.disabled = true;
     }
 
@@ -22,10 +24,9 @@
 
         const options = districts
             .filter(d => d.cityId === cityId)
-            .map(d => `<option value="${d.id}">${d.name}</option>`)
-            .join('');
+            .map(d => new Option(d.name, d.id));
 
-        districtSelect.innerHTML = '<option value=""></option>' + options;
+        districtSelect.replaceChildren(new Option(districtLabel, ''), ...options);
         districtSelect.disabled = false;
 
         // Восстанавливаем выбранный район, если он совпадает с новым списком

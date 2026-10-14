@@ -1,0 +1,197 @@
+<!-- /opt/balthub/templates/default/pages/estates/project_detail.html -->
+
+{% extends "default/base.html" %}
+
+{% load static %}
+{% load image_utils %}
+
+{% block title %}{{ project.name }}{% endblock %}
+
+{% block content %}
+
+<div class="mt-4">
+
+    <div class="row mb-3">
+        <div class="col-8 col-sm-9 col-md-10 col-xl-8">
+            <h1 class="">
+                {{ seo.h1|default:project.name }}
+            </h1>
+            {% if project.params %}
+            <div class="">
+                {% if project.params.city %}
+                    {{ project.params.city.name }},
+                {% endif %}
+
+                {% if project.params.district %} 
+                    {{ project.params.district.name }}
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-4 col-sm-3 col-md-2 col-xl-2 offset-xl-2 d-flex align-items-center justify-content-end">
+            {% if project.developer and project.developer.slug %}
+                <a href="{% url 'developer_detail' project.developer.slug %}">
+                    {% if project.developer.logo %}
+                        <img src="{{ project.developer.logo.url }}" alt="{{ project.developer.name }}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ project.developer.name }}" class="img-fluid">
+                    {% else %}
+                        {{ project.developer.name }}
+                    {% endif %}
+                </a>
+            {% else %}
+                {{ project.developer.name }}
+            {% endif %}
+        </div>
+    </div>
+
+    <hr>
+
+    {% if project.description.description or project.tags %}
+        <div class="project-data row my-5">
+            {% if project.description.description %}
+                <div class="project-description col-12 col-lg-8">
+                    {{ project.description.description|safe }}
+                </div>
+            {% endif %}
+            <div class="project-tags col-12 col-lg-4">
+                <ul class="flat-tags list-unstyled {% if not project.description.description %}h-list{% endif %}">
+                    {% if project.params.property_category %}
+                        <li><i class="fa-solid fa-certificate"></i> {{ project.params.property_category }}</li>
+                    {% endif %}
+                    {% if project.params.property_type %}
+                        <li><i class="fa-solid fa-certificate"></i> {{ project.params.property_type }}</li>
+                    {% endif %}
+                    {% if project.tags.all %}
+                        {% for tag in project.tags.all %}
+                            <li>
+                                <a class="text-decoration-none text-reset" href="{% url 'tags:tag_detail' tag.slug %}"><i class="fa-solid fa-certificate"></i> {{ tag.name }}</a>
+                            </li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
+
+{% if map_points_json %}
+
+<div class="project-map position-relative mb-4">
+
+<div class="block-header position-absolute p-1 px-3 bold">{{ trans.text_coordinates }}</div>
+
+{% if map_points %}
+
+    {% with map_id="collection-map-project" data_id="collection-map-data-project" %}
+    <div id="{{ map_id }}" class="position-relative" data-zoom="16">
+
+        <div class="maps-overlay position-absolute">
+            <span class="maps-toggler position-absolute text-center"><i class="fa-solid fa-lock"></i></span>
+        </div>
+    </div>
+    
+    {{ map_points|json_script:data_id }}
+    {% endwith %}
+
+{% endif %}
+</div>
+
+{% endif %}
+
+<div class="project-slides position-relative mb-4">
+    <div class="block-header position-absolute p-1 px-3 bold">{{ trans.text_exterrior }}</div>
+    <!-- Слайдшоу -->
+    {% include "default/modules/project_slideshow.html" with project=project %}
+</div>
+
+<div class="project-houses">
+    <!-- Дома - tpl: ajax/_house_list.html -->
+    <div id="houses-list">
+        <h2 class="pb-2">{{ trans.text_houses }}</h2>
+
+        <div 
+            data-ajax-list
+            data-container="#houses-block"
+            data-form=".house-filter-form"
+            data-push-state="true"
+            data-section="houses"
+        >
+
+            <div class="ajax-loader-overlay hidden">
+                <div class="spinner"></div>
+            </div>
+            
+            <div id="houses-block">
+                {% include "default/pages/estates/ajax/_house_list.html" %}
+            </div>    
+        </div>
+    </div>
+</div>
+<div class="project-flats">
+    <!-- Квартиры -->
+    <div id="flats-list" class="mt-5">
+        <h2 class="pb-2 mb-4">{{ trans.choose_flat }} {{ project.name }}</h2>
+
+        <div 
+            data-ajax-list
+            data-container="#flats-block"
+            data-push-state="true"
+            data-section="flats"
+        >
+            <div class="ajax-loader-overlay hidden">
+                <div class="spinner"></div>
+            </div>
+
+            <div class="flats-list row">
+                <div class="flats-list-pickers col-12 col-xl-3">
+                    {% include "default/modules/picker_flats.html" with pickers=flats_pickers %}
+                </div>
+                <div class="flats-list-content col-12 col-xl-9">
+                    <div id="flats-block">
+                        <div class="row mb-5" data-items data-page-anchor>
+                            {% if flats_page_obj %}
+                                {% for flat in flats_page_obj %}
+                                    {% include "default/pages/estates/project_flat_card.html" with flat=flat %}
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12 flats-empty">
+                                    <p>{{ trans.no_flats }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="pagination-wrapper" data-pagination>
+                            {% include "default/includes/infinite_pagination.html" with page_obj=flats_page_obj paginator=flats_paginator page_range=flats_page_range %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_css%}
+    <link rel="stylesheet" href="{% static 'assets/css/a3-design/picker.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/a3-design/maps.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/a3-design/project_detail.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
+    <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+    <script src="{% static 'assets/js/house-plans.js' %}"></script>
+    <script src="{% static 'assets/js/project-slideshow.js' %}"></script>
+
+    {% if map_settings.enabled and map_settings.provider == "yandex" %}
+
+        <script src="https://api-maps.yandex.ru/v3/?apikey={{ map_settings.api_key }}&lang={{ map_settings.language }}"></script>
+
+        <script src="{% static 'assets/js/maps/yandex.js' %}"></script>
+
+        <script src="{% static 'assets/js/maps/project.js' %}"></script>
+
+    {% endif %}
+{% endblock %}

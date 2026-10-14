@@ -51,16 +51,46 @@ def tag_detail(request, tag_slug):
 
     sort = state.get("sort", ["name"])[0]
 
+    flat_filter_keys = {
+        "project",
+        "house",
+        "rooms_alias",
+        "floor_from",
+        "floor_to",
+        "ceiling_height_from",
+        "ceiling_height_to",
+        "square_from",
+        "square_to",
+        "living_square_from",
+        "living_square_to",
+        "kitchen_square_from",
+        "kitchen_square_to",
+        "balcony_type",
+        "bathroom_unit_type",
+        "finish_type",
+    }
+    active_tab = (
+        "flats"
+        if (
+            request.GET.get("tab") == "flats"
+            or request.headers.get("X-Picker-Section") == "flats"
+            or flat_filter_keys.intersection(state)
+        )
+        else "projects"
+    )
+
     tasks = AutoTagTask.objects.filter(tag=tag)
     object_types = set(tasks.values_list("object_type", flat=True))
 
     is_flat_tag = AutoTagTask.OBJECT_TYPE_FLAT in object_types or tag.flat_tags.exists()
     is_project_tag = AutoTagTask.OBJECT_TYPE_PROJECT in object_types or tag.project_tags.exists()
 
+    projects_base_qs = Project.objects.active()
+    if active_tab == "projects":
+        projects_base_qs = projects_base_qs.with_flat_stats()
+
     projects_base_qs = (
-        Project.objects
-        .active()
-        .with_flat_stats()
+        projects_base_qs
         .select_related(
             "developer",
             "params__city",
@@ -159,64 +189,51 @@ def tag_detail(request, tag_slug):
         .kitchen_square_to(selected_kitchen_square_to)
     )
 
-    projects_page_obj, projects_paginator, projects_page_range = paginate_queryset(
-        request,
-        projects_qs,
-        12,
-    )
+    projects_page_obj = projects_paginator = projects_page_range = None
+    flats_page_obj = flats_paginator = flats_page_range = None
+    pickers = []
+    flats_pickers = []
 
-    flats_page_obj, flats_paginator, flats_page_range = paginate_queryset(
-        request,
-        flats_qs,
-        12,
-    )
+    if active_tab == "projects":
+        projects_page_obj, projects_paginator, projects_page_range = paginate_queryset(
+            request,
+            projects_qs,
+            12,
+        )
 
-    pickers = project_list_pickers(
-        sort=sort,
-        selected_developers=selected_developers,
-        selected_cities=selected_cities,
-        selected_districts=selected_districts,
-    )
+        pickers = project_list_pickers(
+            sort=sort,
+            selected_developers=selected_developers,
+            selected_cities=selected_cities,
+            selected_districts=selected_districts,
+        )
+    else:
+        flats_page_obj, flats_paginator, flats_page_range = paginate_queryset(
+            request,
+            flats_qs,
+            12,
+        )
 
-    flats_pickers = tag_detail_flat_pickers(
-        selected_houses=selected_houses,
-        selected_rooms_alias=selected_rooms_alias,
-        selected_floor_from=selected_floor_from,
-        selected_floor_to=selected_floor_to,
-        selected_ceiling_height_from=selected_ceiling_height_from,
-        selected_ceiling_height_to=selected_ceiling_height_to,
-        selected_square_from=selected_square_from,
-        selected_square_to=selected_square_to,
-        selected_living_square_from=selected_living_square_from,
-        selected_living_square_to=selected_living_square_to,
-        selected_kitchen_square_from=selected_kitchen_square_from,
-        selected_kitchen_square_to=selected_kitchen_square_to,
-        selected_balcony_type=selected_balcony_type,
-        selected_bathroom_unit_type=selected_bathroom_unit_type,
-        selected_finish_type=selected_finish_type,
-        selected_projects=selected_projects,
-        flat_qs=flats_qs,
-        projects_qs=projects_qs,
-    )
-
-    flat_filter_keys = {
-        "house",
-        "rooms_alias",
-        "floor_from",
-        "floor_to",
-        "ceiling_height_from",
-        "ceiling_height_to",
-        "square_from",
-        "square_to",
-        "living_square_from",
-        "living_square_to",
-        "kitchen_square_from",
-        "kitchen_square_to",
-        "balcony_type",
-        "bathroom_unit_type",
-        "finish_type",
-    }
-    active_tab = "flats" if request.GET.get("tab") == "flats" or flat_filter_keys.intersection(state) else "projects"
+        flats_pickers = tag_detail_flat_pickers(
+            selected_houses=selected_houses,
+            selected_rooms_alias=selected_rooms_alias,
+            selected_floor_from=selected_floor_from,
+            selected_floor_to=selected_floor_to,
+            selected_ceiling_height_from=selected_ceiling_height_from,
+            selected_ceiling_height_to=selected_ceiling_height_to,
+            selected_square_from=selected_square_from,
+            selected_square_to=selected_square_to,
+            selected_living_square_from=selected_living_square_from,
+            selected_living_square_to=selected_living_square_to,
+            selected_kitchen_square_from=selected_kitchen_square_from,
+            selected_kitchen_square_to=selected_kitchen_square_to,
+            selected_balcony_type=selected_balcony_type,
+            selected_bathroom_unit_type=selected_bathroom_unit_type,
+            selected_finish_type=selected_finish_type,
+            selected_projects=selected_projects,
+            flat_qs=flats_qs,
+            projects_qs=projects_qs,
+        )
 
     context = {
         "page_obj": projects_page_obj,

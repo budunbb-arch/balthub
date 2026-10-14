@@ -1,0 +1,35 @@
+{% if data.tag_collection %}
+<section class="module module-tag-collection py-3">
+    <div class="container">
+        <div class="row">
+            {% if data.tag_collection.title %}
+                <h2>{{ data.tag_collection.title }}</h2>
+            {% endif %}
+
+            {% for item in data.tag_collection_items %}
+                <div class="col-12 col-sm-6 col-lg-3 mb-3">
+                    <div class="a3d_tc-card d-flex flex-column h-100" style="background: url('{{ item.image.url }}');">
+                        <div class="a3d_tc-card-content mt-auto p-3">
+                            <h3>{{ item.tag.name }}</h3>
+                            <div class="row">
+                                <div class="a3d_tc-card-description col-10">
+                                    {% if item.description %}
+                                        {{ item.description }}
+                                    {% endif %}
+                                </div>
+                                <div class="a3d_tc-card-action col-2 d-flex align-items-center justify-content-center">
+                                    <a href="{% url 'tags:tag_detail' item.tag.slug %}" class="a3d_tc-card-link d-block">
+                                        <i class="fa-solid fa-circle-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">Нет активных тегов</div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}

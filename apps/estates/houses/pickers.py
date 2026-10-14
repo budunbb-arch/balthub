@@ -100,29 +100,6 @@ def house_list_pickers(
         },
 
         # =====================================================
-        # DEADLINE YEAR
-        # =====================================================
-
-        {
-            "name": "deadline_year",
-            "value": selected_deadlines,
-            "placeholder": "Срок сдачи",
-            "multiple": True,
-            "auto_submit": False,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(year),
-                    "label": str(year),
-                }
-
-                for year in deadline_queryset
-            ]
-        },
-
-        # =====================================================
         # BUILDING STATUS
         # =====================================================
 
@@ -165,6 +142,29 @@ def house_list_pickers(
                 }
 
                 for phase in phase_queryset
+            ]
+        },
+
+        # =====================================================
+        # DEADLINE YEAR
+        # =====================================================
+
+        {
+            "name": "deadline_year",
+            "value": selected_deadlines,
+            "placeholder": "Срок сдачи",
+            "multiple": True,
+            "auto_submit": False,
+            "input_type": "checkbox",
+
+            "options": [
+
+                {
+                    "value": str(year),
+                    "label": str(year),
+                }
+
+                for year in deadline_queryset
             ]
         },
     ]

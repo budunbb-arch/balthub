@@ -132,29 +132,6 @@ def project_list_pickers(
         },
 
         # =====================================================
-        # DEVELOPER
-        # =====================================================
-
-        {
-            "name": "developer",
-            "value": selected_developers,
-            "placeholder": t("text_developer"),
-            "multiple": True,
-            "auto_submit": False,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(dev.id),
-                    "label": dev.name,
-                }
-
-                for dev in Developer.objects.order_by("name")
-            ]
-        },
-
-        # =====================================================
         # CITY
         # =====================================================
 
@@ -198,6 +175,29 @@ def project_list_pickers(
                 }
 
                 for district in district_queryset
+            ]
+        },
+
+        # =====================================================
+        # DEVELOPER
+        # =====================================================
+
+        {
+            "name": "developer",
+            "value": selected_developers,
+            "placeholder": t("text_developer"),
+            "multiple": True,
+            "auto_submit": False,
+            "input_type": "checkbox",
+
+            "options": [
+
+                {
+                    "value": str(dev.id),
+                    "label": dev.name,
+                }
+
+                for dev in Developer.objects.order_by("name")
             ]
         },
     ]

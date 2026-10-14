@@ -1,0 +1,114 @@
+<!-- /opt/balthub/templates/default/pages/estates/tag_detail.html -->
+
+{% extends "default/base.html" %}
+
+{% load static %}
+
+{% block title %}{{ tag.name }}{% endblock %}
+
+{% block content %}
+
+    <h1 class="">{{ tag.name }}</h1>
+
+    <hr class="my-3">
+
+    <ul class="nav nav-tabs h-list d-block font-size-fix mb-4" id="tagDetailTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link{% if active_tab == 'projects' %} active{% endif %} position-relative px-3 px-sm-5" id="projects-tab" data-bs-toggle="tab" data-bs-target="#projects-pane" type="button" role="tab" aria-controls="projects-pane" aria-selected="{% if active_tab == 'projects' %}true{% else %}false{% endif %}">{{ trans.text_projects }}</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link{% if active_tab == 'flats' %} active{% endif %} position-relative px-3 px-sm-5" id="flats-tab" data-bs-toggle="tab" data-bs-target="#flats-pane" type="button" role="tab" aria-controls="flats-pane" aria-selected="{% if active_tab == 'flats' %}true{% else %}false{% endif %}">{{ trans.text_flats }}</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="tagDetailTabContent">
+        <div class="tab-pane fade{% if active_tab == 'projects' %} show active{% endif %}" id="projects-pane" role="tabpanel" aria-labelledby="projects-tab" tabindex="0">
+            <div 
+                data-ajax-list
+                data-container="#project-list-container"
+                data-form=".house-filter-form"
+                data-scroll="top"
+                data-push-state="true"
+            >
+                <div class="ajax-loader-overlay hidden">
+                    <div class="spinner"></div>
+                </div>
+                <div id="project-list-container">
+                    {% include "default/pages/estates/ajax/_project_list.html" %}
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade{% if active_tab == 'flats' %} show active{% endif %}" id="flats-pane" role="tabpanel" aria-labelledby="flats-tab" tabindex="0">
+            <div
+                class="flats-list row"
+                data-ajax-list
+                data-container="#flats-block"
+                data-push-state="true"
+                data-section="flats"
+            >
+                <div class="ajax-loader-overlay hidden">
+                    <div class="spinner"></div>
+                </div>
+                <div class="flats-list-pickers col-12 col-xl-3">
+                    {% include "default/modules/picker_flats.html" with pickers=flats_pickers %}
+                </div>
+                <div class="flats-list-content col-12 col-xl-9">
+                    <div id="flats-block">
+                        <div class="row mb-5" data-items data-page-anchor>
+                            {% if flats_page_obj %}
+                                {% for flat in flats_page_obj %}
+                                    {% include "default/pages/estates/project_flat_card.html" with flat=flat %}
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12 flats-empty">
+                                    <p>{{ trans.no_flats }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="pagination-wrapper" data-pagination>
+                            {% include "default/includes/infinite_pagination.html" with page_obj=flats_page_obj paginator=flats_paginator page_range=flats_page_range %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_css%}
+    <link rel="stylesheet" href="{% static 'assets/css/a3-design/picker.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/a3-design/project_detail.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
+    <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var flatsTab = document.getElementById('flats-tab');
+        var projectsTab = document.getElementById('projects-tab');
+
+        function switchTab(tab) {
+            var url = new URL(window.location.href);
+            url.search = '';
+            url.searchParams.set('tab', tab);
+            window.location.assign(url.toString());
+        }
+
+        if (flatsTab) {
+            flatsTab.addEventListener('click', function(event) {
+                event.preventDefault();
+                switchTab('flats');
+            });
+        }
+
+        if (projectsTab) {
+            projectsTab.addEventListener('click', function(event) {
+                event.preventDefault();
+                switchTab('projects');
+            });
+        }
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,70 @@
+{# latest_projects.html #}
+{% load image_utils %}
+<div class="container">
+
+    <h2>{{ trans.latest_projects_title }}</h2>
+
+    <div class="module-row row">
+        <div class="col-12 col-xl-7">
+            <div class="row">
+                {% for project in data.latest_projects  %}
+                    {% if forloop.counter <= 4 %}
+                        <div class="project-block col-12 col-sm-6 col-xl-6 position-relative mb-4">
+                            <div class="module-card">
+                                {# изображение проекта #}
+                                {% if project.images.all %}
+                                    <div class="card-img-wrapper">
+                                        <img
+                                            src="{{ project.images.first.image|image_variant:480 }}"
+                                            srcset="{{ project.images.first.image|image_srcset:'320,480,640' }}"
+                                            sizes="(max-width: 768px) 100vw, 33vw"
+                                            loading="lazy"
+                                            class="card-img-top"
+                                            alt="{{ project.name }}">
+                                    </div>
+                                {% endif %}
+
+                                {# название проекта #}
+
+                                <a href="{% url 'project_detail' project.slug %}" class="project-title d-block w-100 position-absolute text-center" data-textfit data-padding="30" data-fill="0.7" data-max-size="60">{{ project.name }}</a>
+                                
+                                {# город через ProjectParams #}
+                                {% if project.params and project.params.city %}
+                                    <div class="project-city position-absolute">{{ project.params.city.name }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-12 col-xl-5">
+            <div class="row">
+                {% for project in data.latest_projects  %}
+                    {% if forloop.counter == 5 %}
+                        <div class="project-block large col-12 position-relative">
+                            <div class="module-card">
+                                {% if project.images.all %}
+                                    <div class="card-img-wrapper">
+                                        <img
+                                            src="{{ project.images.first.image|image_variant:320 }}"
+                                            srcset="{{ project.images.first.image|image_srcset:'320,480,640' }}"
+                                            loading="lazy"
+                                            class="card-img-top"
+                                            alt="{{ project.name }}">
+                                    </div>
+                                {% endif %}
+
+                                <a href="{% url 'project_detail' project.slug %}" class="project-title d-block position-absolute text-center" data-textfit data-padding="30" data-fill="0.7" data-max-size="60">{{ project.name }}</a>
+                                
+                                {% if project.params and project.params.city %}
+                                    <div class="project-city position-absolute">{{ project.params.city.name }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

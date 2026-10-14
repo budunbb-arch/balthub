@@ -1,0 +1,69 @@
+<!-- /opt/balthub/templates/default/pages/estates/project_card.html -->
+
+{# use optimized images #}
+{% load image_utils %}
+{% load humanize %}
+<div class="card position-relative mb-3"> 
+  {% if project.params and project.params.city %} 
+    <div class="card-city position-absolute">{{ project.params.city.name }}</div> 
+  {% endif %}
+  <div class="row g-0 d-flex flex-column h-100">
+    {# изображение проекта #} 
+    <div class="image-block col-12">
+      {% if project.images.all %} 
+        <a href="{% url 'project_detail' project.slug %}">
+          <img
+            src="{{ project.images.first.image|image_variant:480 }}"
+            srcset="{{ project.images.first.image|image_srcset:'320,480,640' }}"
+            sizes="(max-width: 768px) 100vw, 33vw"
+            loading="lazy"
+            class="card-img-top"
+            alt="{{ project.name }}">
+        </a>
+      {% endif %} 
+    </div>
+
+    <div class="card-description col-12 position-relative p-3 pb-0">
+
+      <a href="{% url 'project_detail' project.slug %}" class="card-link">
+        <h3 class="card-title mb-3">{{ project.name }}</h3> 
+      </a>
+
+      {# short description #}
+      {% if project.description %}
+        <div class="card-short-description d-none d-xl-block text-small">
+          {{ project.description.description|truncatewords:15|safe }}
+        </div>
+      {% endif %}
+
+      <hr class="my-3">
+      
+
+      {# статистика проекта #} 
+      <div class="project-stats">
+        {% if project.flats_count %}
+          <span class="stat-item me-3">
+            <i class="fa-solid fa-table-cells-large"></i> {{ trans.text_of_flats }}:
+            <strong>{{ project.flats_count }}</strong>
+          </span>
+        {% endif %}
+        
+        {% if project.min_deadline_year %}
+          <span class="stat-item">
+            <i class="fa-regular fa-calendar-days"></i>
+            <strong>{{ project.min_deadline_year }}</strong>{% if project.max_deadline_year != project.min_deadline_year %} &ndash; <strong>{{ project.max_deadline_year }}</strong>{% endif %}
+          </span>
+        {% endif %}
+      </div>
+      <div class="project-stats">
+        {% if project.min_price %}
+          <span class="stat-item me-3">
+            <i class="fa-regular fa-money-bill-1"></i>
+            {{ trans.text_from }} <strong>{{ project.min_price|intcomma }}</strong> {{ trans.text_rub }}
+          </span>
+        {% endif %}
+      </div>
+    </div>
+    <a href="{% url 'project_detail' project.slug %}" class="btn btn-dark">{{ trans.text_more }}</a>
+  </div>
+</div>

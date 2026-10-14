@@ -1,0 +1,72 @@
+/* /opt/balthub/static/assets/css/a3-design/maps.css */
+
+#house-map, #collection-map, #collection-map-project, #collection-map-developer, #collection-map-6, #developer-map, [id^="collection-map-"] {
+    width:100%;
+    height: 350px;
+    overflow: hidden;
+}
+
+@media (min-width: 992px) {
+    #house-map, #collection-map, #collection-map-project, 
+    #collection-map-developer, #collection-map-6, #developer-map, [id^="collection-map-"] {
+        height: 500px;
+    }
+}
+
+#collection-map-developer {
+    border-radius: 1em;
+}
+footer #collection-map, footer #collection-map-6, footer [id^="collection-map-"] {
+    height: 350px;
+    border-radius: 1em;
+}
+
+.house-marker{
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:#d00;
+    border:3px solid #fff;
+    box-shadow:0 0 8px rgba(0,0,0,.3);
+}
+
+.maps-overlay {
+    top: 0;   
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 100%;
+    z-index: 99;
+    border-radius: 0;
+}
+.maps-overlay:hover {
+    background: rgb(255 255 255 / 50%);
+}
+.maps-overlay.unlocked {
+    height: 1px;
+}
+
+.maps-toggler {
+    top: 1em;
+    right: 1em;
+    width: 3em;
+    line-height: 3em;
+    background: var(--hover-color);
+    height: 3em;
+    border-radius: 2vh;
+    color: var(--white);
+    cursor: pointer;
+}
+.maps-toggler:hover {
+    background: var(--text-color);
+}
+.maps-overlay .maps-toggler:hover::before {
+    content: 'Разблокировать карту';
+    display: block;
+    position: absolute;
+    left: -12em;
+    color: var(--text-color);
+}
+.maps-overlay.unlocked .maps-toggler:hover::before {
+    content: 'Заблокировать карту';
+}

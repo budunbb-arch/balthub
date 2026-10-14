@@ -2,7 +2,12 @@
 {% load image_utils %}
 
 <div class="flats-pickers" data-picker-root data-picker>
-    {% for picker in pickers %}
+    {% regroup pickers by no_header as picker_groups %}
+    {% for picker_group in picker_groups %}
+        {% if picker_group.grouper %}
+            <div class="flat-picker-group d-flex flex-wrap align-items-center gap-3 mb-4">
+        {% endif %}
+        {% for picker in picker_group.list %}
         {% if picker.type == "range" %}
             <div class="flat-picker mb-5" data-picker-name="{{ picker.name }}" data-auto-submit="{{ picker.auto_submit|yesno:'true,false' }}">
                 
@@ -33,11 +38,11 @@
                 </div>
             </div>
         {% else %}
-            <div class="flat-picker{% if not picker.no_header %} mb-5{% endif %}{% if picker.disabled %} is-disabled{% endif %}" data-picker-name="{{ picker.name }}">
+            <div class="flat-picker{% if picker_group.grouper %} flat-picker-group-item{% else %}{% if not picker.no_header %} mb-5{% endif %}{% endif %}{% if picker.disabled %} is-disabled{% endif %}" data-picker-name="{{ picker.name }}">
                 {% if not picker.no_header %}
                 <h4>{{ picker.placeholder }}</h4>
                 {% endif %}
-                <div class="flat-picker-options mt-2">
+                <div class="flat-picker-options{% if not picker_group.grouper %} mt-2{% endif %}">
                     {% for option in picker.options %}
                         {% if option.image %}
                             <div class="form-check d-block align-items-center gap-2 mb-2 w-img position-relative" data-project-id="{{ option.project_id|default:'' }}">
@@ -86,6 +91,10 @@
                         {% endif %}
                     {% endfor %}
                 </div>
+            </div>
+        {% endif %}
+        {% endfor %}
+        {% if picker_group.grouper %}
             </div>
         {% endif %}
     {% endfor %}

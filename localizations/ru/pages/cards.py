@@ -8,6 +8,6 @@ translations = {
     "text_of_flats": "квартир",
     "text_house": "Дом:",
     "of_rooms": "Комнат:",
-    "text_square": "Площадь:",
+    "text_square": "Площадь",
     "text_m2": "м²",
 }

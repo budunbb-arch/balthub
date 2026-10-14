@@ -1,0 +1,75 @@
+{# templates/a3-design/pages/estates/house_card.html #}
+
+{% load image_utils %}
+
+<div class="card position-relative mb-3">
+    {% if project.params and project.params.city %} 
+        <div class="card-city position-absolute ps-2">{{ project.params.city.name }}</div> 
+    {% endif %}
+    <div class="row g-0 d-flex flex-column h-100">
+        <div class="image-block col-12">
+            {% if house.image %}
+                <a href="{% url 'house_detail' house.project.slug house.slug %}" class="">
+                    <img
+                        src="{{ house.image|image_variant:480 }}"
+                        srcset="{{ house.image|image_srcset:'320,480,640' }}"
+                        sizes="(max-width: 768px) 100vw, 25vw"
+                        loading="lazy"
+                        class="card-img-top"
+                        alt="">
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="card-description col-12 position-relative p-3">
+            <a href="{% url 'house_detail' house.project.slug house.slug %}" class="card-link">
+                <h3 class="card-title mb-3">
+                    {{ house.params.address|default:trans.no_address }} {{ house.params.corpus }}
+                </h3>
+            </a>
+
+            {# девелопер #} 
+            {% if project.developer and project.developer.slug and not project.developer.logo %}
+                <a href="{% url 'developer_detail' project.developer.slug %}" class="card-developer-link mb-3">
+                    <small>{{ project.developer.name }}</small>
+                </a>
+            {% elif project.developer and not project.developer.logo and not project.developer.slug %}
+                <span class="card-developer-link mb-3">
+                    <small>{{ project.developer.name }}</small>
+                </span>
+            {% endif %} 
+
+            <hr class="my-3">
+
+            <div class="house-stats mb-4">
+                <span class="stat-item me-3">
+                    <i class="fa-solid fa-table-cells-large pe-1"></i>
+                    {{ trans.text_of_flats }}: <strong>{{ house.available_flats_count }}</strong>
+                </span>
+            </div>
+
+            <div class="house-stats mb-4">
+                {% if house.params.deadline %}
+                    <span class="stat-item me-3">
+                        <i class="fa-regular fa-calendar-days pe-1"></i>
+                        {{ house.params.deadline }} {{ house.params.deadline_year }}
+                    </span>
+                    <span class="stat-item me-3">
+                        <i class="fa-solid fa-chart-line pe-1"></i>
+                        {{ house.params.phase }}
+                    </span>
+                {% endif %}
+                {% if house.params.building_status %}
+                    <span class="stat-item">
+                        <i class="fa-solid fa-bars-progress pe-1"></i>
+                        {{ house.params.building_status }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <a href="{% url 'house_detail' house.project.slug house.slug %}" class="btn btn-dark">
+            {{ trans.text_more }}
+        </a>
+    </div>
+</div>

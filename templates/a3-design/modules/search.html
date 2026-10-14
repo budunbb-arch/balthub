@@ -1,0 +1,77 @@
+{# /opt/balthub/templates/a3-design/modules/search.html #}
+
+{% load static %}
+
+<div class="col-12 p-3 search module module-search">
+
+    <div class="">
+        <!--<h2 class="search-heading mb-2" data-textfit data-fill="0.7">{{ trans.search_heading }}</h2>-->
+        <form action="{% url 'search_results' %}" method="get" class="row g-2 align-items-end" id="searchForm">
+
+            <div class="col-12 form-field field-search position-relative">
+                <input type="text" name="q" class="form-control field-search" placeholder="{{ trans.search }}" value="{{ request.GET.q|default:'' }}">
+                <span class="form-field-icon"></span>
+            </div>
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 d-none d-sm-block position-relative pt-3 pe-2">
+                <span class="picker-header position-absolute text-small">{{ trans.text_city }}</span>
+                <div class="search-filter city position-relative w-100 me-2">
+                    <select name="city" class="form-select text-small">
+                        <option value="">{{ trans.all_cities }}</option>
+                        {% for city in data.cities %}
+                            <option value="{{ city.id }}" {% if request.GET.city == city.id|stringformat:"s" %}selected{% endif %}>{{ city.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 d-none d-md-block position-relative pt-3 pe-2">
+                <span class="picker-header position-absolute text-small">{{ trans.text_district }}</span>
+                <div class="search-filter district position-relative w-100 me-2">
+                    <select name="district" class="form-select text-small" data-choose-city="{{ trans.text_choose_city }}" data-district-label="{{ trans.text_district }}">
+                        <option value="">{{ trans.text_choose_city }}</option>
+                        {% for district in data.districts %}
+                            <option value="{{ district.id }}" data-city-id="{{ district.city_id }}" {% if request.GET.district == district.id|stringformat:"s" %}selected{% endif %}>{{ district.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 d-none d-md-block position-relative pt-3 pe-2">
+                <span class="picker-header position-absolute text-small">{{ trans.text_property_type }}</span>
+                <div class="search-filter propertytype position-relative w-100 me-2">
+                    <select name="property_type" class="form-select text-small">
+                        <option value="">{{ trans.all_kinds }}</option>
+                        {% for pt in data.property_types %}
+                            <option value="{{ pt.id }}" {% if request.GET.property_type == pt.id|stringformat:"s" %}selected{% endif %}>{{ pt.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 d-none d-md-block position-relative pt-3 pe-2">
+                <span class="picker-header position-absolute text-small">{{ trans.text_rooms }}</span>
+                <div class="search-filter roomsquantity position-relative w-100 me-2">
+                    <select name="rooms_alias" class="form-select text-small">
+                            <option value="">{{ trans.all_kinds }}</option>
+                        {% for alias in data.rooms_aliases %}
+                            <option value="{{ alias }}" {% if request.GET.rooms_alias == alias %}selected{% endif %}>{{ alias }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 d-none d-sm-block position-relative pt-3 pe-2">
+                <span class="picker-header position-absolute text-small">{{ trans.text_price }}</span>
+                <div class="search-filter price position-relative w-100 me-2">
+                    <select name="price_band" class="form-select text-small">
+                        <option value="">{{ trans.text_anyshe }}</option>
+                        {% for min_p, max_p, label in data.price_bands %}
+                            <option value="{{ min_p }}-{{ max_p }}" {% if price_band == min_p|stringformat:"s"|add:"-"|add:max_p|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-8 offset-2 col-sm-4 offset-sm-0 offset-md-5 col-lg-2 offset-lg-0">
+                <button type="submit" class="btn btn-primary w-100"><i class="fa-brands fa-sistrix"></i><span class="d-none d-sm-inline"> {{ trans.button_search }}</span></button>
+            </div>
+
+        </form>
+    </div>
+    <script src="{% static 'assets/js/search.js' %}"></script>
+</div>

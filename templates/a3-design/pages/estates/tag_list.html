@@ -1,0 +1,25 @@
+<!-- /opt/balthub/templates/default/pages/estates/tag_list.html -->
+
+{% extends "default/base.html" %}
+
+{% load static %}
+
+{% block title %}{{ trans.text_tags }}{% endblock %}
+
+{% block content %}
+
+    <h1 class="">{{ trans.text_tags }}</h1>
+
+    <hr class="my-3">
+
+    <ul class="row list-unstyled">
+        {% for tag in tags %}
+            <li class="col-12 col-sm-6 col-md-4 col-xl-3 mb-3">
+                <a href="{% url 'tags:tag_detail' tag.slug %}" class="text-decoration-none">{{ tag.name }}</a>
+            </li>
+        {% empty %}
+            <p>{{ trans.no_tags }}</p>
+        {% endfor %}
+        </ul>
+
+{% endblock %}

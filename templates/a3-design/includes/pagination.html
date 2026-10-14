@@ -1,0 +1,77 @@
+<!-- /opt/balthub/templates/default/includes/pagination.html -->
+
+{% if page_obj.has_other_pages %}
+
+    {% with request.GET.urlencode as querystring %}
+
+        <nav aria-label="Pagination">
+
+            <ul class="pagination justify-content-center flex-wrap">
+
+                {# FIRST #}
+                {% if page_obj.number > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{{ querystring }}&page=1">
+                            &laquo;
+                        </a>
+                    </li>
+                {% endif %}
+
+                {# PREVIOUS #}
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="?{{ querystring }}&page={{ page_obj.previous_page_number }}">
+                            &lsaquo;
+                        </a>
+                    </li>
+                {% endif %}
+
+                {# PAGE RANGE #}
+                {% for item in page_range %}
+
+                    {% if item == "..." %}
+
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+
+                    {% else %}
+
+                        <li class="page-item {% if page_obj.number == item %}active{% endif %}">
+                            <a class="page-link" href="?{{ querystring }}&page={{ item }}">
+                                {{ item }}
+                            </a>
+                        </li>
+
+                    {% endif %}
+
+                {% endfor %}
+
+                {# NEXT #}
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="?{{ querystring }}&page={{ page_obj.next_page_number }}" data-next-page>
+                            &rsaquo;
+                        </a>
+                    </li>
+                {% endif %}
+
+                {# LAST #}
+                {% if page_obj.number < paginator.num_pages %}
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="?{{ querystring }}&page={{ paginator.num_pages }}">
+                            &raquo;
+                        </a>
+                    </li>
+                {% endif %}
+
+            </ul>
+
+        </nav>
+
+    {% endwith %}
+
+{% endif %}

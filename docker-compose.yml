@@ -22,6 +22,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - ./localizations:/app/localizations
+      - ./templates:/app/templates
       - ./static:/app/static
       - ./staticfiles:/app/staticfiles
       - ./media:/app/media

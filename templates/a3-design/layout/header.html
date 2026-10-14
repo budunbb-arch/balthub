@@ -1,0 +1,54 @@
+<!-- /opt/balthub/templates/a3-design/layout/header.html -->
+
+{% load static %}
+
+<header class="site-header">
+    <div class="header-content container-fluid position-relative">
+        <div class="row h-100">
+            <div class="col-12 p-0">
+                <div class="container position-relative d-flex flex-column h-100">
+                    <div class="row mb-5">
+                        <nav class="navbar navbar-expand-lg navbar-light p-0">
+                            <div class="col-4 col-sm-3 col-lg-2 col-xl-1 position-relative">
+                                <div class="position-absolute w-100 d-flex align-items-center justify-content-center p-2 py-1" id="logo">
+                                    <a href="{{ trans.url_home }}">
+                                        <img src="{% static 'assets/images/a3-design/logo-black.svg' %}" alt="{{ trans.sitename }}" class="img-fluid">  
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-2 offset-1 col-sm-2 col-lg-6 offset-lg-1 col-xl-6 offset-xl-2 position-relative">
+                                <div class="position-absolute w-100 d-flex align-items-center justify-content-center px-1 py-1" id="main-menu">
+                                    <!-- TOGGLER -->
+                                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                                        <i class="fa-solid fa-bars"></i> 
+                                    </button>
+
+                                    <!-- COLLAPSE -->
+                                    <div class="collapse navbar-collapse" id="mainNavbar">
+                                        <div class="mx-auto">
+                                            {% include "default/includes/render_modules.html" with modules=layout.main_menu %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-2 offset-2 offset-lg-1 col-xl-1 offset-xl-2 position-relative">
+                                <div class="position-absolute w-100 d-flex align-items-center justify-content-center p-2 py-1" id="feedback-button">
+                                <a class="btn text-btn text-small p-1 w-100" href="#" data-bs-toggle="modal" data-bs-target="#orderCallModal">
+                                    <span class="d-none d-lg-inline">{{ trans.feedback_button }}</span>
+                                    <span class="d-inline d-lg-none"><i class="fa-solid fa-phone-flip"></i></span>
+                                </a>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                    <div class="row mb-5 mx-2 mx-sm-0">
+                        {% include "default/includes/render_modules.html" with modules=layout.sitename %}
+                    </div>
+                    <div class="row row-search mt-auto mx-2 mx-sm-0">
+                        {% include "default/includes/render_modules.html" with modules=layout.search %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

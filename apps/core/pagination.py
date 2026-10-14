@@ -50,7 +50,7 @@ def build_page_range(page_obj, radius=1):
     return final
 
 
-def paginate_queryset(request, queryset, per_page=10):
+def paginate_queryset(request, queryset, per_page=12):
 
     page = request.GET.get("page", 1)
 

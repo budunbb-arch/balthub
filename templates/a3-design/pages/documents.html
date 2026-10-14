@@ -1,0 +1,42 @@
+{% extends "default/base.html" %}
+
+{% block title %}{{ trans.text_documents }}{% endblock %}
+
+{% block content %}
+    <h1>{{ trans.text_documents }}</h1>
+
+    <hr class="my-3">
+
+    {% if documents %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="p-3">{{ trans.text_column_date }}</th>
+                        <th class="p-3">{{ trans.text_column_name }}</th>
+                        <th class="p-3">{{ trans.text_column_file }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for document in documents %}
+                        <tr>
+                            <td class="text-center">{{ document.document_date|date:"d.m.Y" }}</td>
+                            <td>
+                                <a href="{% url 'document_detail' document.id %}">{{ document.document_name }}</a>
+                            </td>
+                            <td class="text-center">
+                                {% if document.document_file %}
+                                    <a href="{{ document.document_file.url }}" target="_blank">{{ trans.text_open }}</a>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>{{ trans.no_documents }}</p>
+    {% endif %}
+{% endblock %}

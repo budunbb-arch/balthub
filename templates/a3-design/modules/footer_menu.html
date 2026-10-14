@@ -1,0 +1,10 @@
+<div class="col-12 text-start mb-5">
+    <!--<h6>{{ trans.footermenu_header }}</h6>-->
+    <ul class="list-unstyled footermenu-menu h-list">
+        {% for item in data.footer_menu_items %}
+            <li class="pe-3">
+                <a href="{{ item.url }}">{{ item.title }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

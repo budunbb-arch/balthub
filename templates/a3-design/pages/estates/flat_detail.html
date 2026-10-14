@@ -1,0 +1,302 @@
+{% extends "default/base.html" %}
+
+{% load static %}
+{% load price_utils %}
+{% load image_utils %}
+
+{% block title %}{{ trans.text_flat }} {{ flat.number|default:"" }} &mdash; {{ flat.house.params.address }} {{ flat.house.params.corpus }} | {{ flat.house.project.name }}{% endblock %}
+
+{% block content %}
+
+<h1 class="">
+    {{ trans.text_flat }} {{ flat.number|default:"" }}
+</h1>
+<div class="">
+    <strong>&laquo;{{ flat.house.project.name }}&raquo;</strong> | {{ flat.house.project.params.city }}, {{ flat.house.params.address }} 
+    {% if flat.house.params.corpus %}{{ flat.house.params.corpus }}{% endif %}
+</div>
+
+<hr class="my-3">
+
+<div class="flat-description row">
+    <div class="col-12 col-md-5 col-xl-4 mb-4">
+        {% if flat.plan %}
+            <div class="flat-plan">
+                <img src="{{ flat.plan }}" alt="{{ trans.text_flat }} {{ flat.number|default:"" }} {{ trans.text_plan }}" class="img-fluid img-presentation img-grayscale">
+            </div>
+        {% endif %}
+    </div>
+    <div class="details-rows col-12 col-md-7 col-xl-8 mb-5">
+        <div class="row flat-params mb-3">
+            <div class="col-12 address position-relative mb-3">
+                <div class="param clearfix">
+                    <div class="param-icon float-start text-center">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <div class="param-label float-start text-small">
+                        {{ flat.house.project.params.city.name }}, <br>
+                        {{ flat.house.params.address }}
+                        {% if flat.house.params.corpus %}
+                            {{ flat.house.params.corpus }}
+                        {% endif %}    
+                    </div>
+                </div>
+            </div>
+            {% if flat.params.rooms_alias %}
+                <div class="col-12 col-sm-6 col-xl-4 address position-relative mb-3">
+                    <div class="param clearfix">
+                        <div class="param-icon float-start text-center">
+                            <i class="fa-solid fa-table-cells-large"></i>
+                        </div>
+                        <div class="param-label float-start text-small">
+                            {{ trans.of_rooms }}<br>
+                            {{ flat.params.rooms_alias }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if flat.params.floor %}
+                <div class="col-12 col-sm-6 col-xl-4 address position-relative mb-3">
+                    <div class="param clearfix">
+                        <div class="param-icon float-start text-center">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+                        <div class="param-label float-start text-small">
+                            {{ trans.text_floor }}:<br>{{ flat.params.floor }} / {{ flat.house.params.floors }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="row flat-params mb-3">
+            {% if flat.params.square %}
+                <div class="col-12 col-sm-6 col-xl-4 address position-relative mb-3">
+                    <div class="param clearfix">
+                        <div class="param-icon float-start text-center">
+                            <i class="fa-solid fa-ruler-combined"></i>
+                        </div>
+                        <div class="param-label float-start text-small">
+                            {{ trans.text_full_square }}:<br>
+                            {{ flat.params.square }} {{ trans.text_m2 }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if flat.params.living_square %}
+                <div class="col-12 col-sm-6 col-xl-4 address position-relative mb-3">
+                    <div class="param clearfix">
+                        <div class="param-icon float-start text-center">
+                            <i class="fa-solid fa-couch"></i>
+                        </div>
+                        <div class="param-label float-start text-small">
+                            {{ trans.text_living_square }}:<br>
+                            {{ flat.params.living_square }} {{ trans.text_m2 }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if flat.params.kitchen_square %}
+                <div class="col-12 col-sm-6 col-xl-4 address position-relative mb-3">
+                    <div class="param clearfix">
+                        <div class="param-icon float-start text-center">
+                            <i class="fa-solid fa-utensils"></i>
+                        </div>
+                        <div class="param-label float-start text-small">
+                            {{ trans.text_kitchen_square }}:<br>
+                            {{ flat.params.kitchen_square }} {{ trans.text_m2 }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if flat.params.ceiling_height %}
+                <div class="col-12 col-sm-6 col-xl-4 address position-relative mb-3">
+                    <div class="param clearfix">
+                        <div class="param-icon float-start text-center">
+                            <i class="fa-solid fa-arrows-up-down"></i>
+                        </div>
+                        <div class="param-label float-start text-small">
+                            {{ trans.text_ceiling_height }}:<br>
+                            {{ flat.params.ceiling_height }} {{ trans.text_m }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="row flat-params mb-3">
+            <div class="col-12 col-sm-6 col-xl-4 address position-relative mb-3">
+                <div class="param clearfix">
+                    <div class="param-icon float-start text-center">
+                        <i class="fa-regular fa-building"></i>
+                    </div>
+                    <div class="param-label float-start text-small">
+                        {{ trans.text_balcony_type }}:<br>
+                        {% if flat.params.balcony %}
+                            {{ flat.params.balcony }}
+                        {% else %}
+                            {{ trans.text_nobalcony }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% if flat.params.bathroom_unit_type %}
+                <div class="col-12 col-sm-6 col-xl-4 address position-relative mb-3">
+                    <div class="param clearfix">
+                        <div class="param-icon float-start text-center">
+                            <i class="fa-solid fa-bath"></i>
+                        </div>
+                        <div class="param-label float-start text-small">
+                            {{ trans.text_bathroom_unit_type }}:<br>
+                            {{ flat.params.bathroom_unit_type }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+                    
+        <div class="row flat-params mb-5">
+            {% if flat.house.params.deadline and flat.house.params.deadline_year %}
+                <div class="col-12 col-sm-4 col-md-6 col-lg-5 col-xl-4 address position-relative mb-3 mb-sm-0 mb-md-3">
+                    <div class="param clearfix">
+                        <div class="param-icon float-start text-center">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
+                        <div class="param-label float-start text-small">
+                            {{ trans.text_deadline }}:<br>
+                            {{ flat.house.params.deadline }} {{ flat.house.params.deadline_year }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if flat.params.finish_type %}
+                <div class="col-12 col-sm-8 col-md-12 col-lg-7 col-xl-8 address position-relative">
+                    <div class="param clearfix">
+                        <div class="param-icon float-start text-center">
+                            <i class="fa-solid fa-paint-roller"></i>
+                        </div>
+                        <div class="param-label float-start text-small">
+                            {{ trans.text_finish_type }}:<br>
+                            {{ flat.params.finish_type }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="row flat-params mb-3">
+            {% if flat.flat_tags.all %}
+                {% for tag in flat.flat_tags.all %}
+                    <div class="col-12 col-lg-6 col-xl-4"><i class="fa-solid fa-certificate"></i> {{ tag.tag.name }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+
+        
+    
+
+    {% for deal in flat.deals.all %}
+        <div class="text-end">
+            <span class="text-x-large">
+                {% if deal.currency.prefix %}
+                    {{ deal.currency.prefix }}
+                {% endif %}
+                {{ deal.price|format_price }} 
+                {% if deal.currency.postfix %}
+                    {{ deal.currency.postfix }}
+                {% endif %}
+            </span> 
+            <br>
+            <span class="small text-muted ps-2">
+                {% if deal.currency.prefix %}
+                    {{ deal.currency.prefix }}/{{ trans.text_m2 }}
+                {% endif %}
+                {{ flat.price_per_m2|format_price }} 
+                {% if deal.currency.postfix %}
+                    {{ deal.currency.postfix }}/{{ trans.text_m2 }}
+                {% endif %}
+            </span>
+        </div>
+    {% empty %}
+        <div class="text-end">
+            <i class="fa-solid fa-xmark"></i>
+            {{ trans.no_offers }}
+        </div>
+    {% endfor %}
+</div>
+        
+{% if flat.flat_tags.all %}
+    <ul class="list-unstyled h-list flat-tags d-none">
+        {% for tag in flat.flat_tags.all %}
+            <li class="small pe-2">#{{ tag.tag.name }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<div class="project-flats">
+    <!-- Квартиры -->
+    <div id="flats-list" class="mt-5">
+        <h2 class="pb-3 mb-4">{{ trans.other_flats }} {{ flat.house.project.name }}</h2>
+
+        <div 
+            data-ajax-list
+            data-container="#flats-block"
+            data-push-state="true"
+            data-section="flats"
+        >
+            <div class="ajax-loader-overlay hidden">
+                <div class="spinner"></div>
+            </div>
+
+            <div class="flats-list row">
+                <div class="flats-list-pickers col-12 col-xl-3 mb-3">
+                    {% include "default/modules/picker_flats.html" with pickers=flats_pickers %}
+                </div>
+                <div class="flats-list-content col-12 col-xl-9">
+                    <div id="flats-block" class="mb-3">
+                        <div class="row mb-5" data-items data-page-anchor>
+                            {% if flats_page_obj %}
+                                {% for flat in flats_page_obj %}
+                                    {% include "default/pages/estates/project_flat_card.html" with flat=flat %}
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-12 flats-empty text-center">
+                                    <p>{{ trans.no_flats }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="pagination-wrapper" data-pagination>
+                            {% include "default/includes/infinite_pagination.html" with page_obj=flats_page_obj paginator=flats_paginator page_range=flats_page_range %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}
+
+{% block extra_css%}
+    <link rel="stylesheet" href="{% static 'assets/css/maps.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/a3-design/flat_detail.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+
+    <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
+    <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+    <script src="{% static 'assets/js/img-presentation.js' %}"></script>
+
+    {% if map_settings.enabled and map_settings.provider == "yandex" %}
+        <script src="https://api-maps.yandex.ru/v3/?apikey={{ map_settings.api_key }}&lang={{ map_settings.language }}"></script>
+        <script src="{% static 'assets/js/maps/yandex.js' %}"></script>
+        <script src="{% static 'assets/js/maps/house.js' %}"></script>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,117 @@
+{# templates/default/modules/main_menu.html #}
+
+{% url 'project_list' as project_list_url %}
+{% url 'feedback_page' as feedback_page_url %}
+
+<ul class="navbar-nav align-items-lg-center justify-content-lg-center js-overflow-menu"
+    data-overflow-label="{{ trans.text_menu_more }}">
+
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.resolver_match.url_name == 'project_list' %} state{% endif %}" 
+        href="{% url 'project_list' %}"
+        {% if request.resolver_match.url_name == 'project_list' %}aria-current="page"{% endif %}>
+            {{ trans.project_list }}
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.path == '/estates/tags/kalininigrad/' %} state{% endif %}" 
+        href="/estates/tags/kalininigrad/" 
+        {% if request.path == '/estates/tags/kalininigrad/' %}aria-current="page"{% endif %}>
+            {{ trans.kaliningrad }}
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.path == '/estates/tags/prigorod/' %} state{% endif %}" 
+        href="/estates/tags/prigorod/"
+        {% if request.path == '/estates/tags/prigorod/' %}aria-current="page"{% endif %}>
+            {{ trans.suburb }}
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.path == '/estates/tags/poberezhe/' %} state{% endif %}" 
+        href="/estates/tags/poberezhe/"
+        {% if request.path == '/estates/tags/poberezhe/' %}aria-current="page"{% endif %}>
+            {{ trans.seaside }}
+        </a>
+    </li>
+
+
+
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.path == '/estates/tags/kalininigrad/' %} state{% endif %}" 
+        href="/estates/tags/kalininigrad/" 
+        {% if request.path == '/estates/tags/kalininigrad/' %}aria-current="page"{% endif %}>
+            {{ trans.kaliningrad }}
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.path == '/estates/tags/prigorod/' %} state{% endif %}" 
+        href="/estates/tags/prigorod/"
+        {% if request.path == '/estates/tags/prigorod/' %}aria-current="page"{% endif %}>
+            {{ trans.suburb }}
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.path == '/estates/tags/poberezhe/' %} state{% endif %}" 
+        href="/estates/tags/poberezhe/"
+        {% if request.path == '/estates/tags/poberezhe/' %}aria-current="page"{% endif %}>
+            {{ trans.seaside }}
+        </a>
+    </li>
+
+    <!--
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.path == '/estates/tags/ipoteka/' %} state{% endif %}" 
+        href="/estates/tags/ipoteka/"
+        {% if request.path == '/estates/tags/ipoteka/' %}aria-current="page"{% endif %}>
+            {{ trans.mortgage }}
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.path == '#' %} state{% endif %}" 
+        href="#"
+        {% if request.path == '#' %}aria-current="page"{% endif %}>
+            {{ trans.text_blog }}
+        </a>
+    </li>
+    -->
+
+    <li class="nav-item">
+        <a 
+        class="nav-link{% if request.resolver_match.url_name == 'feedback_page' %} state{% endif %}" 
+        href="{% url 'feedback_page' %}"
+        {% if request.resolver_match.url_name == 'feedback_page' %}aria-current="page"{% endif %}>
+            {{ trans.contacts }}
+        </a>
+    </li>
+
+    <!--
+    <li class="nav-item phone-item">
+        {% if site_settings and site_settings.phones %}
+            {% with primary=site_settings.phones|first %}
+                <a class="nav-link" href="tel:{{ primary.value }}">{{ primary.value }}</a>
+            {% endwith %}
+        {% endif %}
+    </li>
+
+    <li class="nav-item call-item">
+        <a class="btn menu-btn" href="#" data-bs-toggle="modal" data-bs-target="#orderCallModal">{{ trans.order_call }}</a>
+    </li>
+    -->
+
+</ul>

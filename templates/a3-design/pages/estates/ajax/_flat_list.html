@@ -1,0 +1,17 @@
+<!-- /opt/balthub/templates/default/pages/estates/ajax/_flat_list.html -->
+
+<div class="row mb-5" data-items data-page-anchor>
+    {% if flats_page_obj %}
+        {% for flat in flats_page_obj %}
+            {% include "default/pages/estates/project_flat_card.html" with flat=flat %}
+        {% endfor %}
+    {% else %}
+        <div class="col-12 flats-empty">
+            <p>{{ trans.no_flats }}</p>
+        </div>
+    {% endif %}
+</div>
+
+<div class="pagination-wrapper" data-pagination>
+    {% include "default/includes/infinite_pagination.html" with page_obj=flats_page_obj paginator=flats_paginator page_range=flats_page_range %}
+</div>

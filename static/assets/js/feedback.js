@@ -24,6 +24,18 @@ jQuery(function ($) {
         return s;
     }
 
+    function formatModulePhone(raw, prefix) {
+        var d = (raw || '').replace(/\D/g, '');
+        if (prefix && d.indexOf(prefix) === 0) d = d.slice(prefix.length);
+        d = d.slice(0, 10);
+
+        var s = d.slice(0, 3);
+        if (d.length > 3) s += ' ' + d.slice(3, 6);
+        if (d.length > 6) s += '-' + d.slice(6, 8);
+        if (d.length > 8) s += '-' + d.slice(8, 10);
+        return s;
+    }
+
     // Нормализует в E.164: "+код + 10 цифр" без пробелов/скобок.
     function normalizePhone(raw, prefix) {
         var d = (raw || '').replace(/\D/g, '');
@@ -33,8 +45,12 @@ jQuery(function ($) {
     }
 
     function maskPhone($input) {
-        var $form = $input.closest('.feedback-form, .project-feedback-form');
-        $input.val(formatPhone($input.val(), phonePrefix($form)));
+        var $form = $input.closest('.feedback-form, .project-feedback-form, .order-call-form');
+        var prefix = phonePrefix($form);
+        if ($form.hasClass('order-call-form')) prefix = prefix || '7';
+        var isFeedbackModule = $input.closest('.phonenumber').length > 0
+            && !$input.closest('.order-call-form').length;
+        $input.val(isFeedbackModule ? formatModulePhone($input.val(), prefix) : formatPhone($input.val(), prefix));
     }
 
 $(document).on('input', '.feedback-form .phone-input, .project-feedback-form .phone-input', function () {
@@ -42,9 +58,7 @@ $(document).on('input', '.feedback-form .phone-input, .project-feedback-form .ph
 });
 
 $(document).on('input', '.order-call-form .phone-input', function () {
-    var $input = $(this);
-    var formatted = formatPhone($input.val(), '7');
-    $input.val(formatted);
+    maskPhone($(this));
 });
 
     $(document).on('change', '.feedback-form .phone-country, .project-feedback-form .phone-country', function () {
@@ -54,6 +68,12 @@ $(document).on('input', '.order-call-form .phone-input', function () {
             $(this).val('+' + prefix);
             maskPhone($(this));
         });
+    });
+
+    $(document).on('change', '.order-call-form .phone-country', function () {
+        var $form = $(this).closest('.order-call-form');
+        var prefix = phonePrefix($form) || '7';
+        $form.find('.phone-input').val('+' + prefix);
     });
 
     $('.feedback-module .feedback-form').on('submit', function (e) {
@@ -303,17 +323,14 @@ $(document).on('input', '.order-call-form .phone-input', function () {
         $form.data('submitting', true);
 
         $form.find('.phone-input').each(function () {
-            var raw = ($(this).val() || '').replace(/\D/g, '');
-            if (!raw) return;
-            if (raw.length === 11 && (raw[0] === '7' || raw[0] === '8')) {
-                raw = '7' + raw.slice(1);
-            } else if (raw.length === 10) {
-                raw = '7' + raw;
-            } else if (raw.length < 10) {
-                raw = '7' + raw;
+            var prefix = phonePrefix($form) || '7';
+            var digits = ($(this).val() || '').replace(/\D/g, '');
+            if (prefix === '7' && digits.length === 11 && (digits[0] === '7' || digits[0] === '8')) {
+                digits = digits.slice(1);
             }
-            raw = raw.slice(0, 11);
-            $(this).val('+' + raw);
+            if (digits) {
+                $(this).val(normalizePhone(digits, prefix));
+            }
         });
 
         var hasTurnstile = $form.find('.cf-turnstile').length > 0;

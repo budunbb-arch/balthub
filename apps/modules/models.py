@@ -156,6 +156,18 @@ class TagCollectionItem(models.Model):
     )
     order = models.PositiveIntegerField(default=0, verbose_name="Порядок")
     is_active = models.BooleanField(default=True, verbose_name="Активен")
+    image = models.ImageField(
+        upload_to="tag_collections/",
+        blank=True,
+        null=True,
+        verbose_name="Изображение",
+    )
+    description = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Краткое описание",
+    )
 
     class Meta:
         verbose_name = "Тег подборки"

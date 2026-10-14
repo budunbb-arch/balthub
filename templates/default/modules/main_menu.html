@@ -3,7 +3,8 @@
 {% url 'project_list' as project_list_url %}
 {% url 'feedback_page' as feedback_page_url %}
 
-<ul class="navbar-nav align-items-lg-center gap-3">
+<ul class="navbar-nav align-items-lg-center gap-3 justify-content-lg-end js-overflow-menu"
+    data-overflow-label="{{ trans.text_menu_more }}">
 
     <li class="nav-item">
         <a 

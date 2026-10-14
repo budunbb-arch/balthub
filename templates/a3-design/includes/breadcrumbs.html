@@ -1,0 +1,32 @@
+{% if breadcrumbs %}
+    <div class="container">
+        <nav aria-label="breadcrumb" class="breadcrumbs row mb-4">
+            <div class="col-1 d-md-none">
+            <a href="#" class="breadcrumbs-back d-inline-flex" aria-label="Назад" title="Назад" onclick="history.back(); return false;">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+            </a>
+            </div>
+            <div class="col-11 col-md-12">
+            <ol class="breadcrumb pb-3">
+
+                {% for item in breadcrumbs %}
+
+                    {% if item.url %}
+                        <li class="breadcrumb-item">
+                            <a href="{{ item.url }}">
+                                {{ item.title }}
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="breadcrumb-item active" aria-current="page">
+                            {{ item.title }}
+                        </li>
+                    {% endif %}
+
+                {% endfor %}
+
+            </ol>
+            </div>
+        </nav>
+    </div>
+{% endif %}

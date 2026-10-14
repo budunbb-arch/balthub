@@ -1,0 +1,107 @@
+<!-- templates/default/pages/estates/developer_detail.html -->
+
+{% extends "default/base.html" %}
+
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ developer.name }}{% endblock %}
+
+{% block content %}
+
+{% if developer.logo %}
+    <div class="row">
+        <div class="col-8 col-sm-9 col-lg-10">
+            <h1>{{ seo.h1|default:developer.name }}</h1>
+        </div>
+        <div class="col-4 col-sm-3 col-lg-2">
+            <img src="{{ developer.logo.url }}" alt="{{ developer.name }}" class="img-fluid">
+        </div>
+    </div>
+{% else %}
+    <h1>{{ seo.h1|default:developer.name }}</h1>
+{% endif %}
+
+<!-- Описание -->
+{% for d in developer.developerdescriptions.all %}
+    <div class="developer-description">
+        {{ d.text_description|safe }}
+    </div>
+{% endfor %}
+
+<hr>
+
+<div class="developer-stats mb-4">
+    <div class="mb-1"><i class="fa-solid fa-building-flag"></i> {{ trans.of_projects }} <strong>{{ stats.total_projects }}</strong></div>
+    <div class="mb-1"><i class="fa-regular fa-building"></i> {{ trans.of_houses }} <strong>{{ stats.total_houses }}</strong></div>
+    <div class="mb-1"><i class="fa-solid fa-table-cells-large"></i> {{ trans.details_of_flats }} <strong>{{ stats.total_flats }}</strong></div>
+
+    {% if stats.min_price and stats.max_price %}
+        <div class="mb-1"><i class="fa-regular fa-money-bill-1"></i>
+            {{ trans.prices }}
+            {{ trans.text_from }} <strong>{{ stats.min_price|intcomma }}</strong>
+            {{ trans.text_to }} <strong>{{ stats.max_price|intcomma }}</strong> ₽
+        </div>
+    {% endif %}
+</div>
+
+{# PROJECTS #}
+<h2 class="mt-5 mb-4">
+    {{ trans.projects }}
+</h2>
+
+<div
+    data-ajax-list
+    data-container="#developer-projects-container"
+    data-form=".house-filter-form"
+    data-scroll="top"
+    data-push-state="true"
+>
+
+    <div class="ajax-loader-overlay hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="developer-projects-container">
+
+        {% include "default/pages/estates/ajax/_project_list.html" %}
+
+    </div>
+
+</div>
+
+{% if map_settings.enabled and map_settings.provider == "yandex" and map_points %}
+<section class="developer-map mb-5">
+    <h2>{{  trans.text_objectsmap}}</h2>
+    {% with map_id="collection-map-developer" data_id="collection-map-data-developer" %}
+    <div id="{{ map_id }}" class="position-relative">
+
+
+        <div class="maps-overlay position-absolute">
+            <span class="maps-toggler position-absolute text-center"><i class="fa-solid fa-lock"></i></span>
+        </div>
+    </div>
+    {{ map_points|json_script:data_id }}
+    {% endwith %}
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_css%}
+    <link rel="stylesheet" href="{% static 'assets/css/a3-design/picker.css' %}">
+    {% if map_settings.enabled and map_settings.provider == "yandex" %}
+        <link rel="stylesheet" href="{% static 'assets/css/a3-design/maps.css' %}">
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
+    <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+
+    {% if map_settings.enabled and map_settings.provider == "yandex" %}
+        <script src="https://api-maps.yandex.ru/v3/?apikey={{ map_settings.api_key }}&lang={{ map_settings.language }}"></script>
+        <script src="{% static 'assets/js/maps/yandex.js' %}"></script>
+        <script src="{% static 'assets/js/maps/all_objects.js' %}"></script>
+    {% endif %}
+{% endblock %}

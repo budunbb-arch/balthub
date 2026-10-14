@@ -1,0 +1,41 @@
+{% load static %}
+
+<script src="{% static 'assets/js/jquery-4.0.0.min.js' %}"></script>
+
+<script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+
+<script src="{% static 'assets/js/main-menu-overflow.js' %}"></script>
+
+<script src="{% static 'assets/js/toastr.min.js' %}"></script>
+
+<script>
+    toastr.options = {
+        "positionClass": "toast-bottom-right"
+    };
+</script>
+
+<script src="{% static 'assets/js/fontawesome.js' %}" crossorigin="anonymous"></script>
+
+<script src="{% static 'assets/js/textfit.js' %}"></script>
+
+<script src="{% static 'assets/js/toggle-class.js' %}"></script>
+
+<script src="{% static 'assets/js/slide-to-top.js' %}"></script>
+
+<script src="{% static 'assets/js/feedback.js' %}"></script>
+<script src="{% static 'assets/js/slider-captcha.js' %}"></script>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script>
+
+<script>
+function initTooltips() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+}
+
+initTooltips();
+</script>
+
+{% block extra_js %}{% endblock %}

@@ -29,8 +29,15 @@ def localization(request):
 
 def layout_modules(request):
 
-    resolver_match = getattr(request, "resolver_match", None)
-    view_name = getattr(resolver_match, "view_name", None)
+    if getattr(request, "is_403", False):
+        view_name = "403"
+    elif getattr(request, "is_404", False):
+        view_name = "404"
+    elif getattr(request, "is_500", False):
+        view_name = "500"
+    else:
+        resolver_match = getattr(request, "resolver_match", None)
+        view_name = getattr(resolver_match, "view_name", None)
 
     lang = (get_language() or "ru")[:2]
 
@@ -254,6 +261,7 @@ def site_settings(request):
 
 def order_call_modal(request):
     from apps.core.documents.models import Document
+    from apps.core.dictionaries.models import Country
     from apps.core.models import SiteSettings
     from apps.leads.captcha import create_challenge
 
@@ -284,9 +292,17 @@ def order_call_modal(request):
             "order_call_personal_data_doc": personal_data_doc,
             "order_call_policy_doc": policy_doc,
             "order_call_turnstile_site_key": turnstile_site_key,
+            "phone_countries": list(
+                Country.objects.all().values("code", "name", "phone_code")
+            ),
         }
         cache.set(cache_key, result, 300)
 
     result = dict(result)
+    if "phone_countries" not in result:
+        result["phone_countries"] = list(
+            Country.objects.all().values("code", "name", "phone_code")
+        )
+        cache.set(cache_key, result, 300)
     result["order_call_captcha"] = create_challenge(request)
     return result

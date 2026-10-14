@@ -36,7 +36,7 @@ def search_results(request):
     district_id = _to_int(district_id)
     property_type_id = _to_int(property_type_id)
 
-    # Валидируем price_band: только если обе части - числа
+    # Для открытого диапазона верхняя граница может быть None или пустой.
     def _validate_price_band(value):
         if not value or "-" not in value:
             return None
@@ -46,7 +46,8 @@ def search_results(request):
         min_str, max_str = parts[0], parts[1]
         try:
             float(min_str)
-            float(max_str)
+            if max_str not in ("", "None"):
+                float(max_str)
             return value
         except (ValueError, TypeError):
             return None
@@ -135,6 +136,13 @@ def search_results(request):
         "params__city", "params__district", "developer", "description"
     ).with_flat_stats()
 
+    if price_band:
+        min_str, max_str = price_band.split("-", 1)
+        price_filters = {"min_price__gte": float(min_str)}
+        if max_str not in ("", "None"):
+            price_filters["min_price__lte"] = float(max_str)
+        projects_qs = projects_qs.filter(**price_filters)
+
     # Дополнительно фильтруем проекты через квартиры, если заданы rooms_alias или price_band
     if rooms_alias or price_band:
         flat_q = Q()
@@ -154,11 +162,9 @@ def search_results(request):
                 except (ValueError, TypeError):
                     pass
 
-        projects_with_flats = Flat.objects.filter(
+        projects_with_flats = Flat.objects.active().filter(
             flat_q,
             house__project__in=projects_qs,
-            house__project__is_public=True,
-            house__project__is_deleted=False,
         ).values_list("house__project_id", flat=True)
 
         projects_qs = projects_qs.filter(id__in=projects_with_flats)

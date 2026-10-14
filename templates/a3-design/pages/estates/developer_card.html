@@ -1,0 +1,45 @@
+<!-- templates/default/pages/estates/developer_card.html -->
+
+{% load humanize %}
+
+<div class="card card-developer h-100">
+
+    <div class="row">
+        <div class="col-12 col-xl-2 d-flex justify-content-center align-items-center">
+            <div class="developer-logo text-center w-100 p-3">
+                {% if developer.logo %}
+                    {% load image_utils %}
+                    <img
+                        src="{{ developer.logo.url|image_variant:200 }}"
+                        srcset="{{ developer.logo.url|image_srcset:'200,400' }}"
+                        sizes="200px"
+                        loading="lazy"
+                        class="img-developer-logo img-fluid">
+                {% else %}
+                    <img src="/static/assets/images/a3-design/nologo.png" class="img-developer-logo img-fluid" alt="{{ developer.name }}">
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-12 col-xl-4 developer-name d-flex align-items-center">
+            {% if developer.slug %}
+                <a href="{% url 'developer_detail' developer.slug %}" class="card-link">
+                    {{ developer.name }}
+                </a>
+            {% else %}
+                <span class="card-data">{{ developer.name }}</span>
+            {% endif %}
+        </div>
+        <div class="col-12 col-xl-3 developer-projects d-flex align-items-center">
+            <span class="card-data">
+                {{ trans.of_projects }} {{ developer.projects_count }}
+            </span>
+        </div>
+        <div class="col-12 col-xl-3 developer-min-price d-flex align-items-center">
+            {% if developer.min_price %}
+                <span class="card-data">
+                    {{ trans.text_from }} {{ developer.min_price|intcomma }} {{ trans.text_rub }}
+                </span>
+            {% endif %}
+        </div>
+    </div>
+</div>

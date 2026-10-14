@@ -51,6 +51,8 @@ def house_list(request):
 
         .phases(selected_phases)
 
+        .with_available_flats_count()
+
         .select_related(
             "project",
             "project__developer",

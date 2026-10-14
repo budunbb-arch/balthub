@@ -1,0 +1,12 @@
+<footer class="position-relative text-center p-3">
+
+    <div class="footer-bg position-absolute"></div>
+    <div class="container footer-modules mb-3">
+        <div class="row">
+            {% include "default/includes/render_modules.html" with modules=layout.footer %}
+        </div>
+    </div>
+    <small class="d-inline-block text-center py-5">
+        © {% now "Y" %} {{ trans.sitename }} 
+    </small>
+</footer>

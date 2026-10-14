@@ -23,7 +23,7 @@
                 </select>
             </div>
             <div class="col-12 col-md-2 search-filter position-relative d-none d-lg-flex">
-                <select name="district" class="form-select">
+                <select name="district" class="form-select" data-choose-city="{{ trans.text_choose_city }}" data-district-label="{{ trans.text_district }}">
                     <option value="">{{ trans.text_district }}</option>
                     {% for district in data.districts %}
                         <option value="{{ district.id }}" data-city-id="{{ district.city_id }}" {% if request.GET.district == district.id|stringformat:"s" %}selected{% endif %}>{{ district.name }}</option>

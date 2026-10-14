@@ -11,6 +11,6 @@ translations = {
     "kaliningrad": "Калининград",
     "suburb": "Пригород",
     "seaside": "Побережье",
-    "contacts": "Контакты"
+    "contacts": "Контакты",
 
 }

@@ -1,0 +1,111 @@
+{% load static %}
+
+{% if data.feedback %}
+    <div class="feedback-module" data-module-id="{{ data.feedback.id }}">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-xl-4 offset-xl-4 text-center">
+                    <h3 class="mb-4">{{ data.feedback.header }}</h3>
+
+                    {% if data.feedback.hint == "no_call" %}
+                        <p class="hint">{{ trans.text_nocalls }}</p>
+                    {% elif data.feedback.hint == "no_voice" %}
+                        <p class="hint">{{ trans.text_novoices }}</p>
+                    {% endif %}
+
+                    <form class="feedback-form" data-module-id="{{ data.feedback.id }}">
+                        {% csrf_token %}
+                        <div class="form-field field-user position-relative mb-3">
+                            <input type="text" name="name" class="form-control" placeholder="Имя" required>
+                            <span class="form-field-icon"></span>
+                        </div>
+
+                        <div class="row phonenumber">
+                            {% if data.has_phone %}
+                                <div class="col-5 mb-3 phone-prefix pe-0">
+                                    <div class="form-field field-country position-relative">
+                                        <select class="form-select phone-country" name="phone_country" aria-label="Страна">
+                                            <option value="" data-prefix="">{{ trans.text_country }}</option>
+                                            {% for country in data.phone_countries %}
+                                                <option value="{{ country.phone_code }}" data-prefix="{{ country.phone_code }}"{% if country.code == "RU" %} selected{% endif %}>{{ country.name }} (+{{ country.phone_code }})</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span class="form-field-icon"></span>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% for field in data.feedback_contact_fields %}
+                                {% if field.input_name == "phone" %}
+                                    <div class="col-7 ps-0 mb-3">
+                                        <div class="form-field field-phone position-relative">
+                                            <input type="tel" name="phone" class="form-control phone-input" placeholder="___ ___-__-__" autocomplete="tel">
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="mb-3">
+                                        <input type="{{ field.input_type }}" name="{{ field.input_name }}" class="form-control" placeholder="{{ field.placeholder }}">
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            <textarea name="comment" class="form-control" placeholder="Комментарий"></textarea>
+                        </div>
+
+                        {% if data.feedback.personal_data %}
+                            <div class="form-check text-start text-small mb-2">
+                                <input class="form-check-input" type="checkbox" id="personalData{{ data.feedback.id }}" name="personal_data" required>
+                                <label class="form-check-label" for="personalData{{ data.feedback.id }}">
+                                    {{ trans.text_agree }} <a href="{% url 'document_modal' data.feedback.personal_data.id %}" class="document-modal" data-title="{{ data.feedback.personal_data.document_name }}">{{ trans.text_personaldata }}</a>
+                                </label>
+                            </div>
+                        {% endif %}
+
+                        {% if data.feedback.policy %}
+                            <div class="form-check text-start text-small mb-4">
+                                <input class="form-check-input" type="checkbox" id="policy{{ data.feedback.id }}" name="policy" required>
+                                <label class="form-check-label" for="policy{{ data.feedback.id }}">
+                                    {{ trans.text_agree }} <a href="{% url 'document_modal' data.feedback.policy.id %}" class="document-modal" data-title="{{ data.feedback.policy.document_name }}">{{ trans.text_policy }}</a>
+                                </label>
+                            </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-10 offset-1 col-lg-8 offset-lg-2 captcha">
+                                {% include "default/modules/slider_captcha.html" with captcha=data.captcha %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-8 offset-2 col-md-6 offset-md-3 col-xl-6 offset-xl-3">
+                                <input type="hidden" name="message_tpl" value="{{ data.feedback.message_tpl|escapejs }}">
+                                <button type="submit" class="btn btn-primary" disabled>Отправить</button>
+                            </div>
+                        </div>
+
+                    </form>
+
+                    <div class="success-form" style="display:none;">
+                        <h4 class="mt-4">{{ trans.text_success_title }}</h4>
+                        <p>{{ trans.text_success_message }}</p>
+                    </div>
+                </div>
+
+                <!-- Bootstrap модальное окно для документов -->
+                <div class="modal fade" id="documentModal" tabindex="-1" aria-labelledby="documentModalTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="documentModalTitle"></h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                            </div>
+                            <div class="modal-body document-modal-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

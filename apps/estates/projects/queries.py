@@ -1,4 +1,4 @@
-from django.db.models import Count, Min, Q
+from django.db.models import Count, Max, Min, Q
 
 from apps.core.common.querysets import PublicQuerySet
 
@@ -26,6 +26,20 @@ class ProjectQuerySet(PublicQuerySet):
                 filter=Q(
                     houses__flats__is_public=True,
                     houses__flats__is_deleted=False,
+                ),
+            ),
+            min_deadline_year=Min(
+                "houses__params__deadline_year",
+                filter=Q(
+                    houses__is_public=True,
+                    houses__is_deleted=False,
+                ),
+            ),
+            max_deadline_year=Max(
+                "houses__params__deadline_year",
+                filter=Q(
+                    houses__is_public=True,
+                    houses__is_deleted=False,
                 ),
             ),
         )

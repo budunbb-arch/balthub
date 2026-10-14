@@ -29,6 +29,7 @@ def get_context(request, module):
 
         House.objects
         .active()
+        .with_available_flats_count()
         .select_related(
             "project",
             "project__params__city",

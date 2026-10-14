@@ -1,6 +1,7 @@
 translations = {
     "button_apply": "Применить",
     "button_reset_all": "Сбросить все",
+    "text_flat_filters": "Фильтры квартир",
 
     "text_sort": "Сортировка",
     "text_name_az": "Название А - Я",
@@ -8,4 +9,5 @@ translations = {
     "text_city_az": "Город А - Я",
     "text_city_za": "Город Я - А",
     "text_developer": "Застройщик",
+    "text_financial": "Финансовые",
 }

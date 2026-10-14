@@ -2,7 +2,9 @@
 
 import json
 import logging
+from pathlib import Path
 
+from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
@@ -13,11 +15,26 @@ from apps.core.common.models import Module as BaseModule
 logger = logging.getLogger(__name__)
 
 
+def get_site_template_choices():
+    templates_dir = Path(settings.BASE_DIR) / "templates"
+    return [
+        (directory.name, directory.name)
+        for directory in sorted(templates_dir.iterdir())
+        if directory.is_dir() and directory.name != "admin"
+    ]
+
+
 class SiteSettings(models.Model):
     site_name = models.CharField(
         max_length=255,
         default="Balthub",
         verbose_name="Название сайта",
+    )
+    template = models.CharField(
+        max_length=100,
+        default="default",
+        choices=get_site_template_choices,
+        verbose_name="Шаблон сайта",
     )
     default_title = models.CharField(
         max_length=255,

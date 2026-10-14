@@ -11,6 +11,7 @@ def home(request):
 
 
 def error_403(request, exception):
+    request.is_403 = True
     seo = get_default_seo(request)
     seo["title"] = f"403 - {seo.get('site_title', '')}"
     seo["site_name"] = seo.get("site_name", "")
@@ -25,6 +26,7 @@ def error_403(request, exception):
 
 
 def error_404(request, exception):
+    request.is_404 = True
     seo = get_default_seo(request)
     seo["title"] = f"404 - {seo.get('site_title', '')}"
     seo["site_name"] = seo.get("site_name", "")
@@ -39,6 +41,7 @@ def error_404(request, exception):
 
 
 def error_500(request):
+    request.is_500 = True
     seo = get_default_seo(request)
     seo["title"] = f"500 - {seo.get('site_title', '')}"
     seo["site_name"] = seo.get("site_name", "")

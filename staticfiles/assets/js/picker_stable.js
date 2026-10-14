@@ -624,17 +624,18 @@ function initPickers() {
 
 }
 
-document.addEventListener("click", (e) => {
+document.addEventListener("click", async (e) => {
 
     const link = e.target.closest(".pagination a");
     if (!link) return;
+
+    const wrapper = link.closest("[data-ajax-list]");
+    if (!wrapper) return;
 
     e.preventDefault();
 
     const url = new URL(link.href);
     const page = url.searchParams.get("page");
-
-    const wrapper = link.closest("[data-ajax-list]");
 
     if (wrapper && window.infiniteScrollInstances) {
         const instance = window.infiniteScrollInstances.get(wrapper);
@@ -643,7 +644,7 @@ document.addEventListener("click", (e) => {
         }
     }
 
-    const loadedPage = document.querySelector(
+    const loadedPage = wrapper.querySelector(
         `[data-items][data-page="${page}"]`
     );
 
@@ -677,10 +678,48 @@ document.addEventListener("click", (e) => {
     // =========================
     // CASE 2: нужно reload
     // =========================
-    const picker = document.querySelector("[data-picker]");
+    const picker = wrapper.querySelector("[data-picker]");
 
     if (picker?._pickerInstance) {
         picker._pickerInstance.reload(url);
+        return;
+    }
+
+    const container = document.querySelector(wrapper.dataset.container);
+    if (!container) return;
+
+    const overlay = wrapper.querySelector(".ajax-loader-overlay");
+    const instance = window.infiniteScrollInstances?.get(wrapper);
+    overlay?.classList.remove("hidden");
+
+    try {
+        const response = await fetch(url, {
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Search pagination failed: ${response.status}`);
+        }
+
+        container.innerHTML = await response.text();
+        history.pushState({}, "", url);
+
+        const anchor = container.querySelector("[data-page-anchor]");
+        if (anchor) {
+            const top = anchor.getBoundingClientRect().top + window.scrollY - 120;
+            window.scrollTo({ top, behavior: "auto" });
+        }
+
+        if (instance) {
+            instance.disabled = false;
+            instance.observe();
+        }
+    } catch (error) {
+        console.error("Pagination error:", error);
+    } finally {
+        overlay?.classList.add("hidden");
     }
 });
 

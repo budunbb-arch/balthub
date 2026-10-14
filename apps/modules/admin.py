@@ -42,7 +42,7 @@ class TagsMenuAdmin(admin.ModelAdmin):
 class TagCollectionItemInline(admin.TabularInline):
     model = TagCollectionItem
     extra = 1
-    fields = ("tag", "order", "is_active")
+    fields = ("tag", "image", "description", "order", "is_active")
 
 
 @admin.register(TagCollection)

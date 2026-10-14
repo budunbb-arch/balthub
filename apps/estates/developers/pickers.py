@@ -112,30 +112,6 @@ def developer_list_pickers(
         },
 
         # =====================================================
-        # PROPERTY CATEGORY
-        # =====================================================
-
-        {
-            "name": "property_category",
-            "label": "Тип недвижимости",
-            "placeholder": "Тип недвижимости",
-            "value": selected_categories,
-            "multiple": True,
-            "auto_submit": False,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(category.id),
-                    "label": category.name,
-                }
-
-                for category in PropertyCategory.objects.order_by("name")
-            ]
-        },
-
-        # =====================================================
         # CITY
         # =====================================================
 
@@ -180,6 +156,30 @@ def developer_list_pickers(
                 }
 
                 for district in district_queryset
+            ]
+        },
+
+        # =====================================================
+        # PROPERTY CATEGORY
+        # =====================================================
+
+        {
+            "name": "property_category",
+            "label": "Тип недвижимости",
+            "placeholder": "Тип недвижимости",
+            "value": selected_categories,
+            "multiple": True,
+            "auto_submit": False,
+            "input_type": "checkbox",
+
+            "options": [
+
+                {
+                    "value": str(category.id),
+                    "label": category.name,
+                }
+
+                for category in PropertyCategory.objects.order_by("name")
             ]
         },
     ]
@@ -250,29 +250,6 @@ def developer_detail_pickers(
         },
 
         # =====================================================
-        # PROPERTY CATEGORY
-        # =====================================================
-
-        {
-            "name": "property_category",
-            "value": selected_categories,
-            "placeholder": "Тип недвижимости",
-            "multiple": True,
-            "auto_submit": False,
-            "input_type": "checkbox",
-
-            "options": [
-
-                {
-                    "value": str(category.id),
-                    "label": category.name,
-                }
-
-                for category in PropertyCategory.objects.order_by("name")
-            ]
-        },
-
-        # =====================================================
         # CITY
         # =====================================================
 
@@ -316,6 +293,29 @@ def developer_detail_pickers(
                 }
 
                 for district in district_queryset
+            ]
+        },
+
+        # =====================================================
+        # PROPERTY CATEGORY
+        # =====================================================
+
+        {
+            "name": "property_category",
+            "value": selected_categories,
+            "placeholder": "Тип недвижимости",
+            "multiple": True,
+            "auto_submit": False,
+            "input_type": "checkbox",
+
+            "options": [
+
+                {
+                    "value": str(category.id),
+                    "label": category.name,
+                }
+
+                for category in PropertyCategory.objects.order_by("name")
             ]
         },
     ]

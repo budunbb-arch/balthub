@@ -1,0 +1,22 @@
+{% extends "default/base.html" %}
+
+{% block title %}{{ trans.text_maintenance }}{% endblock %}
+
+{% block content %}
+
+<section class="error-page py-5">
+
+    <div class="container text-center">
+
+        <h1 class="display-1 fw-bold">
+            {{ trans.text_maintenance }}
+        </h1>
+
+        <p class="lead mb-4">
+            {{ trans.maintenance_message }}
+        </p>
+
+    </div>
+
+</section>
+{% endblock %}

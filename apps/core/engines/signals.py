@@ -41,6 +41,7 @@ def _clear_map_settings_cache():
 
 def _clear_site_settings_cache():
     cache.delete("site_settings")
+    cache.delete("site_template")
 
 
 def _clear_order_call_modal_cache():
