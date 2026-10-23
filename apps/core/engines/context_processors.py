@@ -18,6 +18,19 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def _route_matches(route, view_name, path):
+    if not route:
+        return True
+    if route == view_name:
+        return True
+
+    route_path = f"/{route.strip('/')}"
+    path = path or "/"
+    if route_path == "/":
+        return path == "/"
+    return path == route_path or path.startswith(f"{route_path}/")
+
+
 
 def localization(request):
 
@@ -84,7 +97,11 @@ def layout_modules(request):
 
     for module_meta in modules_meta:
 
-        if module_meta["route"] and module_meta["route"] != view_name:
+        if not _route_matches(
+            module_meta["route"],
+            view_name,
+            request.path_info,
+        ):
             continue
 
         # ---------------------------------------
@@ -181,6 +198,7 @@ def seo(request):
         "house_detail",
         "flat_detail",
         "developer_detail",
+        "geography_detail",
     }
     use_cache = getattr(request, "view_name", None) not in detail_views
 
@@ -259,6 +277,25 @@ def site_settings(request):
     }
 
 
+def account_session(request):
+    account_id = request.session.get("account_id")
+    if not isinstance(account_id, int) or account_id <= 0:
+        return {"is_logged": False, "account_session": None}
+
+    from apps.accounts.models import AccountAccount
+
+    account = (
+        AccountAccount.objects
+        .filter(pk=account_id, active=True)
+        .only("id", "name")
+        .first()
+    )
+    return {
+        "is_logged": account is not None,
+        "account_session": account,
+    }
+
+
 def order_call_modal(request):
     from apps.core.documents.models import Document
     from apps.core.dictionaries.models import Country
@@ -291,7 +328,10 @@ def order_call_modal(request):
         result = {
             "order_call_personal_data_doc": personal_data_doc,
             "order_call_policy_doc": policy_doc,
+            "account_personal_data_doc": personal_data_doc,
+            "account_policy_doc": policy_doc,
             "order_call_turnstile_site_key": turnstile_site_key,
+            "account_registration_turnstile_site_key": turnstile_site_key,
             "phone_countries": list(
                 Country.objects.all().values("code", "name", "phone_code")
             ),
@@ -304,5 +344,10 @@ def order_call_modal(request):
             Country.objects.all().values("code", "name", "phone_code")
         )
         cache.set(cache_key, result, 300)
+    from apps.leads.captcha import create_challenge
+
+    result["account_registration_captcha"] = create_challenge(request)
+    result["account_login_captcha"] = create_challenge(request)
+    result["account_password_reset_captcha"] = create_challenge(request)
     result["order_call_captcha"] = create_challenge(request)
     return result

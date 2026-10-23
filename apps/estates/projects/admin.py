@@ -30,11 +30,12 @@ class ProjectAdmin(SoftDeleteAdmin):
     list_display = (
         "name",
         "developer",
+        "project_type",
         "is_public",
         "is_deleted",
         "created_at",
     )
     search_fields = ("name", "external_id", "developer__name")
-    list_filter = ("is_public", "is_deleted", "developer")
+    list_filter = ("is_public", "is_deleted", "developer", "project_type")
     ordering = ("name",)
     inlines = (ProjectParamsInline, ProjectDescriptionInline, ProjectImageInline)

@@ -12,6 +12,7 @@ from .models import (
     FinishType,
     HouseStructureType,
     PropertyCategory,
+    ProjectType,
     PropertyType,
 )
 
@@ -37,6 +38,18 @@ class CountryAdmin(DictionaryAdmin):
     search_fields = ("code", "name", "phone_code")
 
 
+class ProjectTypeAdmin(admin.ModelAdmin):
+    list_display = ("name", "project_type_alias", "default")
+    list_filter = ("default",)
+    search_fields = ("name", "project_type_alias")
+    ordering = ("name",)
+
+
+class CityAdmin(DictionaryAdmin):
+    list_display = ("name", "slug")
+    search_fields = ("name", "slug")
+
+
 class DistrictAdmin(admin.ModelAdmin):
     list_display = ("city", "name")
     list_filter = ("city",)
@@ -54,12 +67,13 @@ admin.site.register(
         BathroomUnitType,
         HouseStructureType,
         BuildingStatus,
-        City,
     ],
     DictionaryAdmin,
 )
 
+admin.site.register(City, CityAdmin)
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(ContactType, ContactTypeAdmin)
 admin.site.register(Country, CountryAdmin)
+admin.site.register(ProjectType, ProjectTypeAdmin)
 admin.site.register(District, DistrictAdmin)

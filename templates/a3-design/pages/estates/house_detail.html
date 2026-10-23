@@ -14,7 +14,7 @@
 -->
 <h1>{{ house.params.corpus }}</h1>
 <div class="">
-    <strong>&laquo;{{ house.project.name }}&raquo;</strong> | {{ house.project.params.city }}, {{ house.params.address }}
+    <strong>{{ house.project.project_type.project_type_alias }} &laquo;{{ house.project.name }}&raquo;</strong> | {{ house.project.params.city }}, {{ house.params.address }}
 </div>
 
 <hr class="my-3">
@@ -111,24 +111,6 @@
     {% endif %}
 </div>
 
-
-
-{% if map_settings.enabled and house.params.latitude and house.params.longitude %}
-
-<div class="house-map position-relative mb-5">
-    <div class="block-header position-absolute p-1 px-3 bold">{{ trans.text_house_coordinates }}</div>
-
-    <div id="house-map"></div>
-    <div class="maps-overlay position-absolute">
-        <span class="maps-toggler position-absolute text-center"><i class="fa-solid fa-lock"></i></span>
-    </div>
-
-    {{ map_points|json_script:"house-map-data" }}
-
-</div>
-
-{% endif %}
-
 <div class="house-media row mb-5">
     {% if house.image %}
         <div class="col-12 col-sm-6 position-relative mb-5">
@@ -148,10 +130,28 @@
     {% endif %}
 </div>
 
+
+
+{% if map_settings.enabled and house.params.latitude and house.params.longitude %}
+
+<div class="house-map position-relative mb-5">
+    <div class="block-header position-absolute p-1 px-3 bold">{{ trans.text_house_coordinates }}</div>
+
+    <div id="house-map"></div>
+    <div class="maps-overlay position-absolute">
+        <span class="maps-toggler position-absolute text-center"><i class="fa-solid fa-lock"></i></span>
+    </div>
+
+    {{ map_points|json_script:"house-map-data" }}
+
+</div>
+
+{% endif %}
+
 <div class="house-flats mb-4">
     <!-- Квартиры -->
     <div id="flats-list">
-        <h2 class="pb-2 mb-4">{{ trans.choose_flat }} {{ house.params.address }} {{ house.params.corpus }}</h2>
+        <h2 class="pb-2 mb-4">{{ trans.choose_flat }} {{ house.project.project_type.project_type_alias }} &laquo;{{ house.project }}&raquo;, {{ house.params.corpus }}</h2>
 
         <div
             data-ajax-list

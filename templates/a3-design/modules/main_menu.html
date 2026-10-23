@@ -1,4 +1,7 @@
-{# templates/default/modules/main_menu.html #}
+{# templates/a3-design/modules/main_menu.html #}
+
+<div class="row">
+    <div class="site-menu col-9 col-xl-9">
 
 {% url 'project_list' as project_list_url %}
 {% url 'feedback_page' as feedback_page_url %}
@@ -17,38 +20,9 @@
 
     <li class="nav-item">
         <a 
-        class="nav-link{% if request.path == '/estates/tags/kalininigrad/' %} state{% endif %}" 
-        href="/estates/tags/kalininigrad/" 
-        {% if request.path == '/estates/tags/kalininigrad/' %}aria-current="page"{% endif %}>
-            {{ trans.kaliningrad }}
-        </a>
-    </li>
-
-    <li class="nav-item">
-        <a 
-        class="nav-link{% if request.path == '/estates/tags/prigorod/' %} state{% endif %}" 
-        href="/estates/tags/prigorod/"
-        {% if request.path == '/estates/tags/prigorod/' %}aria-current="page"{% endif %}>
-            {{ trans.suburb }}
-        </a>
-    </li>
-
-    <li class="nav-item">
-        <a 
-        class="nav-link{% if request.path == '/estates/tags/poberezhe/' %} state{% endif %}" 
-        href="/estates/tags/poberezhe/"
-        {% if request.path == '/estates/tags/poberezhe/' %}aria-current="page"{% endif %}>
-            {{ trans.seaside }}
-        </a>
-    </li>
-
-
-
-    <li class="nav-item">
-        <a 
-        class="nav-link{% if request.path == '/estates/tags/kalininigrad/' %} state{% endif %}" 
-        href="/estates/tags/kalininigrad/" 
-        {% if request.path == '/estates/tags/kalininigrad/' %}aria-current="page"{% endif %}>
+        class="nav-link{% if request.resolver_match.kwargs.city_slug == 'kaliningrad' %} state{% endif %}"
+        href="{% url 'geography_detail' 'kaliningrad' %}"
+        {% if request.resolver_match.kwargs.city_slug == 'kaliningrad' %}aria-current="page"{% endif %}>
             {{ trans.kaliningrad }}
         </a>
     </li>
@@ -115,3 +89,29 @@
     -->
 
 </ul>
+</div>
+<div class="account-menu col-3 col-xl-3">
+    {% if is_logged %}
+        <a
+            href="{% url 'account_dashboard' %}"
+            class="nav-link thin-button"
+            aria-label="{{ trans.text_account }}"
+        >
+            <i class="fa-solid fa-user" aria-hidden="true"></i>
+            <span class="d-none d-sm-inline">{{ trans.text_account }}</span>
+        </a>
+    {% else %}
+        <a
+            href="#"
+            class="nav-link thin-button"
+            data-bs-toggle="modal"
+            data-bs-target="#accountModal"
+            aria-controls="accountModal"
+            aria-label="{{ trans.text_account }}"
+        >
+            <i class="fa-solid fa-user" aria-hidden="true"></i>
+            <span class="d-none d-sm-inline">{{ trans.text_account }}</span>
+        </a>
+    {% endif %}
+</div>
+</div>

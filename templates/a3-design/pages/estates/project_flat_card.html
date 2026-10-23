@@ -3,7 +3,7 @@
 
 <div class="col-12 col-sm-6 col-lg-4 col-xl-4 pb-3">
     <div class="card p-3">
-        <h5 class="uppercase">{{ flat.house.project.name }}</h5>
+        <h5 class="uppercase">{{ flat.house.project.project_type.project_type_alias }} &laquo;{{ flat.house.project.name }}&raquo;</h5>
         <div class="text-center">
             <ul class="card-params list-unstyled font-size-fix h-list mb-3">
                 {% if flat.number %}
@@ -31,13 +31,19 @@
             </ul>
             <ul class="card-params list-unstyled font-size-fix h-list mb-3">
                 {% if flat.params.square %}
-                    <li>{{ flat.params.square }} {{ trans.text_m2 }}</li>
+                    <li data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ trans.full_square }}">
+                        {{ flat.params.square }} {{ trans.text_m2 }}
+                    </li>
                 {% endif %}
                 {% if flat.params.living_square %}
-                    <li>{{ flat.params.living_square }} {{ trans.text_m2 }}</li>
+                    <li data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ trans.living_square }}">
+                        {{ flat.params.living_square }} {{ trans.text_m2 }}
+                    </li>
                 {% endif %}
                 {% if flat.params.kitchen_square %}
-                    <li>{{ flat.params.kitchen_square }} {{ trans.text_m2 }}</li>
+                    <li data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{{ trans.kitchen_square }}">
+                        {{ flat.params.kitchen_square }} {{ trans.text_m2 }}
+                    </li>
                 {% endif %}
             </ul>
         </div>

@@ -1,4 +1,5 @@
 from apps.core.models import SiteSettings
+from apps.core.localization import t
 
 import json
 import logging
@@ -121,7 +122,7 @@ def build_seo(request, context=None):
             seo["title"] = pick_value(project.meta_title, seo["title"])
             seo["description"] = pick_value(project.meta_description, seo["description"])
             seo["keywords"] = pick_value(project.meta_keywords, seo["keywords"])
-            seo["h1"] = pick_value(project.seo_h1, project.name)
+            seo["h1"] = pick_value(project.seo_h1, f"project.project_type.project_type_alias &laquo;project.name&raquo;")
             seo["canonical"] = pick_value(
                 project.canonical_url,
                 request.build_absolute_uri(request.path)
@@ -193,6 +194,26 @@ def build_seo(request, context=None):
             seo["og_image"] = build_og_image(developer)
             seo["og_url"] = seo["canonical"]
             seo["json_ld"] = json.dumps(build_json_ld("HomeAndConstructionBusiness", developer), ensure_ascii=False)
+
+    elif view == "geography_list":
+        seo["title"] = t("text_geography")
+        seo["h1"] = t("text_geography")
+        seo["canonical"] = request.build_absolute_uri(request.path)
+        seo["og_title"] = seo["title"]
+        seo["og_url"] = seo["canonical"]
+
+    elif view == "geography_detail":
+        city = getattr(request, "geo_city", None) or context.get("city")
+
+        if city:
+            seo["title"] = t("seo_geography_title").format(name=city.name)
+            seo["description"] = t("seo_geography_description").format(name=city.name)
+            seo["h1"] = city.name
+            seo["canonical"] = request.build_absolute_uri(request.path)
+            seo["og_title"] = seo["title"]
+            seo["og_description"] = seo["description"]
+            seo["og_url"] = seo["canonical"]
+            seo["json_ld"] = json.dumps(build_json_ld("City", city), ensure_ascii=False)
 
     elif view == "tag_detail":
         tag = context.get("tag")

@@ -51,6 +51,7 @@ class NMarketImporter:
 
         self.cache = ImportCache()
         self.cache.load_dictionaries()
+        self.cache.load_project_types()
         self.cache.load_cities()
         self.cache.load_districts()
         self.cache.load_developers()
@@ -471,12 +472,15 @@ class NMarketImporter:
             # ------------------------
             # PROJECT
             # ------------------------
+            project_name, project_type = self.cache.resolve_project_type(
+                data["building_name"]
+            )
             project, created = self.cache.resolve_project(
                 external_id=data["complex_id"],
                 developer=developer,
-                name=data["building_name"],
-                meta_title=data["building_name"],
-                seo_h1=data["building_name"],
+                name=project_name,
+                meta_title=project_name,
+                seo_h1=project_name,
             )
 
             if developer is not None:
@@ -491,6 +495,8 @@ class NMarketImporter:
                     is_public=True,
                     published_at=project.published_at or timezone.now(),
                     developer=developer,
+                    name=project_name,
+                    project_type=project_type,
                 )
 
 

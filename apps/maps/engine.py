@@ -13,6 +13,10 @@ class MapEngine:
 
         for house in (
             qs.select_related("project", "params")
+              .select_related(
+                  "project__project_type",
+                  "project__params__city",
+              )
               .filter(
                   params__latitude__isnull=False,
                   params__longitude__isnull=False,
@@ -26,6 +30,19 @@ class MapEngine:
                 "lon": house.params.longitude,
                 "url": house.get_absolute_url(),
                 "project": house.project.name,
+                "project_type_alias": (
+                    house.project.project_type.project_type_alias
+                    if house.project.project_type
+                    else ""
+                ),
+                "city": (
+                    house.project.params.city.name
+                    if hasattr(house.project, "params")
+                    and house.project.params.city
+                    else ""
+                ),
+                "corpus": house.params.corpus or "",
+                "address": house.params.address or "",
             })
 
         return points

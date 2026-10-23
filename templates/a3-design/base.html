@@ -50,8 +50,12 @@
     <link rel="icon" type="image/png" sizes="192x192" href="{% static 'assets/images/a3-design/icons/icon-black.svg' %}">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/images/a3-design/icons/icon-black.svg' %}">
     <link rel="stylesheet" href="{% static 'assets/css/a3-design/a3-design.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/css/slide-to-top.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/a3-design/slide-to-top.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/a3-design/slider-captcha.css' %}">
+
+    {% if is_home %}
+        <link rel="stylesheet" href="{% static 'assets/css/a3-design/homepage.css' %}">
+    {% endif %}
 
     {% block extra_css %}{% endblock %}
 </head>
@@ -60,6 +64,7 @@
     {% include "default/layout/header.html" %}
 
     {% include "default/modules/order_call_modal.html" %}
+    {% include "default/modules/account_modal.html" %}
 
     
 
@@ -68,16 +73,19 @@
     {% block layout %}
         <div class="container mb-4 {% if is_home %}d-none{% endif %}">
             <div class="row">
+                <div class="col-12">
+                    {% include "default/includes/breadcrumbs.html" %}
+                </div>
+            </div>
+            <div class="row">
 
                 {% if layout.sidebar %}
-                    <aside class="col-md-3 col-xl-2">
+                    <aside class="col-md-3 col-xl-2 order-xl-2">
                         {% include "default/includes/render_modules.html" with modules=layout.sidebar %}
                     </aside>
-                    <main class="col-md-9 col-xl-10 content-wrapper">
-                        {% include "default/includes/breadcrumbs.html" %}
+                    <main class="col-md-9 col-xl-10 order-xl-1 content-wrapper">                        
                 {% else %}
                     <main class="col-12 col-xl-12 content-wrapper">
-                        {% include "default/includes/breadcrumbs.html" %}
                 {% endif %}
                         <div class="container">
                             {% block content %}{% endblock %}
@@ -94,6 +102,8 @@
     <button class="slide-to-top d-flex align-items-center justify-content-center" type="button" aria-label="{{ trans.slide_to_top }}" title="{{ trans.slide_to_top }}">
         <i class="fa-solid fa-angle-up" aria-hidden="true"></i>
     </button>
+
+    {{ trans|json_script:"translations-data" }}
     {% include "default/layout/scripts.html" %}
 
     {% block extra_js %}{% endblock %}

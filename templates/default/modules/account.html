@@ -1,0 +1,25 @@
+{% if data.account %}
+<section class="account-module">
+    <h2>{{ module.name }}</h2>
+
+    <p>{{ data.account.name }}</p>
+
+    {% if data.account_groups %}
+        <h3>Группы</h3>
+        <ul>
+            {% for group in data.account_groups %}
+                <li>{{ group.name }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if data.account_contacts %}
+        <h3>Контакты</h3>
+        <ul>
+            {% for contact in data.account_contacts %}
+                <li>{{ contact.type }}: {{ contact.value }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</section>
+{% endif %}

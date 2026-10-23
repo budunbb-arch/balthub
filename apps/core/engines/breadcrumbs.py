@@ -1,15 +1,26 @@
 from django.urls import reverse, Resolver404, resolve
 
+from apps.core.dictionaries.models import City
 from apps.estates.projects.models import Project
 from apps.estates.houses.models import House
 from apps.estates.flats.models import Flat
 from apps.estates.developers.models import Developer
 from apps.estates.tags.models import Tag
 from apps.core.documents.models import Document
+from apps.core.localization import t
 
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+def _project_breadcrumb_title(project):
+    project_type_alias = (
+        project.project_type.project_type_alias
+        if project.project_type
+        else ""
+    )
+    return f"{project_type_alias} «{project.name}»".strip()
 
 
 def build_breadcrumbs(request):
@@ -26,7 +37,7 @@ def build_breadcrumbs(request):
 
     breadcrumbs = [
         {
-            "title": "Главная",
+            "title": t("text_homepage"),
             "url": reverse("home"),
         }
     ]
@@ -39,7 +50,7 @@ def build_breadcrumbs(request):
         if view == "developer_list":
 
             breadcrumbs.append({
-                "title": "Застройщики",
+                "title": t("text_developers"),
                 "url": None,
             })
 
@@ -59,7 +70,7 @@ def build_breadcrumbs(request):
             )
 
             breadcrumbs.append({
-                "title": "Застройщики",
+                "title": t("text_developers"),
                 "url": reverse("developer_list"),
             })
 
@@ -76,7 +87,7 @@ def build_breadcrumbs(request):
         elif view == "search_results":
 
             breadcrumbs.append({
-                "title": "Результаты поиска",
+                "title": t("search_title"),
                 "url": None,
             })
 
@@ -87,7 +98,7 @@ def build_breadcrumbs(request):
         elif view == "feedback_page":
 
             breadcrumbs.append({
-                "title": "Обратная связь",
+                "title": t("feedback_page"),
                 "url": None,
             })
 
@@ -98,9 +109,37 @@ def build_breadcrumbs(request):
         elif view == "project_list":
 
             breadcrumbs.append({
-                "title": "Новостройки",
+                "title": t("text_newprojects"),
                 "url": None,
             })
+
+        elif view == "geography_list":
+
+            breadcrumbs.append({
+                "title": t("text_geography"),
+                "url": None,
+            })
+
+        elif view == "geography_detail":
+
+            city = getattr(request, "geo_city", None)
+            if city is None:
+                city = (
+                    City.objects
+                    .only("name")
+                    .filter(slug=resolver.kwargs.get("city_slug"))
+                    .first()
+                )
+
+            breadcrumbs.append({
+                "title": t("text_geography"),
+                "url": reverse("geography_list"),
+            })
+            if city:
+                breadcrumbs.append({
+                    "title": city.name,
+                    "url": None,
+                })
 
         # =====================================================
         # PROJECT DETAIL
@@ -112,18 +151,23 @@ def build_breadcrumbs(request):
 
             project = (
                 Project.objects
-                .only("name", "slug")
+                .only("name", "slug", "project_type__project_type_alias")
+                .select_related("project_type")
                 .filter(slug=project_slug)
                 .first()
             )
 
             breadcrumbs.append({
-                "title": "Новостройки",
+                "title": t("text_newprojects"),
                 "url": reverse("project_list"),
             })
 
             breadcrumbs.append({
-                "title": project.name if project else project_slug,
+                "title": (
+                    _project_breadcrumb_title(project)
+                    if project
+                    else project_slug
+                ),
                 "url": None,
             })
 
@@ -135,7 +179,7 @@ def build_breadcrumbs(request):
         elif view == "house_list":
 
             breadcrumbs.append({
-                "title": "Дома",
+                "title": t("text_houses"),
                 "url": None,
             })
 
@@ -147,7 +191,7 @@ def build_breadcrumbs(request):
         elif view == "plans":
 
             breadcrumbs.append({
-                "title": "Планировки",
+                "title": t("text_layouts"),
                 "url": None,
             })
 
@@ -163,7 +207,8 @@ def build_breadcrumbs(request):
 
             project = (
                 Project.objects
-                .only("name", "slug")
+                .only("name", "slug", "project_type__project_type_alias")
+                .select_related("project_type")
                 .filter(slug=project_slug)
                 .first()
             )
@@ -177,13 +222,13 @@ def build_breadcrumbs(request):
             )
 
             breadcrumbs.append({
-                "title": "Новостройки",
+                "title": t("text_newprojects"),
                 "url": reverse("project_list"),
             })
 
             if project:
                 breadcrumbs.append({
-                    "title": project.name,
+                    "title": _project_breadcrumb_title(project),
                     "url": reverse(
                         "project_detail",
                         kwargs={
@@ -211,7 +256,8 @@ def build_breadcrumbs(request):
 
             project = (
                 Project.objects
-                .only("name", "slug")
+                .only("name", "slug", "project_type__project_type_alias")
+                .select_related("project_type")
                 .filter(slug=project_slug)
                 .first()
             )
@@ -232,13 +278,13 @@ def build_breadcrumbs(request):
             )
 
             breadcrumbs.append({
-                "title": "Новостройки",
+                "title": t("text_newprojects"),
                 "url": reverse("project_list"),
             })
 
             if project:
                 breadcrumbs.append({
-                    "title": project.name,
+                    "title": _project_breadcrumb_title(project),
                     "url": reverse(
                         "project_detail",
                         kwargs={
@@ -261,7 +307,7 @@ def build_breadcrumbs(request):
 
             breadcrumbs.append({
                 "title": (
-                    f"Квартира {flat.number}"
+                    f'{t("text_flat")} {flat.number}'
                     if flat and flat.number
                     else flat_slug
                 ),
@@ -274,7 +320,7 @@ def build_breadcrumbs(request):
 
         elif view == "documents":
             breadcrumbs.append({
-                "title": "Документы",
+                "title": t("text_documents"),
                 "url": None,
             })
 
@@ -292,7 +338,7 @@ def build_breadcrumbs(request):
             )
 
             breadcrumbs.append({
-                "title": "Документы",
+                "title": t("text_documents"),
                 "url": reverse("documents"),
             })
 
@@ -307,7 +353,7 @@ def build_breadcrumbs(request):
 
         elif view in ("tag_list", "tags:tag_list"):
             breadcrumbs.append({
-                "title": "Теги",
+                "title": t("text_tags"),
                 "url": None,
             })
 
@@ -329,7 +375,7 @@ def build_breadcrumbs(request):
                 logger.exception("BREADCRUMB TAG ERROR")
 
             breadcrumbs.append({
-                "title": "Теги",
+                "title": t("text_tags"),
                 "url": reverse("tags:tag_list"),
             })
 

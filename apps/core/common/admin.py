@@ -341,8 +341,30 @@ class ProjectDescriptionSettingsInline(admin.StackedInline):
     extra = 1
 
 
+class ModuleAdminForm(forms.ModelForm):
+    class Meta:
+        model = Module
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        module_type = self.data.get(
+            self.add_prefix("type"),
+            self.instance.type,
+        )
+        if module_type == "account":
+            self.fields["template"].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("type") == "account":
+            cleaned_data["template"] = "default/modules/account.html"
+        return cleaned_data
+
+
 @admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):
+    form = ModuleAdminForm
     list_display = ("name", "type", "position", "route", "html_module", "is_active", "order")
     list_filter = ("position", "is_active", "type")
     search_fields = ("name", "template", "route", "html_module__name", "html_module__code")
@@ -413,6 +435,8 @@ class ModuleAdmin(admin.ModelAdmin):
             obj.template = "default/modules/tags_menu.html"
         if obj.type == "tag_collection" and not obj.template:
             obj.template = "default/modules/tag_collection.html"
+        if obj.type == "account" and not obj.template:
+            obj.template = "default/modules/account.html"
         super().save_model(request, obj, form, change)
 
         if obj.type == "tags_menu":

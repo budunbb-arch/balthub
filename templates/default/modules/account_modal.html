@@ -1,0 +1,180 @@
+{% load static %}
+
+<div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered account-modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="accountModalLabel">{{ trans.text_account }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ trans.text_close }}"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs nav-fill" id="accountTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link position-relative active" id="account-login-tab" data-bs-toggle="tab" data-bs-target="#account-login-pane" type="button" role="tab" aria-controls="account-login-pane" aria-selected="true">
+                            {{ trans.text_login }}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link position-relative" id="account-register-tab" data-bs-toggle="tab" data-bs-target="#account-register-pane" type="button" role="tab" aria-controls="account-register-pane" aria-selected="false">
+                            {{ trans.text_register }}
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="account-login-pane" role="tabpanel" aria-labelledby="account-login-tab" tabindex="0">
+                            <form action="{% url 'account_login' %}" method="post" data-account-login>
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <div class="form-field field-user position-relative">
+                                        <input class="form-control" id="accountLoginEmail" name="email" type="email" placeholder="{{ trans.text_email }}" maxlength="254" autocomplete="email" required>
+                                        <span class="form-field-icon"></span>
+                                    </div>
+                                    <div class="hint text-small"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-field field-password position-relative">
+                                        <input class="form-control" id="accountLoginPassword" name="password" type="password" placeholder="{{ trans.text_password }}" maxlength="1024" autocomplete="current-password" required>
+                                        <span class="form-field-icon"></span>
+                                    </div>
+                                    <div class="hint text-small"></div>
+                                    <div class="text-end">
+                                        <button class="btn btn-link text-small" type="button" data-password-reset-show>
+                                            {{ trans.text_forgot }}
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-12 col-xl-8 offset-xl-2 mb-3">
+                                        {% include "default/modules/slider_captcha.html" with captcha=account_login_captcha %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-xl-8 offset-xl-2">
+                                        <button class="btn btn-primary w-100" type="submit" disabled>{{ trans.text_login }}</button>
+                                    </div>
+                                </div>
+                                
+                            </form>
+                            <form action="{% url 'account_password_reset_request' %}" method="post" data-account-password-reset hidden>
+                                {% csrf_token %}
+                                <div class="text-small mb-3">{{ trans.passreset_manual }}</div>
+                                <div class="mb-3">
+                                    <div class="form-field field-email position-relative">
+                                        <input class="form-control" id="accountPasswordResetEmail" name="email" type="email" placeholder="{{ trans.text_email }}" maxlength="254" autocomplete="email" required>
+                                        <span class="form-field-icon"></span>
+                                    </div>                                    
+                                </div>
+                                <div class="mb-3">
+                                    <div class="row">
+                                        <div class="col-12 col-xl-8 offset-xl-2">
+                                            {% include "default/modules/slider_captcha.html" with captcha=account_password_reset_captcha %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-xl-8 offset-xl-2">
+                                        <button class="btn btn-primary w-100" type="submit" disabled>{{ trans.forgot_button }}</button>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn-link w-100 mt-2 p-0" type="button" data-password-reset-back>
+                                    {{ trans.back_to_login }}
+                                </button>
+                            </form>
+                            <div class="account-password-reset-success text-center" role="status" hidden>
+                                <p class="mb-3"></p>
+                                <button class="btn btn-link p-0" type="button" data-password-reset-back>
+                                    Вернуться ко входу
+                                </button>
+                            </div>
+                        </div>
+
+                    <div class="tab-pane fade" id="account-register-pane" role="tabpanel" aria-labelledby="account-register-tab" tabindex="0">
+                        <form action="{% url 'account_register' %}" method="post" data-account-registration>
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <div class="form-field field-user position-relative">
+                                    <input class="form-control" id="accountRegisterName" name="name" type="text" placeholder="{{ trans.text_username }}" maxlength="255" autocomplete="name" required>
+                                    <span class="form-field-icon"></span>
+                                </div>
+                                <div class="hint text-small ps-3">{{ trans.username_required }}</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-field field-email position-relative">
+                                    <input class="form-control" id="accountRegisterEmail" name="email" type="email" placeholder="{{ trans.text_email }}" maxlength="254" autocomplete="email" required>
+                                    <span class="form-field-icon"></span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-field field-password position-relative">
+                                    <input class="form-control" id="accountRegisterPassword" name="password" type="password" placeholder="{{ trans.text_password }}" minlength="8" maxlength="1024" autocomplete="new-password" aria-describedby="accountPasswordHelp" required>
+                                    <span class="form-field-icon"></span>
+                                    <button class="btn btn-text text-small btn-dice no-border position-absolute" type="button" data-bs-toggle="tooltip" data-bs-title="{{ trans.text_generate }}" data-generate-account-password>
+                                        <i class="fa-solid fa-dice"></i>
+                                    </button>
+                                </div>
+                                <div class="hint text-small ps-3" id="accountPasswordHelp">
+                                    {{ trans.password_required|safe }}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-field field-password position-relative">
+                                    <input class="form-control" id="accountRegisterPasswordConfirm" name="password_confirm" type="password" placeholder="{{ trans.text_password_confirm }}" minlength="8" maxlength="1024" autocomplete="new-password" required>
+                                    <span class="form-field-icon"></span>
+                                </div>
+                            </div>
+
+                            {% if account_personal_data_doc %}
+                                <div class="form-check text-start text-small mb-2">
+                                    <input class="form-check-input" type="checkbox" id="accountPersonalData" name="personal_data" required>
+                                    <label class="form-check-label" for="accountPersonalData">
+                                        {{ trans.text_agree }}
+                                        <a href="{% url 'document_detail' account_personal_data_doc.id %}" target="_blank" rel="noopener">
+                                            {{ trans.text_personaldata }}
+                                        </a>
+                                    </label>
+                                </div>
+                            {% endif %}
+
+                            {% if account_policy_doc %}
+                                <div class="form-check text-start text-small mb-3">
+                                    <input class="form-check-input" type="checkbox" id="accountPolicy" name="policy" required>
+                                    <label class="form-check-label" for="accountPolicy">
+                                        {{ trans.text_agree }}
+                                        <a href="{% url 'document_detail' account_policy_doc.id %}" target="_blank" rel="noopener">
+                                            {{ trans.text_policy }}
+                                        </a>
+                                    </label>
+                                </div>
+                            {% endif %}
+
+                            {% if account_registration_turnstile_site_key %}
+                                <div class="cf-turnstile text-center mb-3" data-sitekey="{{ account_registration_turnstile_site_key }}" data-size="compact"></div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <div class="row">
+                                    <div class="col-12 col-xl-8 offset-xl-2">
+                                        {% include "default/modules/slider_captcha.html" with captcha=account_registration_captcha %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-xl-8 offset-xl-2">
+                                    <button class="btn btn-primary w-100" type="submit" disabled>{{ trans.text_register }}</button>
+                                </div>
+                            </div>
+                            
+                        </form>
+
+                        <div class="account-registration-success text-center" role="status" hidden>
+                            <p class="mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

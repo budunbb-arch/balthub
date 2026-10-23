@@ -1,5 +1,8 @@
 {% load static %}
 
+<div class="hint text-small">
+    {{ trans.captcha_manual }}
+</div>
 <div class="slider-captcha row" data-slider-captcha data-target="{{ captcha.target }}">
     <div class="col-2 d-flex align-items-center p-0">
         <img src="{% static 'assets/images/a3-design/icons/icon-black.svg' %}" class="img-fluid">

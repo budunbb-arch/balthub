@@ -1,7 +1,12 @@
 # apps/estates/urls.py
 
 from django.urls import path, include
-from apps.estates.projects.views import project_list, project_detail
+from apps.estates.projects.views import (
+    project_list,
+    project_detail,
+    geography_list,
+    geography_detail,
+)
 from apps.estates.houses.views import house_list, house_detail, house_plans_ajax, plans, plans_ajax
 from apps.estates.flats.views import flat_detail
 from apps.estates.search.views import search_results
@@ -19,6 +24,8 @@ urlpatterns = [
 
     # списки
     path("projects/", project_list, name="project_list"),
+    path("geography/", geography_list, name="geography_list"),
+    path("geography/<slug:city_slug>/", geography_detail, name="geography_detail"),
     path("houses/", house_list, name="house_list"),
     path("plans/", plans, name="plans"),
     path("developers/", developer_list, name="developer_list"),

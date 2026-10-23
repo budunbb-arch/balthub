@@ -81,7 +81,7 @@ $(document).on('input', '.order-call-form .phone-input', function () {
         var $form = $(this);
 
         if (!$form.find('.slider-captcha.is-passed').length) {
-            toastr.error('Пройдите проверку ползунком.');
+            toastr.error(t("text_notbot"));
             return;
         }
 
@@ -117,13 +117,13 @@ $(document).on('input', '.order-call-form .phone-input', function () {
                 }
                 $form.hide();
                 $form.closest('.feedback-module').find('.success-form').show();
-                toastr.success('Заявка отправлена!');
+                toastr.success(t("text_ticket_sent"));
             } else {
-                toastr.error(result.data.error || 'Ошибка отправки');
+                toastr.error(result.data.error || t("text_send_error"));
             }
         })
         .catch(function () {
-            toastr.error('Ошибка отправки');
+            toastr.error(t("text_send_error"));
         })
         .finally(function () {
             $form.data('submitting', false);
@@ -210,7 +210,7 @@ $(document).on('input', '.order-call-form .phone-input', function () {
         if (hasTurnstile) {
             var cfToken = $form.find('input[name="cf-turnstile-response"]').val() || '';
             if (!cfToken) {
-                toastr.error('Слава роботам?');
+                toastr.error(t("text_notbot"));
                 $form.data('submitting', false);
                 return;
             }
@@ -240,13 +240,13 @@ $(document).on('input', '.order-call-form .phone-input', function () {
                 }
                 $form.hide();
                 $form.closest('.modal').find('.success-form').show();
-                toastr.success('Заявка отправлена!');
+                toastr.success(t("text_ticket_sent"));
             } else {
-                toastr.error(result.data.error || 'Ошибка отправки');
+                toastr.error(result.data.error || t("text_send_error"));
             }
         })
         .catch(function () {
-            toastr.error('Ошибка отправки');
+            toastr.error(t("text_send_error"));
         })
         .finally(function () {
             $form.data('submitting', false);
@@ -337,7 +337,7 @@ $(document).on('input', '.order-call-form .phone-input', function () {
         if (hasTurnstile) {
             var cfToken = $form.find('input[name="cf-turnstile-response"]').val() || '';
             if (!cfToken) {
-                toastr.error('Слава роботам?');
+                toastr.error(t("text_notbot"));
                 $form.data('submitting', false);
                 return;
             }
@@ -367,13 +367,13 @@ $(document).on('input', '.order-call-form .phone-input', function () {
                 }
                 $form.hide();
                 $form.closest('.modal').find('.success-form').show();
-                toastr.success('Заявка отправлена!');
+                toastr.success(t("text_ticket_sent"));
             } else {
-                toastr.error(result.data.error || 'Ошибка отправки');
+                toastr.error(result.data.error || t("text_send_error"));
             }
         })
         .catch(function (err) {
-            toastr.error('Ошибка отправки');
+            toastr.error(t("text_send_error"));
         })
         .finally(function () {
             $form.data('submitting', false);

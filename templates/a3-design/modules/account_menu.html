@@ -3,11 +3,22 @@
 <ul class="navbar-nav flex-row gap-3 text-end">
 
     <li class="nav-item">
-        <a class="nav-link" href="#">{{ trans.text_account }}</a>
+        {% if is_logged %}
+            <a class="nav-link" href="{% url 'account_dashboard' %}">{{ trans.text_account }}</a>
+        {% else %}
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#accountModal">{{ trans.text_account }}</a>
+        {% endif %}
     </li>
 
-    <li class="nav-item">
-        <a class="nav-link" href="#"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
-    </li>
+    {% if is_logged %}
+        <li class="nav-item">
+            <form method="post" action="{% url 'account_logout' %}">
+                {% csrf_token %}
+                <button class="nav-link border-0 bg-transparent" type="submit" aria-label="Выйти">
+                    <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+                </button>
+            </form>
+        </li>
+    {% endif %}
 
 </ul>

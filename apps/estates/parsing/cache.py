@@ -12,6 +12,7 @@ from apps.core.dictionaries.models import (
     BuildingStatus,
     City,
     District,
+    ProjectType,
 )
 from apps.estates.developers.models import Developer
 from apps.estates.projects.models import Project, ProjectDescription, ProjectParams
@@ -29,6 +30,8 @@ class ImportCache:
 
     def __init__(self):
         self.dictionaries = {}
+        self.project_types = []
+        self.default_project_type = None
 
         self.cities = {}
         self.districts = {}
@@ -85,6 +88,74 @@ class ImportCache:
             BuildingStatus,
         ):
             self.load_dictionary(model)
+
+    def load_project_types(self):
+        self.project_types = list(ProjectType.objects.order_by("id"))
+        default_project_types = [
+            project_type
+            for project_type in self.project_types
+            if project_type.default is True
+        ]
+        if len(default_project_types) != 1:
+            raise RuntimeError(
+                "В справочнике типов проектов должен быть ровно один тип "
+                "с default=True."
+            )
+
+        self.default_project_type = default_project_types[0]
+
+    def resolve_project_type(self, project_name):
+        if self.default_project_type is None:
+            raise RuntimeError("Типы проектов не загружены.")
+        if not project_name:
+            raise RuntimeError("В объявлении отсутствует название проекта.")
+
+        matches = []
+        for project_type in self.project_types:
+            for value in (project_type.name, project_type.project_type_alias):
+                value = (value or "").strip()
+                if not value:
+                    continue
+                pattern = rf"(?<!\w){re.escape(value)}(?!\w)"
+                if re.search(pattern, project_name, re.IGNORECASE):
+                    matches.append((len(value), project_type, value))
+
+        if not matches:
+            return project_name, self.default_project_type
+
+        longest_match_length = max(length for length, _, _ in matches)
+        longest_matches = [
+            (project_type, value)
+            for length, project_type, value in matches
+            if length == longest_match_length
+        ]
+        matching_type_ids = {project_type.id for project_type, _ in longest_matches}
+        if len(matching_type_ids) > 1:
+            matched_values = ", ".join(
+                sorted({value for _, value in longest_matches}, key=str.casefold)
+            )
+            raise RuntimeError(
+                f"Неоднозначный тип для названия проекта {project_name!r}: "
+                f"{matched_values}."
+            )
+
+        project_type, matched_value = longest_matches[0]
+        clean_name = re.sub(
+            rf"(?<!\w){re.escape(matched_value)}(?!\w)",
+            "",
+            project_name,
+            flags=re.IGNORECASE,
+        )
+        clean_name = re.sub(r"\s+", " ", clean_name).strip(
+            " \t\r\n-–—,.;:|«»\"'()[]"
+        )
+        if not clean_name:
+            raise RuntimeError(
+                f"Совпадение с типом проекта оставило пустое название: "
+                f"{project_name!r}."
+            )
+
+        return clean_name, project_type
     
 
     def load_cities(self):
@@ -121,11 +192,13 @@ class ImportCache:
 
         self.projects = {
             cache_key(p.external_id): p
-            for p in Project.objects.all().only(
+            for p in Project.objects.select_related("project_type").only(
                 "id",
                 "external_id",
                 "developer_id",
                 "is_deleted",
+                "name",
+                "project_type",
             )
         }
 

@@ -5,7 +5,7 @@
 {% load static %}
 {% load image_utils %}
 
-{% block title %}{{ project.name }}{% endblock %}
+{% block title %}{{ project.project_type.project_type_alias }} &laquo;{{ project.name }}&raquo;{% endblock %}
 
 {% block content %}
 
@@ -14,7 +14,7 @@
     <div class="row mb-3">
         <div class="col-8 col-sm-9 col-md-10 col-xl-8">
             <h1 class="">
-                {{ seo.h1|default:project.name }}
+                {{ project.project_type.project_type_alias }} &laquo;{{ project.name }}&raquo;
             </h1>
             {% if project.params %}
             <div class="">
@@ -72,12 +72,20 @@
         </div>
     {% endif %}
 
+<div class="project-slides position-relative mb-4">
+    <div class="block-header position-absolute p-1 px-3 bold">{{ trans.text_exterrior }} {{ project.project_type.project_type_alias }} &laquo;{{ project.name }}&raquo;</div>
+    <!-- Слайдшоу -->
+    {% include "default/modules/project_slideshow.html" with project=project %}
+</div>
+
+
+
 
 {% if map_points_json %}
 
 <div class="project-map position-relative mb-4">
 
-<div class="block-header position-absolute p-1 px-3 bold">{{ trans.text_coordinates }}</div>
+<div class="block-header position-absolute p-1 px-3 bold">{{ trans.text_coordinates }} {{ project.project_type.project_type_alias }} &laquo;{{ project.name }}&raquo;</div>
 
 {% if map_points %}
 
@@ -97,16 +105,10 @@
 
 {% endif %}
 
-<div class="project-slides position-relative mb-4">
-    <div class="block-header position-absolute p-1 px-3 bold">{{ trans.text_exterrior }}</div>
-    <!-- Слайдшоу -->
-    {% include "default/modules/project_slideshow.html" with project=project %}
-</div>
-
 <div class="project-houses">
     <!-- Дома - tpl: ajax/_house_list.html -->
     <div id="houses-list">
-        <h2 class="pb-2">{{ trans.text_houses }}</h2>
+        <h2 class="pb-2">{{ trans.text_houses }} {{ project.project_type.project_type_alias }} &laquo;{{ project.name }}&raquo;</h2>
 
         <div 
             data-ajax-list
@@ -129,7 +131,7 @@
 <div class="project-flats">
     <!-- Квартиры -->
     <div id="flats-list" class="mt-5">
-        <h2 class="pb-2 mb-4">{{ trans.choose_flat }} {{ project.name }}</h2>
+        <h2 class="pb-2 mb-4">{{ trans.choose_flat }} {{ project.project_type.project_type_alias }} &laquo;{{ project.name }}&raquo;</h2>
 
         <div 
             data-ajax-list

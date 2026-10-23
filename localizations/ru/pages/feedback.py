@@ -14,4 +14,5 @@ translations = {
     "text_to_home": "На главную",
     "text_close": "Закрыть",
     "feedback_map_title": "Мы здесь",
+    "feedback_page": "Обратная связь",
 }

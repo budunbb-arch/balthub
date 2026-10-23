@@ -1,0 +1,32 @@
+{% extends "default/base.html" %}
+
+{% load static %}
+
+{% block title %}{{ city.name }} — {{ trans.text_geography }}{% endblock %}
+
+{% block content %}
+    <h1>{{ city.name }}</h1>
+    <hr class="my-3">
+
+    <div
+        data-ajax-list
+        data-container="#geography-projects-container"
+        data-default-city="{{ city.pk }}"
+    >
+        <div class="ajax-loader-overlay hidden">
+            <div class="spinner"></div>
+        </div>
+        <div id="geography-projects-container">
+            {% include "default/pages/estates/ajax/_geography_projects.html" %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'assets/css/a3-design/picker.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/infinite-scroll.js' %}"></script>
+    <script src="{% static 'assets/js/picker_stable.js' %}"></script>
+{% endblock %}

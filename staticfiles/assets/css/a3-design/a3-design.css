@@ -38,6 +38,7 @@
 
     --bg-color: #fff;
     --text-color: #666;
+    --light-text: #888;
     --hover-color: #333;
     --light: #eee;
     --light-grey: #ddd;
@@ -119,25 +120,6 @@ h6 {
     background: url('/static/assets/images/a3-design/a3d_main_bg.webp');
     background-size: cover;
     margin-top: .5em;
-    aspect-ratio: 1 / 1;
-}
-
-@media (min-width: 576px) {
-    .header-content {
-        aspect-ratio: 2 / 1;
-    }
-}
-
-@media (min-width: 992px) {
-    .header-content {
-        aspect-ratio: 3 / 1.5;
-    }
-}
-
-@media (min-width: 1200px) {
-    .header-content {
-        aspect-ratio: 8 / 3;
-    }
 }
 
 /* blocks */
@@ -241,10 +223,10 @@ div#mainNavbar {
     border-radius: 1em;
     box-shadow: 0 0 5px var(--text-color);
     padding: 1em;
-    min-width: 200%;
+    min-width: 500%;
 }
 div#mainNavbar ul li {
-    border-top: 1px solid var(--text-color);
+    border-top: 1px dotted var(--text-color);
 
     &:first-child {
         border: none;
@@ -362,14 +344,14 @@ a.btn.btn-primary, button.btn.btn-primary {
     width: 100%;
     height: 50px;
     line-height: 50px;
-    border-radius: 50vh;
-    background: var(--seagreen);
+    border-radius: 6px;
+    background: var(--text-color);
     font-family: var(--gothic-font);
     font-weight: 600;
     border: none;
 }
 a.btn.btn-primary:hover, a.btn.btn-primary:focus, a.btn.btn-primary:active, button.btn.btn-primary:hover, button.btn.btn-primary:active, .btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
-    background:var(--mediumseagreen);
+    background:var(--hover-color);
 }
 a.btn.btn-primary:active:focus, button.btn.btn-primary:active, button.btn.btn-primary:active:focus {
     font-size: 0.9rem;
@@ -420,6 +402,10 @@ header a.nav-link:hover, header a.nav-link:focus, a.card-link:hover, a.card-link
     header a.nav-link {
         font-size: small;
     }
+    header a.nav-link.state {
+        font-weight: 700;
+        color: var(--hover-color);
+    }
 }
 
 a.a3d_tc-card-link {
@@ -427,6 +413,17 @@ a.a3d_tc-card-link {
 }
 a.a3d_tc-card-link:hover, a.a3d_tc-card-link:focus, a.a3d_tc-card-link:active {
     color: var(--white);
+}
+
+a.geo-link {
+    line-height: 3;
+    border-bottom: 1px dotted var(--light-grey);
+    color: var(--text-color);
+    transition: var(--animation-05);
+}
+a.geo-link:hover {
+    color: var(--hover-color);
+    padding-left: 1em;
 }
 
 button.pickers-collapse-button::after {
@@ -452,6 +449,37 @@ button.btn.btn-text.pickers-collapse-button:active {
     color: var(--seagreen);
 }
 
+a.nav-link.thin-button {
+    text-align: center;
+    background: var(--text-color);
+    color: var(--white);
+    border-radius: 50vh;
+}
+a.nav-link.thin-button:hover, a.nav-link.thin-button:focus {
+    background: var(--hover-color);
+    color: var(--white);
+}
+
+button.btn.btn-link, button.btn.btn-dice {
+    text-decoration: none;
+    color: var(--text-color);
+    padding-right: 1em;
+}
+button.btn.btn-link:hover, button.btn.btn-link:active, button.btn.btn-link:focus, 
+button.btn.btn-dice:hover, button.btn.btn-dice:active, button.btn.btn-dice:focus {
+    color: var(--hover-color);
+    background: none;
+}
+button.btn.btn-dice:hover, button.btn.btn-dice:active, button.btn.btn-dice:focus {
+    border: none;
+}
+
+.btn-dice {
+    right: 0;
+    top: 0;
+    height: 100%;
+}
+
 /* forms */
 .form-select:focus {
     box-shadow: none;
@@ -471,6 +499,9 @@ button.btn.btn-text.pickers-collapse-button:active {
 }
 .field-email span.form-field-icon::after {
     content: '\40';
+}
+.field-password span.form-field-icon::after {
+    content: '\f084';
 }
 .form-field input.form-control + span.form-field-icon::after, .search-filter::after, .form-field select.form-select + span.form-field-icon::after {
     font-family: var(--icon-font);
@@ -532,7 +563,7 @@ button.btn.btn-text.pickers-collapse-button:active {
     height: 3em;
     padding-left: 3em;
     border-radius: 50vh;
-    background: var(--white);
+    background-color: var(--white);
 }
 .phonenumber .form-field select.form-select.phone-country {
     border-top-right-radius: 0;
@@ -564,15 +595,16 @@ button.btn.btn-text.pickers-collapse-button:active {
 
 #orderCallModal .modal-dialog {
     box-sizing: border-box;
-    width: calc(100% - 1rem);
-    max-width: 500px;
+    width: min(500px, calc(100vw - 1rem));
+    max-width: calc(100vw - 1rem);
     margin-right: auto;
     margin-left: auto;
     min-height: 0;
 }
 
 #orderCallModal .modal-content,
-#orderCallModal .modal-body {
+#orderCallModal .modal-body, #accountModal .modal-content,
+#accountModal .modal-body {
     min-width: 0;
 }
 
@@ -996,16 +1028,6 @@ div.list-icon {
     display: flex;
     align-items: center;
 }
-.content-wrapper {
-    padding: 1em;
-}
-
-@media (min-width: 1200px) {
-    .content-wrapper {
-        border-radius: 5px;
-    }
-}
-
 
 li.nav-item.phone-item a.nav-link {
     font-weight: 700;
@@ -1616,45 +1638,48 @@ span.flatplan-card-description-squareline-block-hint {
 .text-small .form-check-input {
     margin-top: .25em;
 }
-ul.nav.nav-tabs {
-    border-bottom: 5px solid var(--seagreen);
-}
-ul.nav.nav-tabs .nav-link {
+
+ul.nav.nav-tabs, ul.nav.nav-tabs .nav-link {
     border: none;
 }
 .nav-item button.nav-link {
-    color: var(--seagreen);
-    border-radius: 0;
+    color: var(--hover-color);
+    border-radius: 1em;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    padding: .7em 1em;
 }
 .nav-item button.nav-link:hover, .nav-item button.nav-link:focus {
-    color: var(--hover-color);
+    color: var(--text-color);
 }
 .nav-item button.nav-link.active, .nav-item button.nav-link.active:hover {
-    color: var(--white);
-    background: var(--seagreen);
+    position: relative;
+    color: var(--hover-color);
+    background: var(--light-grey);
     margin: 0;
-    padding-top: 1rem;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    text-shadow: 0 0 3px var(--light);
 }
-ul.nav.nav-tabs li.nav-item:last-child button.nav-link {
-    border-top-right-radius: 5px;
-}
-ul.nav.nav-tabs li.nav-item:first-child button.nav-link {
-    border-top-left-radius: 5px;
-}
-ul.nav.nav-tabs li.nav-item button::after {
+.nav-item:first-child button.nav-link.active::before, .nav-item:last-child button.nav-link.active::before {
     content: '';
+    position:absolute;
     display: block;
-    position: absolute;
-    border-left: 1px solid var(--seagreen);
-    right: -1px;
-    top: 25%;
-    height: 50%;
+    width: 5px;
+    height: 10px;
+    bottom: -5px;
+    background: var(--light-grey);
 }
-ul.nav.nav-tabs li.nav-item:last-child button::after, ul.nav.nav-tabs li.nav-item button.active::after {
-    content: none;
+.nav-item:first-child button.nav-link.active::before {
+    left: 0;
 }
+.nav-item:last-child button.nav-link.active::before {
+    right: 0;
+}
+.tab-content {
+    background: var(--light-grey);
+    padding: 1em;
+    border-radius: 5px;
+}
+
 
 .font-size-fix {
     font-size: 0;   
@@ -1758,4 +1783,8 @@ table td {
     #mainNavbar .js-overflow-menu > .nav-item {
         flex-shrink: 0;
     }
+}
+
+.hint {
+    color: var(--light-text);
 }

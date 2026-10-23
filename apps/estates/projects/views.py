@@ -6,6 +6,7 @@ from django.conf import settings
 from django.db.models import Min, F, FloatField, ExpressionWrapper
 from django.db.models.functions import Round
 
+from apps.core.dictionaries.models import City
 from apps.estates.houses.models import House
 from apps.estates.flats.models import Flat
 from apps.estates.flats.pickers import flat_list_pickers
@@ -97,6 +98,87 @@ def project_list(request):
         "default/pages/estates/project_list.html",
         context
     )
+
+
+def geography_list(request):
+    cities = list(
+        City.objects
+        .filter(projectparams__project__in=Project.objects.active())
+        .distinct()
+        .order_by("name")
+    )
+
+    map_points = MapEngine.houses_queryset(
+        House.objects.active().filter(
+            project__params__city_id__in=[city.pk for city in cities]
+        )
+    )
+
+    return render(
+        request,
+        "default/pages/estates/geography_list.html",
+        {
+            "cities": cities,
+            "map_points": map_points,
+            "is_geo": True,
+        },
+    )
+
+
+def geography_detail(request, city_slug):
+    city = get_object_or_404(
+        City.objects.filter(
+            projectparams__project__in=Project.objects.active()
+        ).distinct(),
+        slug=city_slug,
+    )
+    request.geo_city = city
+
+    state = normalize_querydict(request)
+    selected_cities = [str(city.pk)]
+    selected_districts = state.get("district", [])
+    selected_developers = state.get("developer", [])
+    sort = state.get("sort", ["name"])[0]
+
+    projects = (
+        Project.objects.active()
+        .with_flat_stats()
+        .filter(params__city=city)
+        .district(selected_districts)
+        .developer(selected_developers)
+        .select_related(
+            "developer",
+            "params__city",
+            "params__district",
+            "description",
+        )
+        .prefetch_related("images")
+        .sorted(sort)
+    )
+    page_obj, paginator, page_range = paginate_queryset(request, projects, 12)
+    pickers = project_list_pickers(
+        sort=sort,
+        selected_developers=selected_developers,
+        selected_cities=selected_cities,
+        selected_districts=selected_districts,
+        available_cities=City.objects.filter(pk=city.pk),
+    )
+
+    context = {
+        "city": city,
+        "page_obj": page_obj,
+        "paginator": paginator,
+        "page_range": page_range,
+        "pickers": pickers,
+        "is_geo": True,
+    }
+
+    template = (
+        "default/pages/estates/ajax/_geography_projects.html"
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        else "default/pages/estates/geography_detail.html"
+    )
+    return render(request, template, context)
 
 
 def project_detail(request, project_slug):

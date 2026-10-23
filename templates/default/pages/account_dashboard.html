@@ -1,0 +1,34 @@
+{% extends "default/base.html" %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+    <section class="account-dashboard">
+        <h1 class="mb-4">Личный кабинет</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="h5">Профиль</h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">ФИО</dt>
+                    <dd class="col-sm-9">{{ account.name }}</dd>
+                    <dt class="col-sm-3">Электронная почта</dt>
+                    <dd class="col-sm-9">{{ account_email|default:"—" }}</dd>
+                    <dt class="col-sm-3">Группы</dt>
+                    <dd class="col-sm-9">
+                        {% for group in account_groups %}
+                            {{ group.name }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            —
+                        {% endfor %}
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <form class="mt-4" method="post" action="{% url 'account_logout' %}">
+            {% csrf_token %}
+            <button class="btn btn-outline-secondary" type="submit">Выйти</button>
+        </form>
+    </section>
+{% endblock %}

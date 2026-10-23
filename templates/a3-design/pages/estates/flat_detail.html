@@ -4,7 +4,7 @@
 {% load price_utils %}
 {% load image_utils %}
 
-{% block title %}{{ trans.text_flat }} {{ flat.number|default:"" }} &mdash; {{ flat.house.params.address }} {{ flat.house.params.corpus }} | {{ flat.house.project.name }}{% endblock %}
+{% block title %}{{ trans.text_flat }} {{ flat.number|default:"" }} &mdash; {{ flat.house.params.address }} {{ flat.house.params.corpus }} | {{ flat.house.project.project_type.project_type_alias }} &laquo;{{ flat.house.project.name }}&raquo;{% endblock %}
 
 {% block content %}
 
@@ -12,7 +12,7 @@
     {{ trans.text_flat }} {{ flat.number|default:"" }}
 </h1>
 <div class="">
-    <strong>&laquo;{{ flat.house.project.name }}&raquo;</strong> | {{ flat.house.project.params.city }}, {{ flat.house.params.address }} 
+    <strong>{{ flat.house.project.project_type.project_type_alias }} &laquo;{{ flat.house.project.name }}&raquo;</strong> | {{ flat.house.project.params.city }}, {{ flat.house.params.address }} 
     {% if flat.house.params.corpus %}{{ flat.house.params.corpus }}{% endif %}
 </div>
 
@@ -28,20 +28,6 @@
     </div>
     <div class="details-rows col-12 col-md-7 col-xl-8 mb-5">
         <div class="row flat-params mb-3">
-            <div class="col-12 address position-relative mb-3">
-                <div class="param clearfix">
-                    <div class="param-icon float-start text-center">
-                        <i class="fa-solid fa-location-dot"></i>
-                    </div>
-                    <div class="param-label float-start text-small">
-                        {{ flat.house.project.params.city.name }}, <br>
-                        {{ flat.house.params.address }}
-                        {% if flat.house.params.corpus %}
-                            {{ flat.house.params.corpus }}
-                        {% endif %}    
-                    </div>
-                </div>
-            </div>
             {% if flat.params.rooms_alias %}
                 <div class="col-12 col-sm-6 col-xl-4 address position-relative mb-3">
                     <div class="param clearfix">
@@ -237,7 +223,7 @@
 <div class="project-flats">
     <!-- Квартиры -->
     <div id="flats-list" class="mt-5">
-        <h2 class="pb-3 mb-4">{{ trans.other_flats }} {{ flat.house.project.name }}</h2>
+        <h2 class="pb-3 mb-4">{{ trans.other_flats }} {{ flat.house.project.project_type.project_type_alias }} &laquo;{{ flat.house.project.name }}&raquo;</h2>
 
         <div 
             data-ajax-list

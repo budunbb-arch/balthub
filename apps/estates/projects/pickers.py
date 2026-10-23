@@ -71,6 +71,7 @@ def project_list_pickers(
     selected_developers,
     selected_cities,
     selected_districts,
+    available_cities=None,
 ):
 
     district_queryset = District.objects.none()
@@ -93,6 +94,12 @@ def project_list_pickers(
                 "name"
             )
         )
+
+    city_queryset = (
+        available_cities
+        if available_cities is not None
+        else City.objects.all()
+    )
 
     pickers = [
 
@@ -150,7 +157,7 @@ def project_list_pickers(
                     "label": city.name,
                 }
 
-                for city in City.objects.order_by("name")
+                for city in city_queryset.order_by("name")
             ]
         },
 

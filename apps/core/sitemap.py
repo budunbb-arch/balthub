@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.urls import reverse
 from django.utils import timezone
 
+from apps.core.dictionaries.models import City
 from apps.estates.projects.models import Project
 from apps.estates.houses.models import House
 from apps.estates.flats.models import Flat
@@ -31,6 +32,13 @@ class SitemapView(View):
             "lastmod": timezone.now().date().isoformat(),
             "changefreq": "daily",
             "priority": "0.9",
+        })
+
+        urls.append({
+            "loc": base_url + reverse("geography_list"),
+            "lastmod": timezone.now().date().isoformat(),
+            "changefreq": "weekly",
+            "priority": "0.8",
         })
 
         urls.append({
@@ -67,6 +75,20 @@ class SitemapView(View):
                 "lastmod": project.published_at.date().isoformat() if project.published_at else timezone.now().date().isoformat(),
                 "changefreq": "weekly",
                 "priority": "0.8",
+            })
+
+        cities = (
+            City.objects
+            .filter(projectparams__project__in=Project.objects.active())
+            .distinct()
+            .only("slug")
+        )
+        for city in cities:
+            urls.append({
+                "loc": base_url + reverse("geography_detail", args=[city.slug]),
+                "lastmod": timezone.now().date().isoformat(),
+                "changefreq": "weekly",
+                "priority": "0.7",
             })
 
         for house in House.objects.active().only("slug", "project__slug", "published_at"):

@@ -1,0 +1,23 @@
+{% extends "default/base.html" %}
+
+{% block title %}Активация аккаунта{% endblock %}
+
+{% block content %}
+    <section class="text-center py-5">
+        {% if activated %}
+            <h1>Аккаунт активирован</h1>
+            <p>Вы автоматически вошли в личный кабинет.</p>
+            <a class="btn btn-primary" href="{% url 'account_dashboard' %}">Перейти в личный кабинет</a>
+        {% elif can_activate %}
+            <h1>Подтвердите активацию</h1>
+            <p>Нажмите кнопку, чтобы активировать аккаунт.</p>
+            <form method="post">
+                {% csrf_token %}
+                <button class="btn btn-primary" type="submit">Активировать аккаунт</button>
+            </form>
+        {% else %}
+            <h1>Не удалось активировать аккаунт</h1>
+            <p>Ссылка недействительна или срок её действия истёк.</p>
+        {% endif %}
+    </section>
+{% endblock %}

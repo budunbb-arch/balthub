@@ -1,9 +1,11 @@
 translations = {
     "text_developers": "Застройщики",
     "text_all_houses": "Все дома",
+    "text_houses": "Дома",
     "project_houses": "Дома ЖК",
     "text_no_houses": "В этом ЖК нет домов",
     "text_projects": "Жилые комплексы",
+    "text_newprojects": "Новостройки",
     "text_tags": "Тэги",
     "text_download": "Скачать",
     "text_documents": "Документы",

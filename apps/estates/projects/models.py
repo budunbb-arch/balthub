@@ -6,7 +6,13 @@ from slugify import slugify
 from apps.core.common.mixins import UrlMixin, SeoMixin, SlugifyMixin
 from apps.core.common.models import BaseModel
 from apps.estates.developers.models import Developer
-from apps.core.dictionaries.models import City, District, PropertyCategory, PropertyType
+from apps.core.dictionaries.models import (
+    City,
+    District,
+    ProjectType,
+    PropertyCategory,
+    PropertyType,
+)
 from .queries import ProjectQuerySet
 
 
@@ -19,6 +25,14 @@ class Project(BaseModel, UrlMixin, SeoMixin, SlugifyMixin):
     name = models.CharField(max_length=255)
 
     slug = models.SlugField(max_length=255, unique=True, blank=True)
+
+    project_type = models.ForeignKey(
+        ProjectType,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="projects",
+    )
 
 
     def build_slug_base(self):

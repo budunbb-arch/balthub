@@ -1,0 +1,17 @@
+<div class="pickers position-relative container-fluid">
+    {% include "default/modules/picker.html" with pickers=pickers %}
+</div>
+
+<div class="row mb-5" data-items data-page-anchor>
+    {% for project in page_obj %}
+        <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-3">
+            {% include "default/pages/estates/project_card.html" with project=project %}
+        </div>
+    {% empty %}
+        <p>{{ trans.text_no_geography }}</p>
+    {% endfor %}
+</div>
+
+<div class="pagination-wrapper" data-pagination>
+    {% include "default/includes/infinite_pagination.html" %}
+</div>

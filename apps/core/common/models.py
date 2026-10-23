@@ -143,6 +143,7 @@ MODULE_TYPES = [
     ("project_description", "Описание проекта"),
     ("house_description", "Описание дома"),
     ("flat_description", "Описание квартиры"),
+    ("account", "Аккаунт пользователя"),
 ]
 
 

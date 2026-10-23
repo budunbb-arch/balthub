@@ -1,0 +1,47 @@
+{% extends "default/base.html" %}
+
+{% load static %}
+
+{% block title %}{{ trans.text_geography }}{% endblock %}
+
+{% block content %}
+    <h1>{{ trans.text_geography }}</h1>
+    <hr class="my-3">
+
+    <div class="row">
+        <div class="col-12 col-sm-5 col-lg-4 col-xl-3 mb-3">
+            {% for city in cities %}
+                <a class="geo-link d-block w-100"
+                   data-geography-city
+                   href="{% url 'geography_detail' city.slug %}">
+                    {{ city.name }}
+                </a>
+            {% empty %}
+                <p>{{ trans.text_no_geography }}</p>
+            {% endfor %}
+        </div>
+        <div class="col-12 col-sm-7 col-lg-8 col-xl-9 mb-3">
+            {% if map_settings.enabled and map_settings.provider == "yandex" %}
+                <div
+                    id="geography-map"
+                    data-zoom="9"
+                ></div>
+                {{ map_points|json_script:"geography-map-points" }}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+    {% if map_settings.enabled and map_settings.provider == "yandex" %}
+        <link rel="stylesheet" href="{% static 'assets/css/a3-design/maps.css' %}">
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    {% if map_settings.enabled and map_settings.provider == "yandex" %}
+        <script src="https://api-maps.yandex.ru/v3/?apikey={{ map_settings.api_key }}&lang={{ map_settings.language }}"></script>
+        <script src="{% static 'assets/js/maps/yandex.js' %}"></script>
+        <script src="{% static 'assets/js/maps/geography.js' %}"></script>
+    {% endif %}
+{% endblock %}

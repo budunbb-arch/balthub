@@ -24,6 +24,7 @@ urlpatterns = [
     path("sitemap.xml", SitemapView.as_view(), name="sitemap"),
     path("robots.txt", RobotsView.as_view(), name="robots"),
     path("admin/", admin.site.urls),
+    path("account/", include("apps.accounts.urls")),
     path("estates/", include("apps.estates.urls")),
     path("api/", include("apps.core.dictionaries.urls")),
     path("documents/", documents_list, name="documents"),

@@ -371,7 +371,11 @@ def tag_detail_flat_pickers(
             Project.objects
             .filter(houses__flats__in=flat_qs)
             .distinct()
-            .select_related("params__city", "params__district")
+            .select_related(
+                "params__city",
+                "params__district",
+                "project_type",
+            )
             .order_by("name")
         )
 
@@ -448,9 +452,19 @@ def tag_detail_flat_pickers(
             "options": [
                 {
                     "value": str(project_id),
-                    "label": project_name,
+                    "label": (
+                        f"{project_type_alias} «{project_name}»"
+                        if project_type_alias
+                        else project_name
+                    ),
                 }
-                for project_id, project_name in projects_qs.values_list("id", "name")
+                for project_id, project_type_alias, project_name in (
+                    projects_qs.values_list(
+                        "id",
+                        "project_type__project_type_alias",
+                        "name",
+                    )
+                )
             ]
         },
         {

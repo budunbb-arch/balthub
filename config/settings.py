@@ -23,6 +23,8 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SECURE = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
@@ -49,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'apps.accounts.apps.AccountsConfig',
     'apps.core',
     'apps.core.common',
     'apps.estates',
@@ -111,6 +114,7 @@ TEMPLATES[0]['OPTIONS']['context_processors'] += [
     'apps.core.engines.context_processors.map_settings',
     'apps.core.engines.context_processors.site_settings',
     'apps.core.engines.context_processors.order_call_modal',
+    'apps.core.engines.context_processors.account_session',
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
@@ -223,6 +227,32 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.smtp.EmailBackend",
+)
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "true").lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "false").lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "10"))
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    EMAIL_HOST_USER or "webmaster@localhost",
+)
 
 LOGGING = {
     'version': 1,

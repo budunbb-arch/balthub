@@ -1,6 +1,9 @@
 # apps/dictionaries/models.py
 
 from django.db import models
+from slugify import slugify
+
+from apps.core.common.mixins import SlugifyMixin
 
 
 class BaseDictionary(models.Model):
@@ -30,6 +33,24 @@ class PropertyType(BaseDictionary):
     pass
 
 
+class ProjectType(models.Model):
+    name = models.CharField(max_length=100)
+    project_type_alias = models.CharField(max_length=255, blank=True)
+    default = models.BooleanField(null=True, blank=True, default=None)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=("default",),
+                condition=models.Q(default=True),
+                name="unique_default_project_type",
+            ),
+        ]
+
+    def __str__(self):
+        return self.name
+
+
 class PropertyCategory(BaseDictionary):
     pass
 
@@ -54,8 +75,15 @@ class BuildingStatus(BaseDictionary):
     pass
 
 
-class City(BaseDictionary):
-    pass
+class City(BaseDictionary, SlugifyMixin):
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+
+    def build_slug_base(self):
+        return slugify(self.name) or f"city-{self.pk or 'new'}"
+
+    def save(self, *args, **kwargs):
+        self.ensure_slug()
+        super().save(*args, **kwargs)
 
 
 class District(models.Model):

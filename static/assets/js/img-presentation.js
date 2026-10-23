@@ -9,7 +9,7 @@ const initImgPresentation = () => {
         overlay.className = "img-presentation-overlay";
 
         overlay.innerHTML = `
-            <button class="img-presentation-close" aria-label="Закрыть">&times;</button>
+            <button class="img-presentation-close" aria-label="{{ trans.text_close }}">&times;</button>
             <img class="img-presentation-image" src="" alt="">
         `;
 

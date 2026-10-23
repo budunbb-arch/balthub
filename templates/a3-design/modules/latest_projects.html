@@ -26,7 +26,7 @@
 
                                 {# название проекта #}
 
-                                <a href="{% url 'project_detail' project.slug %}" class="project-title d-block w-100 position-absolute text-center" data-textfit data-padding="30" data-fill="0.7" data-max-size="60">{{ project.name }}</a>
+                                <a href="{% url 'project_detail' project.slug %}" class="project-title d-block w-100 position-absolute text-center" data-textfit data-padding="30" data-fill="0.7" data-max-size="60">{{ project.project_type.project_type_alias }} &laquo;{{ project.name }}&raquo;</a>
                                 
                                 {# город через ProjectParams #}
                                 {% if project.params and project.params.city %}
@@ -55,7 +55,7 @@
                                     </div>
                                 {% endif %}
 
-                                <a href="{% url 'project_detail' project.slug %}" class="project-title d-block position-absolute text-center" data-textfit data-padding="30" data-fill="0.7" data-max-size="60">{{ project.name }}</a>
+                                <a href="{% url 'project_detail' project.slug %}" class="project-title d-block position-absolute text-center" data-textfit data-padding="30" data-fill="0.7" data-max-size="60">{{ project.project_type.project_type_alias }} {{ project.name }}</a>
                                 
                                 {% if project.params and project.params.city %}
                                     <div class="project-city position-absolute">{{ project.params.city.name }}</div>

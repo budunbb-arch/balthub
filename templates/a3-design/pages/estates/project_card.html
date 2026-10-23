@@ -26,7 +26,7 @@
     <div class="card-description col-12 position-relative p-3 pb-0">
 
       <a href="{% url 'project_detail' project.slug %}" class="card-link">
-        <h3 class="card-title mb-3">{{ project.name }}</h3> 
+        <h3 class="card-title mb-3">{{ project.project_type.project_type_alias }} &laquo;{{ project.name }}&raquo;</h3> 
       </a>
 
       {# short description #}

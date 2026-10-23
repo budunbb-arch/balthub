@@ -35,6 +35,11 @@ class PickerSystem {
             state[key].push(value);
         }
 
+        const defaultCity = this.root.closest("[data-ajax-list]")?.dataset.defaultCity;
+        if (defaultCity) {
+            state.city = [defaultCity];
+        }
+
         return state;
     }
 
@@ -352,7 +357,7 @@ class PickerSystem {
                     } else {
 
                         trigger.textContent =
-                            trigger.dataset.placeholder || "Цена";
+                            trigger.dataset.placeholder || t("text_price");
                     }
                 }
 
@@ -364,7 +369,7 @@ class PickerSystem {
             // =====================================================
 
             const selectText =
-                this.root.dataset.i18nSelect || "Выбрать";
+                this.root.dataset.i18nSelect || t("text_choose");
 
             values = this.state[key] || [];
             hasValue = values.length > 0;
@@ -478,7 +483,7 @@ class PickerSystem {
                             .map(i => i.parentElement.textContent.trim());
 
                         if (checkedLabels.length === 0) {
-                            trigger.textContent = trigger.dataset.placeholder || "Выбрать";
+                            trigger.textContent = trigger.dataset.placeholder || t("text_choose");
                         } else if (checkedLabels.length === 1) {
                             trigger.textContent = checkedLabels[0];
                         } else {
