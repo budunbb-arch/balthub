@@ -1,0 +1,30 @@
+{# templates/Lx2-style/widgets/account_menu.html #}
+
+<ul class="navbar-nav flex-row gap-3 text-end">
+
+    <li class="nav-item{% if not is_logged %} w-100 text-center{% endif %}">
+        {% if is_logged %}
+            <a class="nav-link" href="{% url 'account_dashboard' %}">
+                <span class="d-inline d-md-none sm-menu-icon"><i class="fa-solid fa-user" aria-hidden="true"></i></span>
+                <span class="d-none d-md-inline">{{ trans.text_account }}</span>
+            </a>
+        {% else %}
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#accountModal">
+                <span class="d-inline d-md-none sm-menu-icon"><i class="fa-solid fa-user" aria-hidden="true"></i></span>
+                <span class="d-none d-md-inline">{{ trans.text_account }}</span>
+            </a>
+        {% endif %}
+    </li>
+
+    {% if is_logged %}
+        <li class="nav-item">
+            <form method="post" action="{% url 'account_logout' %}">
+                {% csrf_token %}
+                <button class="nav-link border-0 sm-menu-icon" type="submit" aria-label="Выйти">
+                    <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+                </button>
+            </form>
+        </li>
+    {% endif %}
+
+</ul>

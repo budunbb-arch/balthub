@@ -137,6 +137,7 @@ MODULE_TYPES = [
     ("latest_projects", "Последние проекты"),
     ("html", "HTML модуль"),
     ("feedback", "Обратная связь"),
+    ("main_menu", "Главное меню"),
     ("footer_menu", "Меню футера"),
     ("tags_menu", "Меню тегов"),
     ("tag_collection", "Подборка тегов"),

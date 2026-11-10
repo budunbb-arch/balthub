@@ -24,6 +24,7 @@ from apps.core.documents.models import Document
 from apps.core.localization import t
 from apps.leads.captcha import create_challenge, verify_challenge
 from apps.leads.turnstile import is_turnstile_enabled, verify_turnstile_token
+from apps.modules.account import get_account_contacts
 
 from .models import AccountAccount, AccountAccountGroup, AccountGroup
 
@@ -183,11 +184,113 @@ def account_dashboard(request):
     )
     return render(
         request,
-        "default/pages/account_dashboard.html",
+        "a3-design/pages/account/account_dashboard.html",
         {
             "account": account,
             "account_email": email,
             "account_groups": account.groups.all(),
+            "account_contacts": get_account_contacts(account),
+            "all_contact_types": list(ContactType.objects.all().order_by("name")),
+        },
+    )
+
+
+@require_POST
+def account_profile_save(request):
+    account_id = request.session.get("account_id")
+    if not isinstance(account_id, int) or account_id <= 0:
+        return _account_response(
+            request,
+            {"success": False, "error": t("login_error")},
+            status=401,
+        )
+
+    account = AccountAccount.objects.filter(pk=account_id, active=True).first()
+    if account is None:
+        return _account_response(
+            request,
+            {"success": False, "error": t("login_error")},
+            status=404,
+        )
+
+    data = request.POST
+
+    # Капча (как в других формах сайта)
+    if not verify_challenge(
+        request,
+        data.get("captcha_id"),
+        data.get("captcha_value"),
+    ):
+        return _account_response(
+            request,
+            {"success": False, "error": t("text_notbot")},
+            status=400,
+        )
+
+    # Согласия с документами (как в других формах сайта)
+    personal_data_doc, policy_doc = _get_consent_documents()
+    accepted = lambda key: data.get(key) in {"on", "true", "1"}
+    if personal_data_doc and not accepted("personal_data"):
+        return _account_response(
+            request,
+            {"success": False, "error": t("persdata_required")},
+            status=400,
+        )
+    if policy_doc and not accepted("policy"):
+        return _account_response(
+            request,
+            {"success": False, "error": t("policy_required")},
+            status=400,
+        )
+
+    name = (data.get("name") or "").strip()
+    if not name or len(name) > 255:
+        return _account_response(
+            request,
+            {"success": False, "error": t("username_required")},
+            status=400,
+        )
+
+    existing_contacts = (
+        account.contacts if isinstance(account.contacts, dict) else {}
+    )
+    existing_contact_type_ids = {str(contact_id) for contact_id in existing_contacts}
+    contacts = {}
+    # Индексы строк контактов — берём из имён полей contact_type_<index>
+    contact_indices = {
+        key.rsplit("_", 1)[1]
+        for key in data.keys()
+        if key.startswith("contact_type_")
+    }
+    for idx in contact_indices:
+        chosen_type_id = (data.get(f"contact_type_{idx}") or "").strip()
+        if idx in existing_contact_type_ids:
+            chosen_type_id = idx
+        if not chosen_type_id:
+            continue
+        contact_value = (data.get(f"contact_value_{idx}") or "").strip()
+        if contact_value:
+            contacts[str(chosen_type_id)] = contact_value
+
+    # Email — логин аккаунта, его нельзя удалить через редактирование профиля.
+    email_contact_type = _get_email_contact_type()
+    if email_contact_type:
+        email_key = str(email_contact_type.pk)
+        existing_email = existing_contacts.get(email_key)
+        if existing_email and email_key not in contacts:
+            contacts[email_key] = existing_email
+
+    account.name = name
+    account.contacts = contacts
+    account.save(update_fields=("name", "contacts"))
+
+    return _account_response(
+        request,
+        {
+            "success": True,
+            "message": t("text_profile_saved"),
+            "name": account.name,
+            "contacts": get_account_contacts(account),
         },
     )
 

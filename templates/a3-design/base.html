@@ -80,10 +80,10 @@
             <div class="row">
 
                 {% if layout.sidebar %}
-                    <aside class="col-md-3 col-xl-2 order-xl-2">
+                    <aside class="col-md-3 col-xl-3 order-xl-2">
                         {% include "default/includes/render_modules.html" with modules=layout.sidebar %}
                     </aside>
-                    <main class="col-md-9 col-xl-10 order-xl-1 content-wrapper">                        
+                    <main class="col-md-9 col-xl-9 order-xl-1 content-wrapper">                        
                 {% else %}
                     <main class="col-12 col-xl-12 content-wrapper">
                 {% endif %}

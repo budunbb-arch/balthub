@@ -1,0 +1,40 @@
+@media (max-width: 767.98px) {
+    .lx2-main-menu {
+        width: 100%;
+    }
+
+    .lx2-main-menu .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        z-index: 1020;
+        width: max-content;
+        min-width: 100%;
+        background-color: var(--background-color);
+    }
+}
+
+#main-menu .navbar {
+    position: unset;
+}
+#main-menu a.nav-link {
+    text-transform: uppercase;
+    font-size: x-small;
+    font-family: var(--font-montserrat);
+    font-weight: 600;
+    transition: all .5s;
+}
+#main-menu a.nav-link:hover {
+    color: var(--hover-color);
+    text-decoration: none;
+}
+
+button.navbar-toggler {
+    font-size: xx-large;
+}
+button.navbar-toggler.collapsed {
+    color: var(--hover-color);
+}
+button.navbar-toggler:focus {
+    box-shadow: none;
+}

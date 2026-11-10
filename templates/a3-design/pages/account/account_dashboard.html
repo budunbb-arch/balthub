@@ -1,0 +1,56 @@
+{% extends "a3-design/base.html" %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+    <section class="account-dashboard">
+        <h1 class="mb-4">{{ trans.text_account }}</h1>
+
+        <div class="row">
+            {% include "a3-design/modules/account/account_profile.html" %}
+
+            <!--
+            <div class="col-12 col-xl-6">
+                <div class="dashboard-block position-relative">
+                    <div class="block-header position-absolute p-1 px-3 bold">{{ trans.text_profile }}</div>
+                    <ul class="list-unstyled">
+                        <li>
+                            <span class="icon"><i class="fa-regular fa-circle-user"></i></span>
+                            {{ account.name }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        -->
+        </div>
+
+
+
+
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="h5">Профиль</h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">ФИО</dt>
+                    <dd class="col-sm-9">{{ account.name }}</dd>
+                    <dt class="col-sm-3">Электронная почта</dt>
+                    <dd class="col-sm-9">{{ account_email|default:"—" }}</dd>
+                    <dt class="col-sm-3">Группы</dt>
+                    <dd class="col-sm-9">
+                        {% for group in account_groups %}
+                            {{ group.name }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            —
+                        {% endfor %}
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <form class="mt-4" method="post" action="{% url 'account_logout' %}">
+            {% csrf_token %}
+            <button class="btn btn-outline-secondary" type="submit">Выйти</button>
+        </form>
+    </section>
+{% endblock %}

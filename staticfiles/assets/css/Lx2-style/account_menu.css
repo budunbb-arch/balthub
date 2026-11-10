@@ -1,0 +1,10 @@
+a .sm-menu-icon {
+    color: var(--white);
+    background: var(--base-color);
+    padding: .5em;
+    border-radius: .3em;
+    margin: 0 2px;
+}
+a:active .sm-menu-icon {
+    background: var(--hover-color);
+}

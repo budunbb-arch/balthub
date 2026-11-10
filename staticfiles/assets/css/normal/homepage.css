@@ -1,0 +1,21 @@
+.header-content {
+    aspect-ratio: 1 / 1;
+}
+
+@media (min-width: 576px) {
+    .header-content {
+        aspect-ratio: 2 / 1;
+    }
+}
+
+@media (min-width: 992px) {
+    .header-content {
+        aspect-ratio: 3 / 1.5;
+    }
+}
+
+@media (min-width: 1200px) {
+    .header-content {
+        aspect-ratio: 8 / 3;
+    }
+}

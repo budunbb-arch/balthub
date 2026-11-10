@@ -1,0 +1,24 @@
+<!-- /opt/balthub/templates/Lx2-style/layouts/header.html -->
+
+{% load static %}
+
+<header>
+    <div class="container-fluid">
+        <div class="row row-0 py-3 position-relative">
+            <div class="col-4 order-1 col-sm-3 col-md-2 col-xl-1" id="logo">
+                <a href="{% url 'home' %}">
+                    <img src="{% static 'assets/images/Lx2-style/logo-black.svg' %}" alt="{{ trans.sitename }}" class="img-fluid">
+                </a>
+            </div>
+            <div class="col-3 order-3 col-sm-2 offset-sm-7 col-md-7 offset-md-1 order-md-1 col-xl-5 offset-xl-3 d-flex align-items-center justify-content-end" id="main-menu">
+                {% include "Lx2-style/includes/render_modules.html" with modules=layout.main_menu %}
+            </div>
+            <div class="col-4 offset-1 order-2">
+                {% include "Lx2-style/includes/render_modules.html" with modules=layout.account_menu %}
+            </div><!--
+            <div class="col-3 offset-1 order-2">
+                {% include "Lx2-style/widgets/account_menu.html" %}
+            </div>-->
+        </div>
+    </div>
+</header>

@@ -72,6 +72,7 @@ html {
 body.modal-open {
     padding-right: 0 !important;
 }
+
 body {
     color: var(--text-color);
     background: var(--bg-color);
@@ -157,7 +158,8 @@ h6 {
     -webkit-mask: radial-gradient(circle 1em at 100% 100%, transparent 99%, var(--black) 100%);
     mask: radial-gradient(circle 1em at 100% 100%, transparent 99%, var(--black) 100%);
 }
-#main-menu::before, #feedback-button::before, #feedback-button::after {
+#main-menu::before, #feedback-button::before, #feedback-button::after, 
+.block-header.right::before, .block-header.right::after {
     -webkit-mask: radial-gradient(circle 1em at 0 100%, transparent 99%, var(--black) 100%);
     mask: radial-gradient(circle 1em at 0 100%, transparent 99%, var(--black) 100%);
 }
@@ -168,21 +170,25 @@ h6 {
 .project-city::before {
     left: calc(var(--bs-gutter-x) * .5);
 }
-#feedback-button::after {
+#feedback-button::after, .block-header.right::after {
     right: 0;
 }
-#main-menu::before, #feedback-button::before {
+#main-menu::before, #feedback-button::before, .block-header.right::before {
     left: -1em;
 }
-#logo::before, #feedback-button::after, .project-city::before, .card-city::before, .block-header::before {
+#logo::before, #feedback-button::after, .project-city::before, .card-city::before, .block-header::before, 
+.block-header.right::after {
     bottom: -1em;
 }
 #logo::after, #main-menu::after, .project-city::after, .card-city::after, .block-header::after {
     right: -1em;
 }
 #logo::after, #main-menu::before, #main-menu::after, #feedback-button::before, .project-city::after, 
-.card-city::after, .block-header::after {
+.card-city::after, .block-header::after, .block-header.right::before {
     top: 0;
+}
+.block-header.right::after {
+    top: auto;
 }
 
 @media (min-width: 576px) {
@@ -1009,6 +1015,22 @@ div.list-icon {
 }
 .img-presentation-close:hover {
     background: var(--hover-color);
+}
+
+.dashboard-block {
+    background: var(--light);
+    border-radius: 1em;
+
+    .block-header {
+        top: 0;
+        left: 0;
+    }
+    .block-header.right {
+        right: 0;
+        left: auto;
+        border-bottom-left-radius: 1em;
+        border-bottom-right-radius: 0;
+    }
 }
 
 /* a3_design styles above */

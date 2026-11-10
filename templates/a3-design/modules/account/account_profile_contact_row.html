@@ -1,0 +1,60 @@
+<div class="contact-row mb-2" data-row>
+    {% if 'fa-at' in contact.code %}
+        <!-- Email — логин, показывается текстом, без поля ввода и без кнопки удалить -->
+        <div class="row g-2">
+            <div class="col-12 col-xl-3">
+                <span class="form-control-plaintext"><i class="{{ contact.code }}"></i> {{ contact.type }}:</span>
+            </div>
+            <div class="col-12 col-md-5 contact-value-col">
+                <span class="form-control-plaintext contact-value">{{ contact.value }}</span>
+            </div>
+            <div class="col-12 col-md-2 d-flex align-items-end">
+                <!-- кнопка удалить для email не выводится -->
+            </div>
+        </div>
+    {% else %}
+        <div class="row g-2">
+            <div class="col-12 col-xl-3">
+                <div class="form-field position-relative">
+                    {% for ct in all_contact_types %}
+                        {% if ct.id == contact.type_id %}
+                            <span class="icon position-absolute top-50 start-0 translate-middle-y ps-3">
+                                <i class="{{ ct.code }}"></i>
+                            </span>
+                        {% endif %}
+                    {% endfor %}
+                    <select class="form-select contact-type" name="contact_type_{{ contact.type_id }}" aria-label="{{ trans.text_contact_type }}" data-existing-id="{{ contact.type_id }}" disabled>
+                        <option value="">{{ trans.text_select_contact_type }}</option>
+                        {% for ct in all_contact_types %}
+                            <option value="{{ ct.id }}" data-is-telephone="{% if ct.name|lower == 'telephone' %}true{% else %}false{% endif %}" {% if ct.id == contact.type_id %}selected{% endif %}>{{ ct.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="hidden" name="contact_type_{{ contact.type_id }}" value="{{ contact.type_id }}">
+                </div>
+            </div>
+            <div class="col-12 col-xl-3 contact-value-col">
+                <div class="form-field field-contact position-relative contact-value-wrapper">
+                    <input type="text" class="form-control contact-value" name="contact_value_{{ contact.type_id }}" placeholder="{{ contact.type }}" value="{{ contact.value }}" data-is-telephone="{% if contact.type|lower == 'telephone' %}true{% else %}false{% endif %}">
+                    <span class="form-field-icon"></span>
+                </div>
+            </div>
+            {% if contact.type|lower == 'telephone' %}
+                <div class="col-12 col-md-2 country-col d-flex align-items-center">
+                    <select class="form-select phone-country" name="phone_country" aria-label="{{ trans.text_country }}">
+                        <option value="" data-prefix="">{{ trans.text_country }}</option>
+                        {% for country in phone_countries %}
+                            <option value="{{ country.phone_code }}" data-prefix="{{ country.phone_code }}"{% if country.code == 'RU' %} selected{% endif %}>{{ country.name }} (+{{ country.phone_code }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% else %}
+                <div class="col-12 col-md-2 country-col d-none d-flex align-items-center"></div>
+            {% endif %}
+            <div class="col-12 col-md-2 d-flex align-items-center">
+                <button type="button" class="btn btn-text text-small btn-remove-contact w-100">
+                    <i class="fa-solid fa-trash"></i> {{ trans.text_remove }}
+                </button>
+            </div>
+        </div>
+    {% endif %}
+</div>

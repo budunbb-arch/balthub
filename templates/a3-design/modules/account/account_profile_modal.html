@@ -1,0 +1,84 @@
+{% load static %}
+
+<div class="modal fade" id="accountProfileModal" tabindex="-1" aria-labelledby="accountProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="accountProfileModalLabel">{{ trans.text_edit_profile }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ trans.text_close }}"></button>
+            </div>
+            <div class="modal-body">
+                <form class="account-profile-form" data-account-profile method="post" action="{% url 'account_profile_save' %}">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <div class="form-field field-user position-relative">
+                            <input type="text" name="name" class="form-control" placeholder="{{ trans.text_name }}" value="{{ account.name }}" maxlength="255" required>
+                            <span class="form-field-icon"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="contact-fields" id="contactFields">
+                            <h5>{{ trans.text_contacts }}</h5>
+                            {% for contact in account_contacts %}
+                                {% include "a3-design/modules/account/account_profile_contact_row.html" with contact=contact %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <button type="button" class="btn btn-text text-small btn-add-contact" data-add-contact>
+                            <i class="fa-solid fa-plus"></i> {{ trans.text_add_contact }}
+                        </button>
+                    </div>
+
+                    {% if account_personal_data_doc or account_policy_doc %}
+                        <div class="consent-block mb-3 border-top pt-3">
+                            <div class="form-check text-start text-small mb-2">
+                                <input class="form-check-input" type="checkbox" id="profilePersonalData" name="personal_data" required>
+                                <label class="form-check-label" for="profilePersonalData">
+                                    {{ trans.text_agree }}
+                                    {% if account_personal_data_doc %}
+                                        <a href="{% url 'document_modal' account_personal_data_doc.id %}" class="document-modal" data-title="{{ account_personal_data_doc.document_name }}">{{ trans.text_personaldata }}</a>
+                                    {% else %}
+                                        {{ trans.text_personaldata }}
+                                    {% endif %}
+                                </label>
+                            </div>
+                            <div class="form-check text-start text-small mb-2">
+                                <input class="form-check-input" type="checkbox" id="profilePolicy" name="policy" required>
+                                <label class="form-check-label" for="profilePolicy">
+                                    {{ trans.text_agree }}
+                                    {% if account_policy_doc %}
+                                        <a href="{% url 'document_modal' account_policy_doc.id %}" class="document-modal" data-title="{{ account_policy_doc.document_name }}">{{ trans.text_policy }}</a>
+                                    {% else %}
+                                        {{ trans.text_policy }}
+                                    {% endif %}
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="captcha mb-3">
+                        {% include "default/modules/slider_captcha.html" with captcha=account_registration_captcha %}
+                    </div>
+
+                    <div class="text-end">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ trans.text_cancel }}</button>
+                        <button type="submit" class="btn btn-primary">{{ trans.text_save }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.ACCOUNT_PROFILE_DATA = {
+        contactTypes: [{% for ct in all_contact_types %}{id: {{ ct.id }}, name: "{{ ct.name|escapejs }}", isTelephone: {% if ct.name|lower == 'telephone' %}true{% else %}false{% endif %}}{% if not forloop.last %}, {% endif %}{% endfor %}],
+        phoneCountries: [{% for c in phone_countries %}{code: "{{ c.code }}", name: "{{ c.name|escapejs }}", phoneCode: "{{ c.phone_code }}"}{% if not forloop.last %}, {% endif %}{% endfor %}]
+    };
+</script>
+    <script src="{% static 'assets/js/account-profile.js' %}"></script>

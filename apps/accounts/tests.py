@@ -479,6 +479,38 @@ class AccountRegistrationTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("home"))
 
+    def test_account_dashboard_passes_all_contacts_to_template(self):
+        contact_type = ContactType.objects.create(
+            name="Телефон",
+            code="fa-solid fa-phone",
+            prefix="+",
+            postfix=" добавочный",
+        )
+        account = AccountAccount.objects.create(
+            name="Иван Иванов",
+            active=True,
+            contacts={str(contact_type.pk): "7 900 000-00-00"},
+        )
+        request = self.factory.get("/account/")
+        request.session = {"account_id": account.pk}
+
+        with patch("apps.accounts.views.render") as render:
+            response = account_dashboard(request)
+
+        self.assertEqual(response, render.return_value)
+        self.assertEqual(
+            render.call_args.args[2]["account_contacts"],
+            [
+                {
+                    "type": "Телефон",
+                    "code": "fa-solid fa-phone",
+                    "prefix": "+",
+                    "postfix": " добавочный",
+                    "value": "7 900 000-00-00",
+                },
+            ],
+        )
+
     def test_password_reset_request_sends_hashed_one_time_token(self):
         account = AccountAccount.objects.create(
             name="Иван Иванов",

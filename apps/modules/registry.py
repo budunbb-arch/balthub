@@ -3,10 +3,21 @@
 import importlib
 import pkgutil
 import logging
+from pathlib import PurePosixPath
 
 MODULE_HANDLERS = {}
 
 logger = logging.getLogger(__name__)
+
+
+def get_module_handler(template):
+    handler = MODULE_HANDLERS.get(template)
+    if handler:
+        return handler
+
+    template_path = PurePosixPath(template)
+    default_template = f"default/modules/{template_path.name}"
+    return MODULE_HANDLERS.get(default_template)
 
 
 def autodiscover_modules():

@@ -1,0 +1,15 @@
+translations = {
+    "text_profile": "Профиль",
+    "text_edit_profile": "Редактирование профиля",
+    "text_name": "ФИО",
+    "text_contacts": "Контакты",
+    "text_add_contact": "Добавить контакт",
+    "text_contact_type": "Тип контакта",
+    "text_contact_value": "Значение",
+    "text_remove": "Удалить",
+    "text_save": "Сохранить",
+    "text_cancel": "Отмена",
+    "text_profile_saved": "Профиль сохранён",
+    "text_field_required": "Заполните поле",
+    "text_select_contact_type": "Выберите тип контакта",
+}

@@ -1,0 +1,211 @@
+.pickers {
+    margin-bottom: 2em;
+}
+
+.picker {
+    padding: 1em;
+    overflow: visible;
+    position: relative;
+    border-bottom: 2px solid var(--text-color);
+}
+.picker.has-value {
+    border-color: var(--seagreen);
+}
+
+.picker-dropdown {
+
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+
+    width: 100%;
+    z-index: 10;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform: translateY(-10px);
+
+    transition:
+        opacity .5s ease,
+        transform .5s ease,
+        visibility .5s ease;
+}
+
+.picker.open .picker-dropdown {
+
+    opacity: 1;
+    visibility: visible;
+
+    transform: translateY(0);
+}
+.picker-options {
+    overflow-y: auto;
+    max-height: 260px;
+    background: var(--light);
+}
+
+button.picker-trigger {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: none;
+    padding: 0 1em;
+}
+label.picker-option {
+    display: block;
+    color: var(--text-color);
+    padding: .5em;
+    cursor: pointer;
+    font-size: small;
+}
+label.picker-option:hover {
+    color: var(--seagreen);
+}
+.picker-dropdown input[type="radio"], .picker-dropdown input[type="checkbox"] {
+    visibility: hidden;
+}
+.picker-dropdown input[type="checkbox"] {
+    margin-right: .25em;
+}
+.picker-dropdown input[type="checkbox"]::after {
+    content: '\f00c';
+    visibility: visible;
+    font-family: var(--icon-font);
+    font-weight: 900;
+    display: block;
+    color: #ccc;
+}
+.picker-dropdown input[type="checkbox"]:checked::after {
+    color: var(--seagreen);
+}
+
+button.picker-apply {
+    display: block;
+    width: 100%;
+    border: none;
+    padding: .5em 1em;
+    color: #fff;
+    background: var(--seagreen);
+}
+button.picker-apply:hover {
+    background: var(--mediumseagreen);
+}
+button.picker-apply:active {
+    background: var(--lightseagreen);
+}
+
+.picker-control {
+    padding: 0;
+}
+
+button.picker-reset {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: .5s;
+    border: none;
+    background: none;
+    padding: 0;
+    top: 1em;
+    right: 1.5em;
+}
+.picker.has-value .picker-reset {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.picker-range {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.picker-range-label {
+    font-size: .9rem;
+    font-weight: 600;
+}
+
+.picker-range-fields {
+    display: flex;
+    gap: .5rem;
+}
+
+.picker-house-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.picker-range-input {
+    width: 30%;
+}
+
+.picker.disabled {
+    opacity: .5;
+    pointer-events: none;
+}
+
+.flat-picker.is-disabled {
+    opacity: .5;
+    pointer-events: none;
+}
+
+.picker[data-picker-name="sort"]::before {
+    content: '\f885';
+}
+.picker[data-picker-name="developer"]::before {
+    content: '\f807';
+}
+.picker[data-picker-name="city"]::before {
+    content: '\e587';
+}
+.picker[data-picker-name="district"]::before {
+    content: '\f557';
+}
+.picker[data-picker-name="deadline_year"]::before {
+    content: '\f073';
+}
+.picker[data-picker-name="building_status"]::before {
+    content: '\f828';
+}
+.picker[data-picker-name="phase"]::before {
+    content: '\f0c9';
+}
+.picker[data-picker-name="property_category"]::before {
+    content: '\f1ad';
+}
+.picker::before {
+    left: 0;
+}
+.picker::after {
+    content: '\f107';
+    right: 1.5em;
+}
+.open.picker::after {
+    content: '\f106';
+}
+.has-value.picker::after {
+    content: none;
+}
+.picker::before, .picker::after {
+    font-family: var(--icon-font);
+    font-weight: 900;
+    position: absolute;
+    top: 1em;
+    z-index: -1;
+}
+
+#developer-list-container span.picker-range-label {
+    display: flex;
+    align-items: center;
+}
+#developer-list-container input[type="number"].picker-range-input {
+    border-radius: 5vh;
+    box-shadow: none;
+    border: 1px solid var(--light-grey);
+    text-align: center;
+}

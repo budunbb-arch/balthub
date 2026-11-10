@@ -36,6 +36,46 @@ class FooterMenuItem(models.Model):
         return self.title
 
 
+class MainMenuItem(models.Model):
+    ITEM_TYPES = [
+        ("section", "Раздел"),
+        ("link", "Ссылка"),
+    ]
+
+    module = models.ForeignKey(
+        "core.Module",
+        on_delete=models.CASCADE,
+        related_name="main_menu_items",
+        verbose_name="Модуль",
+    )
+    name = models.CharField(max_length=255, verbose_name="Название")
+    type = models.CharField(
+        max_length=10,
+        choices=ITEM_TYPES,
+        default="section",
+        verbose_name="Тип",
+    )
+    url = models.CharField(max_length=2048, verbose_name="URL")
+    css_class = models.CharField(
+        db_column="class",
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Дополнительный класс",
+    )
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+    range = models.PositiveIntegerField(default=0, verbose_name="Порядок")
+
+    class Meta:
+        db_table = "modules_mainmenu"
+        ordering = ["range", "id"]
+        verbose_name = "Пункт главного меню"
+        verbose_name_plural = "Пункты главного меню"
+
+    def __str__(self):
+        return self.name
+
+
 class TagsMenu(models.Model):
     module = models.OneToOneField(
         "core.Module",
@@ -176,4 +216,3 @@ class TagCollectionItem(models.Model):
 
     def __str__(self):
         return str(self.tag)
-

@@ -1,0 +1,30 @@
+{# templates/Lx2-style/widgets/main_menu.html #}
+
+<nav class="navbar navbar-expand-md p-0 justify-content-end lx2-main-menu">
+    <button
+        class="navbar-toggler d-md-none p-0 no-border"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#mainMenu-{{ module.id }}"
+        aria-controls="mainMenu-{{ module.id }}"
+        aria-expanded="false"
+        aria-label="{{ trans.text_menu }}"
+    >
+        <i class="fa fa-bars" aria-hidden="true"></i>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-center" id="mainMenu-{{ module.id }}">
+        <ul class="navbar-nav flex-md-row js-overflow-menu py-3 py-md-0"
+            data-overflow-label="{{ trans.text_menu_more }}">
+            {% for item in data.main_menu_items %}
+                <li class="nav-item">
+                    <a class="nav-link{% if item.is_current %} state{% endif %}{% if item.css_class %} {{ item.css_class }}{% endif %} px-3 px-md-2"
+                       href="{{ item.url }}"
+                       {% if item.is_current %}aria-current="page"{% endif %}>
+                        {{ item.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</nav>

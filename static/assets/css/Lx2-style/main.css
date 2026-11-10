@@ -1,0 +1,44 @@
+@font-face {
+    font-family: "Montserrat";
+    src: url("../../fonts/Lx2-style/Montserrat.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url("../../fonts/Lx2-style/Roboto.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+}
+
+:root {
+    --font-montserrat: "Montserrat", sans-serif;
+    --font-roboto: "Roboto", sans-serif;
+    --white: #fff;
+    --background-color: #ffe203;
+    --base-color: #666;
+    --hover-color: #888;
+}
+
+html {
+    overflow-anchor: none;
+}
+
+body {
+    font-family: var(--font-roboto);
+    color: var(--base-color);
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.no-border {
+    border: none !important;
+}
+
+.row-0 {
+    border-bottom: 1px solid var(--base-color);
+    background-color: var(--background-color);
+}

@@ -1,0 +1,8 @@
+.header-content {
+    background: url('/static/assets/images/a3-design/404-bg.webp');
+    background-size: cover;
+    background-position: left center;
+}
+.error-content {
+    margin: 5em 0;
+}

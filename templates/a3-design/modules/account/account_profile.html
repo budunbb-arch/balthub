@@ -1,0 +1,30 @@
+{% load static %}
+
+<div class="col-12 col-xl-6 mb-3">
+    <div class="dashboard-block position-relative p-3 pt-5">
+        <div class="block-header position-absolute p-1 px-3 bold">{{ trans.text_profile }}</div>
+        <div class="block-header right position-absolute p-1 px-3">
+            <i class="fa-solid fa-user-pen" data-bs-toggle="modal" data-bs-target="#accountProfileModal" style="cursor: pointer;"></i>
+        </div>
+        <ul class="list-unstyled">
+            <li>
+                <span class="icon"><i class="fa-regular fa-circle-user"></i></span>
+                {{ account.name }}
+            </li>
+            {% for contact in account_contacts %}
+                <li>
+                    <span class="icon"><i class="{{ contact.code }}"></i></span>
+                    {% if contact.prefix %}
+                        {{ contact.prefix }}
+                    {% endif %}
+                    {{ contact.value }}
+                    {% if contact.postfix %}
+                        {{ contact.postfix }}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% include "a3-design/modules/account/account_profile_modal.html" %}

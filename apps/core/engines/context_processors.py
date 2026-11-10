@@ -8,7 +8,7 @@ from apps.core.localization import load_locale
 from apps.core.models import SiteSettings
 from apps.maps.models import MapSettings
 
-from apps.modules.registry import MODULE_HANDLERS
+from apps.modules.registry import get_module_handler
 
 from .breadcrumbs import build_breadcrumbs
 from .builders import build_seo
@@ -110,7 +110,7 @@ def layout_modules(request):
 
         data = {}
 
-        handler = MODULE_HANDLERS.get(module_meta["template"])
+        handler = get_module_handler(module_meta["template"])
         logger.info("[MODULE] template=%s handler=%s", module_meta["template"], bool(handler))
 
         if handler:

@@ -1,0 +1,5 @@
+{# /opt/balthub/templates/Lx2-style/includes/render_modules.html #}
+
+{% for item in modules %}
+    {% include item.module.template with module=item.module data=item.data %}
+{% endfor %}

@@ -72,6 +72,7 @@ translations = {
     "email_activation": "На введенный Email отправлена ссылка с кодом активации аккаунта",
     "email_already_registered": "Этот адрес электронной почты уже зарегистрирован. Войдите или восстановите пароль.",
     "account_activation": "Активация аккаунта",
+    "text_profile": "Профиль",
 
     "order_call": "Заказать звонок",
     "feedback_button": "Связаться",

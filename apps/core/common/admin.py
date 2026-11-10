@@ -12,6 +12,7 @@ from django.utils import timezone
 from django.utils.html import format_html, mark_safe, escape
 from apps.core.models import Module, SiteSettings
 from apps.modules.models import HtmlModule, TagsMenu, ProjectDescriptionSettings, TagCollection
+from apps.modules.admin import MainMenuItemInline
 import logging
 
 
@@ -352,13 +353,13 @@ class ModuleAdminForm(forms.ModelForm):
             self.add_prefix("type"),
             self.instance.type,
         )
-        if module_type == "account":
-            self.fields["template"].required = False
+        if module_type == "main_menu":
+            self.fields["position"].required = False
 
     def clean(self):
         cleaned_data = super().clean()
-        if cleaned_data.get("type") == "account":
-            cleaned_data["template"] = "default/modules/account.html"
+        if cleaned_data.get("type") == "main_menu":
+            cleaned_data["position"] = "main_menu"
         return cleaned_data
 
 
@@ -369,7 +370,12 @@ class ModuleAdmin(admin.ModelAdmin):
     list_filter = ("position", "is_active", "type")
     search_fields = ("name", "template", "route", "html_module__name", "html_module__code")
     ordering = ("position", "order")
-    inlines = [FeedbackModuleInline, FooterMenuItemInline, ProjectDescriptionSettingsInline]
+    inlines = [
+        FeedbackModuleInline,
+        FooterMenuItemInline,
+        MainMenuItemInline,
+        ProjectDescriptionSettingsInline,
+    ]
 
     def get_inline_instances(self, request, obj=None):
         inlines = super().get_inline_instances(request, obj)
@@ -377,6 +383,8 @@ class ModuleAdmin(admin.ModelAdmin):
             return []
         if obj.type == "feedback":
             return [i for i in inlines if isinstance(i, FeedbackModuleInline)]
+        if obj.type == "main_menu":
+            return [i for i in inlines if isinstance(i, MainMenuItemInline)]
         if obj.template == "default/modules/footer_menu.html":
             return [i for i in inlines if isinstance(i, FooterMenuItemInline)]
         if obj.type == "tags_menu":
@@ -387,6 +395,16 @@ class ModuleAdmin(admin.ModelAdmin):
             return [i for i in inlines if isinstance(i, TagCollectionItemInline)]
         if obj.type == "project_description":
             return [i for i in inlines if isinstance(i, ProjectDescriptionSettingsInline)]
+        return []
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.type == "html":
+            return ["route"]
+        return []
+
+    def get_exclude(self, request, obj=None):
+        if obj and obj.type == "html":
+            return ["route"]
         return []
 
     fieldsets = (
@@ -404,31 +422,13 @@ class ModuleAdmin(admin.ModelAdmin):
         }),
     )
 
-    def get_readonly_fields(self, request, obj=None):
-        readonly = []
-        if obj and obj.type == "html":
-            readonly += ["template", "route"]
-        if obj and obj.type == "feedback":
-            readonly += ["template"]
-        if obj and obj.type in ("tags_menu", "tag_collection"):
-            readonly += ["template"]
-        return readonly
-
-    def get_exclude(self, request, obj=None):
-        exclude = []
-        if obj and obj.type == "html":
-            exclude += ["template", "route"]
-        if obj and obj.type == "feedback":
-            exclude += ["template"]
-        if obj and obj.type in ("tags_menu", "tag_collection"):
-            exclude += ["template"]
-        return exclude
-
     def save_model(self, request, obj, form, change):
         if obj.type == "html" and not obj.template:
             obj.template = "default/modules/html_module.html"
         if obj.type == "feedback" and not obj.template:
             obj.template = "default/modules/feedback.html"
+        if obj.type == "main_menu" and not obj.template:
+            obj.template = "default/modules/main_menu.html"
         if obj.type == "footer_menu" and not obj.template:
             obj.template = "default/modules/footer_menu.html"
         if obj.type == "tags_menu" and not obj.template:
