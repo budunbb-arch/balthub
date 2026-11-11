@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const refreshCaptcha = (form, challenge) => {
         const captcha = form.querySelector("[data-slider-captcha]");
         if (!challenge || !captcha) {
-            return;
+            return false;
         }
 
         captcha.dataset.target = challenge.target;
@@ -90,9 +90,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const slider = captcha.querySelector("[data-captcha-slider]");
         slider.value = "0";
         slider.dispatchEvent(new Event("input", { bubbles: true }));
+        return true;
     };
 
-    const bindAjaxForm = (form, onSuccess, fallbackError) => {
+    const bindAjaxForm = (form, onSuccess, fallbackError, onError = () => {}) => {
         const submit = form.querySelector('button[type="submit"]');
         if (!submit) {
             return;
@@ -113,12 +114,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 turnstile
                 && !form.querySelector('[name="cf-turnstile-response"]')?.value
             ) {
+                onError(t("text_notbot"));
                 toastr.error(t("text_notbot"));
                 return;
             }
 
             form.dataset.submitting = "true";
             submit.disabled = true;
+            onError("");
 
             try {
                 const formData = new FormData(form);
@@ -133,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 const data = await response.json();
 
-                refreshCaptcha(form, data.captcha);
+                const captchaRefreshed = refreshCaptcha(form, data.captcha);
 
                 if (response.ok && data.success) {
                     onSuccess(data);
@@ -143,14 +146,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (window.turnstile && turnstile) {
                     window.turnstile.reset();
                 }
-                toastr.error(data.error || fallbackError);
+                const message = data.error || fallbackError;
+                if (!captchaRefreshed) {
+                    submit.disabled = false;
+                }
+                onError(message);
+                toastr.error(message);
             } catch (error) {
                 console.error("Account form submission failed", error);
                 if (window.turnstile && turnstile) {
                     window.turnstile.reset();
                 }
                 submit.disabled = false;
-                toastr.error(t("connection_error"));
+                const message = t("connection_error");
+                onError(message);
+                toastr.error(message);
             } finally {
                 form.dataset.submitting = "false";
             }
@@ -162,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const modal = form.closest(".modal");
         const success = modal.querySelector(".account-registration-success");
         const successMessage = success.querySelector("p");
+        const errorMessage = modal.querySelector(".account-registration-error");
 
         bindAjaxForm(
             form,
@@ -171,6 +182,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 success.hidden = false;
             },
             t("unknown_error"),
+            message => {
+                errorMessage.textContent = message;
+                errorMessage.hidden = !message;
+            },
         );
     });
 

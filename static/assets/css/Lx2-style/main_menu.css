@@ -17,14 +17,14 @@
 #main-menu .navbar {
     position: unset;
 }
-#main-menu a.nav-link {
+#main-menu a.nav-link, #account-menu a.nav-link {
     text-transform: uppercase;
     font-size: x-small;
     font-family: var(--font-montserrat);
     font-weight: 600;
     transition: all .5s;
 }
-#main-menu a.nav-link:hover {
+#main-menu a.nav-link:hover, #account-menu a.nav-link:hover {
     color: var(--hover-color);
     text-decoration: none;
 }

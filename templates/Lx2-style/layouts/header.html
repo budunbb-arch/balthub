@@ -10,15 +10,12 @@
                     <img src="{% static 'assets/images/Lx2-style/logo-black.svg' %}" alt="{{ trans.sitename }}" class="img-fluid">
                 </a>
             </div>
-            <div class="col-3 order-3 col-sm-2 offset-sm-7 col-md-7 offset-md-1 order-md-1 col-xl-5 offset-xl-3 d-flex align-items-center justify-content-end" id="main-menu">
+            <div class="col-3 order-3 col-sm-2 offset-sm-1 col-md-7 offset-md-1 order-md-1 col-xl-5 offset-xl-3 d-flex align-items-center justify-content-end" id="main-menu">
                 {% include "Lx2-style/includes/render_modules.html" with modules=layout.main_menu %}
             </div>
-            <div class="col-4 offset-1 order-2">
+            <div class="col-4 offset-1 order-2 col-sm-5 col-md-2 offset-md-0 col-xl-2 offset-xl-1 d-flex align-items-center justify-content-end" id="account-menu">
                 {% include "Lx2-style/includes/render_modules.html" with modules=layout.account_menu %}
-            </div><!--
-            <div class="col-3 offset-1 order-2">
-                {% include "Lx2-style/widgets/account_menu.html" %}
-            </div>-->
+            </div>
         </div>
     </div>
 </header>

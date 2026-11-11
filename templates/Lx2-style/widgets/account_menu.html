@@ -5,8 +5,8 @@
     <li class="nav-item{% if not is_logged %} w-100 text-center{% endif %}">
         {% if is_logged %}
             <a class="nav-link" href="{% url 'account_dashboard' %}">
-                <span class="d-inline d-md-none sm-menu-icon"><i class="fa-solid fa-user" aria-hidden="true"></i></span>
-                <span class="d-none d-md-inline">{{ trans.text_account }}</span>
+                <span class="d-inline d-lg-none sm-menu-icon"><i class="fa-solid fa-user" aria-hidden="true"></i></span>
+                <span class="d-none d-lg-inline">{{ trans.text_account }}</span>
             </a>
         {% else %}
             <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#accountModal">
@@ -17,10 +17,13 @@
     </li>
 
     {% if is_logged %}
-        <li class="nav-item">
+        <li class="nav-item d-flex align-items-center">
             <form method="post" action="{% url 'account_logout' %}">
                 {% csrf_token %}
-                <button class="nav-link border-0 sm-menu-icon" type="submit" aria-label="Выйти">
+                <button class="nav-link border-0 bg-transparent p-0 d-flex align-items-center d-lg-none" type="submit" aria-label="{{  trans.text_logout }}">
+                    <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+                </button>
+                <button class="nav-link border-0 bg-transparent p-0 d-none d-lg-block" type="submit" aria-label="{{  trans.text_logout }}">
                     <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
                 </button>
             </form>
